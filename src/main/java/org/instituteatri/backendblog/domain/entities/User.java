@@ -6,6 +6,10 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
 
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -16,4 +20,6 @@ public class User {
     private String name;
     private String email;
     private String password;
+    private UserRole role;
+    private List<Post> posts = new ArrayList<>();
 }
