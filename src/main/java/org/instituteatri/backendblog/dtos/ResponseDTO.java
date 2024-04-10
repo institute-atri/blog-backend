@@ -1,5 +1,4 @@
 package org.instituteatri.backendblog.dtos;
 
-public class ResponseDTO {
-    String token;
+public record ResponseDTO(String token) {
 }
