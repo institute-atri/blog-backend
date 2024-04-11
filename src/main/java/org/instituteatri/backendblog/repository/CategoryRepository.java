@@ -1,6 +1,6 @@
-package myapp.authenticateAPI.repository;
+package org.instituteatri.backendblog.repository;
 
-import myapp.authenticateAPI.domain.entities.Category;
+import org.instituteatri.backendblog.domain.entities.Category;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
