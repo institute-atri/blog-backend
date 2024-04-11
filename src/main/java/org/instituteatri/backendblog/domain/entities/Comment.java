@@ -5,14 +5,36 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.instituteatri.backendblog.dtos.AuthorDTO;
 
-import java.util.Date;
+import java.io.Serial;
+import java.io.Serializable;
+import java.time.LocalDateTime;
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Comment{
+public class Comment implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
+
     private String text;
-    private Date date;
-    private User author;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+
+    private User user;
+
+    private AuthorDTO authorDTO;
+
+    public Comment(String text, LocalDateTime createdAt, User user) {
+        this.text = text;
+        this.createdAt = createdAt;
+        this.authorDTO = new AuthorDTO(user.getName(), user.getLastName());
+    }
+
+    public void UpdatedComment(String text, LocalDateTime updatedAt) {
+        this.text = text;
+        this.createdAt = updatedAt;
+    }
 }
