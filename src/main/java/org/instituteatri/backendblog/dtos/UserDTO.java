@@ -1,4 +1,13 @@
 package org.instituteatri.backendblog.dtos;
 
-public record RegisterDTO (String name, String lastName, String email, String password){
+import org.instituteatri.backendblog.domain.entities.UserRole;
+
+public record UserDTO(
+        String name,
+        String lastName,
+        String phoneNumber,
+        String bio,
+        String email,
+        String password,
+        UserRole role){
 }
