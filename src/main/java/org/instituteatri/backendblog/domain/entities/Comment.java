@@ -1,6 +1,7 @@
 package org.instituteatri.backendblog.domain.entities;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,6 +24,7 @@ public class Comment implements Serializable {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
+    @JsonIgnore
     private User user;
 
     private AuthorDTO authorDTO;
@@ -31,10 +33,5 @@ public class Comment implements Serializable {
         this.text = text;
         this.createdAt = createdAt;
         this.authorDTO = new AuthorDTO(user.getName(), user.getLastName());
-    }
-
-    public void UpdatedComment(String text, LocalDateTime updatedAt) {
-        this.text = text;
-        this.createdAt = updatedAt;
     }
 }

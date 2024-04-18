@@ -1,14 +1,16 @@
 package org.instituteatri.backendblog.domain.entities;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.*;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -17,7 +19,9 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class User  implements UserDetails {
+@EqualsAndHashCode(of = "id")
+@Document
+public class User implements UserDetails {
     @Id
     private String id;
     private String name;
@@ -27,12 +31,20 @@ public class User  implements UserDetails {
     private String email;
     private String password;
     private boolean isActive;
+    private int failedLoginAttempts = 0;
+    private LocalDateTime lockExpirationTime;
 
     private UserRole role;
+
+    @DBRef(lazy = true)
+    @JsonIgnore
     private List<Post> posts = new ArrayList<>();
 
+    @JsonIgnore
+    @Transient
+    private int postCount;
 
-    public User(String name, String lastName,String phoneNumber, String bio, String email, String password, boolean isActive, UserRole role) {
+    public User(String name, String lastName, String phoneNumber, String bio, String email, String password, boolean isActive, UserRole role) {
         this.name = name;
         this.lastName = lastName;
         this.phoneNumber = phoneNumber;
@@ -43,18 +55,10 @@ public class User  implements UserDetails {
         this.role = role;
     }
 
-    public User(String name, String lastName,String phoneNumber, String email, String password, boolean isActive) {
-        this.name = name;
-        this.lastName = lastName;
-        this.phoneNumber = phoneNumber;
-        this.email = email;
-        this.password = password;
-        this.isActive = isActive;
-    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        if(this.role == UserRole.ADMIN) return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"));
+        if (this.role == UserRole.ADMIN) return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"));
         else return List.of(new SimpleGrantedAuthority("ROLE_USER"));
     }
 
@@ -75,7 +79,7 @@ public class User  implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return lockExpirationTime == null || lockExpirationTime.isBefore(LocalDateTime.now());
     }
 
     @Override
@@ -85,6 +89,11 @@ public class User  implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return isActive;
+    }
+
+    public void lockAccountForHours() {
+        lockExpirationTime = LocalDateTime.now().plusHours(2);
+        isActive = false;
     }
 }
