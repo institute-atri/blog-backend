@@ -31,6 +31,7 @@ public class Instantiation implements CommandLineRunner {
         tagRepository.deleteAll();
         categoryRepository.deleteAll();
 
+        // Create an admin user
         String encryptedPassword = passwordEncoder.encode("@Visual23k+");
         User admin = new User(
                 "Rafael",
@@ -43,13 +44,15 @@ public class Instantiation implements CommandLineRunner {
                 UserRole.ADMIN);
         userRepository.save(admin);
 
-
+        // Create and save a category
         Category category1 = new Category("Technology", "tech");
         categoryRepository.save(category1);
 
+        // Create and save a tag
         Tag tag1 = new Tag("Java", "java");
         tagRepository.save(tag1);
 
+        // Create and save a post
         LocalDateTime createdAt = LocalDateTime.now();
         Post post1 = new Post(
                 "title",
@@ -63,6 +66,7 @@ public class Instantiation implements CommandLineRunner {
         post1.getTags().add(tag1);
         postRepository.save(post1);
 
+        // Create a new user
         User user = new User(
                 "User",
                 "Test",
@@ -74,12 +78,15 @@ public class Instantiation implements CommandLineRunner {
                 UserRole.USER);
         userRepository.save(user);
 
+        // Create and save a new category
         Category category2 = new Category("Business", "business");
         categoryRepository.save(category2);
 
+        // Create and save a new tag
         Tag tag2 = new Tag("C#", "csharp");
         tagRepository.save(tag2);
 
+        // Create and save a new post
         Post post2 = new Post(
                 "title",
                 "summary",
@@ -99,6 +106,27 @@ public class Instantiation implements CommandLineRunner {
         post1.getComments().add(comment1);
         post2.getComments().add(comment2);
         postRepository.saveAll(Arrays.asList(post1, post2));
+
+
+        // For each post, add the post to the list of posts in the corresponding categories
+        for (Post post : Arrays.asList(post1, post2)) {
+            for (Category category : post.getCategories()) {
+                category.getPosts().add(post);
+            }
+        }
+
+        // Save the updated categories in the repository
+        categoryRepository.saveAll(Arrays.asList(category1, category2));
+
+        for (Post post : Arrays.asList(post1, post2)) {
+            for (Tag tag : post.getTags()) {
+                tag.getPosts().add(post);
+            }
+        }
+
+        // Save the updated tags in the repository
+        tagRepository.saveAll(Arrays.asList(tag1, tag2));
+
 
         // Update the list of user posts
         admin.getPosts().add(post1);

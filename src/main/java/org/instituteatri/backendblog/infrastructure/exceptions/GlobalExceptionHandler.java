@@ -17,7 +17,10 @@ import java.util.Map;
 
 public class GlobalExceptionHandler {
 
-
+    @ExceptionHandler(AccountLockedException.class)
+    public ResponseEntity<Object> handleAccountLockedException(AccountLockedException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Collections.singletonMap("message", ex.getMessage()));
+    }
     @ExceptionHandler(CategoryNotFoundException.class)
     public ResponseEntity<Object> handleCategoryNotFoundException(CategoryNotFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.singletonMap("message", ex.getMessage()));
