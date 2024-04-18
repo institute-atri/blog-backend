@@ -340,3 +340,8 @@ gradle-app.setting
 ### Gradle Patch ###
 # Java heap dump
 *.hprof
+
+
+# Ignore configuration files
+src/main/resources/application.properties
+src/main/resources/application.yml
