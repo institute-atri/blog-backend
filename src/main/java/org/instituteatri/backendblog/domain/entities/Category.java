@@ -21,7 +21,6 @@ import java.util.List;
 @NoArgsConstructor
 @Document
 public class Category implements Serializable {
-
     @Serial
     private static final long serialVersionUID = 1L;
 

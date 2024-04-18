@@ -16,7 +16,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Comment implements Serializable {
-
     @Serial
     private static final long serialVersionUID = 1L;
 

@@ -22,7 +22,6 @@ import java.util.List;
 @NoArgsConstructor
 @Document
 public class Post implements Serializable {
-
     @Serial
     private static final long serialVersionUID = 1L;
 

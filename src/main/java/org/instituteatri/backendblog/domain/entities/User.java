@@ -30,6 +30,7 @@ public class User implements UserDetails {
     private String bio;
     private String email;
     private String password;
+
     private boolean isActive;
     private int failedLoginAttempts = 0;
     private LocalDateTime lockExpirationTime;
