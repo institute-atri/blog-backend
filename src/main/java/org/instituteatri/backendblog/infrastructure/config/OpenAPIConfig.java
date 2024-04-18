@@ -38,7 +38,7 @@ public class OpenAPIConfig {
         contact.setEmail("contactorgatri@gmail.com");
         contact.setName("ATRI");
         contact.setUrl("https://www.orgatri.com");
-
+ 
         License mitLicense = new License().name("MIT License").url("https://github.com/institute-atri/blog-backend?tab=MIT-1-ov-file");
         Info info = new Info()
                 .title("Blog backend")
