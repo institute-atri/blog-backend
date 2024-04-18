@@ -1,8 +1,10 @@
 package org.instituteatri.backendblog.service;
 
 import lombok.RequiredArgsConstructor;
+import org.instituteatri.backendblog.domain.entities.Category;
 import org.instituteatri.backendblog.domain.entities.Post;
 import org.instituteatri.backendblog.domain.entities.User;
+import org.instituteatri.backendblog.dtos.PostDTO;
 import org.instituteatri.backendblog.infrastructure.exceptions.PostNotFoundException;
 import org.instituteatri.backendblog.repository.PostRepository;
 import org.instituteatri.backendblog.service.helpers.HelperValidateUser;
@@ -36,11 +38,11 @@ public class PostService {
         return post.orElseThrow(() -> new PostNotFoundException(id));
     }
 
-    public ResponseEntity<Post> processCreatePost(Post post, Authentication authentication) {
+    public ResponseEntity<Post> processCreatePost(PostDTO postDTO, Authentication authentication) {
         User currentUser = helperValidateUser.getCurrentUser(authentication);
         helperValidateUser.validateCurrentUser(currentUser);
 
-        Post createdPost = helperComponentCreatePost.helperCreateNewPost(post, currentUser);
+        Post createdPost = helperComponentCreatePost.helperCreateNewPost(postDTO, currentUser);
 
         URI uri = helperComponentCreatePost.helperBuildUserUri(createdPost);
 
@@ -48,14 +50,14 @@ public class PostService {
     }
 
 
-    public ResponseEntity<Post> processUpdatePost(String id, Post updatedpost, User currentUser) {
+    public ResponseEntity<Post> processUpdatePost(String id, PostDTO updatedPostDto, User currentUser) {
         helperValidateUser.validateCurrentUser(currentUser);
+
         Post existingPost = findById(id);
+
         helperComponentPostUpdate.helperValidateAuthorship(existingPost, currentUser);
 
-        helperComponentPostUpdate.helperUpdatedPost(updatedpost);
-        updatedpost.setId(id);
-        helperComponentPostUpdate.helperUpdate(id, updatedpost);
+        helperComponentPostUpdate.helperUpdate(id, updatedPostDto);
 
         return ResponseEntity.noContent().build();
     }
@@ -64,6 +66,12 @@ public class PostService {
         User currentUser = helperValidateUser.getCurrentUser(authentication);
         Post existingPost = findById(id);
         helperComponentPostDelete.helperValidatePostDeletion(existingPost, currentUser);
+
+        for (Category category : existingPost.getCategories()) {
+            helperComponentCreatePost.decrementCategoryPostCount(category.getId(), id);
+        }
+
         postRepository.deleteById(id);
+        helperComponentPostDelete.helperDecrementPostCount(currentUser);
     }
 }
