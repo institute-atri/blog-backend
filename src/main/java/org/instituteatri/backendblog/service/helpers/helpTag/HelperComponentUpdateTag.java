@@ -2,6 +2,7 @@ package org.instituteatri.backendblog.service.helpers.helpTag;
 
 import lombok.RequiredArgsConstructor;
 import org.instituteatri.backendblog.domain.entities.Tag;
+import org.instituteatri.backendblog.dtos.TagDTO;
 import org.instituteatri.backendblog.infrastructure.exceptions.TagNotFoundException;
 import org.instituteatri.backendblog.repository.TagRepository;
 import org.springframework.stereotype.Component;
@@ -12,17 +13,17 @@ public class HelperComponentUpdateTag {
 
     private final TagRepository tagRepository;
 
-    public void helperUpdate(String id, Tag updatedTag) {
+    public void helperUpdate(String id, TagDTO  updatedTagDTO) {
         Tag existingTag = tagRepository.findById(id)
                 .orElseThrow(() -> new TagNotFoundException(id));
 
-        helperUpdateName(existingTag, updatedTag.getName());
-        helperUpdateSlug(existingTag, updatedTag.getSlug());
+        helperUpdateName(existingTag, updatedTagDTO.name());
+        helperUpdateSlug(existingTag, updatedTagDTO.slug());
 
         tagRepository.save(existingTag);
     }
-    public void helperUpdatedTag(Tag tag) {
-        new Tag(tag.getName(), tag.getSlug());
+    public void helperUpdatedTag(TagDTO tagDTO) {
+        new Tag(tagDTO.name(), tagDTO.slug());
     }
 
     private void helperUpdateName(Tag existingTag, String newName) {
