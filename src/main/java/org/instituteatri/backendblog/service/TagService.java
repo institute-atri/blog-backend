@@ -3,6 +3,7 @@ package org.instituteatri.backendblog.service;
 import lombok.RequiredArgsConstructor;
 import org.instituteatri.backendblog.domain.entities.Post;
 import org.instituteatri.backendblog.domain.entities.Tag;
+import org.instituteatri.backendblog.dtos.TagDTO;
 import org.instituteatri.backendblog.infrastructure.exceptions.TagNotFoundException;
 import org.instituteatri.backendblog.repository.TagRepository;
 import org.instituteatri.backendblog.service.helpers.helpTag.HelperComponentUpdateTag;
@@ -36,19 +37,22 @@ public class TagService {
         return tag.orElseThrow(() -> new TagNotFoundException(id));
     }
 
-    public ResponseEntity<Tag> processCreateTag(Tag tag) {
+    public ResponseEntity<Tag> processCreateTag(TagDTO tagDTO) {
+        Tag tag = new Tag(tagDTO.name(), tagDTO.slug());
+
+        tag = tagRepository.save(tag);
+
         URI uri = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
                 .buildAndExpand(tag.getId())
                 .toUri();
-        return ResponseEntity.created(uri).body(tagRepository.insert(tag));
+        return ResponseEntity.created(uri).body(tag);
     }
 
-    public ResponseEntity<Tag> processUpdateTag(String id, Tag updatedTag) {
-        helperComponentUpdateTag.helperUpdatedTag(updatedTag);
-        updatedTag.setId(id);
-        helperComponentUpdateTag.helperUpdate(id, updatedTag);
+    public ResponseEntity<Void> processUpdateTag(String id, TagDTO updatedTagDTO) {
+        helperComponentUpdateTag.helperUpdatedTag(updatedTagDTO);
+        helperComponentUpdateTag.helperUpdate(id, updatedTagDTO);
 
         return ResponseEntity.noContent().build();
     }
