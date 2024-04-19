@@ -30,25 +30,26 @@ public class AccountController {
 
     @Operation(
             method = "POST",
-            description = "Endpoint for authentication. If a user enters the wrong password more than four times, their account will be locked. Upon successful login, returns a token and email.",
+            description = "Endpoint for authentication." +
+                    "If the user enters the wrong password more than 4 times, the account will be blocked.",
             summary = "Authenticate user by verifying credentials.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Success.",
+            @ApiResponse(responseCode = "200", description = "-Successfully login. Returns a token and email.",
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(
                                     value = "{" +
-                                            "\"token\": [\"string\"]," +
-                                            "\"email\": [\"string\"]" +
+                                            "\"token\": [\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhdXRoLWFwaSIsInN1YiI6InVzZXJAbG9jYWxob3N0LmNvbSIsImV4cCI6MTcxMzMxNDg1OH0.5CJqH5WbTdgc8_8y5-V4r9XlYkZ5Bhp6eHnmp2OQl\"]," +
+                                            "\"email\": [\"email@localhost.com\"]" +
                                             "}"
                             ))),
 
-            @ApiResponse(responseCode = "404", description = "Not found.",
+            @ApiResponse(responseCode = "404", description = "-Invalid username or password.",
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(
                                     value = "{\"message\":\"Invalid username or password.\"}"
                             ))),
 
-            @ApiResponse(responseCode = "403", description = "Forbidden.",
+            @ApiResponse(responseCode = "403", description = "-Account is locked.",
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(
                                     value = "{\"message\":\"Account is locked.\"}"
@@ -62,26 +63,19 @@ public class AccountController {
 
     @Operation(
             method = "POST",
-            description = "Endpoint for user registration." +
-                    " Accepts " +
-                    "'name' (string), " +
-                    "'lastName' (string)" +
-                    " 'phoneNumber' (string)," +
-                    " 'email' (string), and" +
-                    " 'password' (string)." +
-                    " Upon successful registration, returns a token and email.",
+            description = "Endpoint for user registration.",
             summary = "Register a new user.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Success.",
+            @ApiResponse(responseCode = "200", description = "-User registered successfully. Returns a token and email.",
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(
                                     value = "{" +
-                                            "\"token\": [\"string\"]," +
-                                            "\"email\": [\"string\"]" +
+                                            "\"token\": [\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhdXRoLWFwaSIsInN1YiI6InVzZXJAbG9jYWxob3N0LmNvbSIsImV4cCI6MTcxMzMxNDg1OH0.5CJqH5WbTdgc8_8y5-V4r9XlYkZ5Bhp6eHnmp2OQl\"]," +
+                                            "\"email\": [\"email@localhost.com\"]" +
                                             "}"
                             ))),
 
-            @ApiResponse(responseCode = "400", description = "Bad request.",
+            @ApiResponse(responseCode = "400", description = "-Property validation ",
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(
                                     value = "{" +
@@ -92,7 +86,7 @@ public class AccountController {
                                             "\"password\": [\"Password must be strong and contain at least one uppercase letter, one lowercase letter, one digit, and one special character.\", \"Password must be between 10 and 30 characters.\", \"Password is required.\"]" +
                                             "}"
                             ))),
-            @ApiResponse(responseCode = "409", description = "Conflicts.",
+            @ApiResponse(responseCode = "409", description = "-E-mail not available.",
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(
                                     value = "{\"message\":\"E-mail not available.\"}"

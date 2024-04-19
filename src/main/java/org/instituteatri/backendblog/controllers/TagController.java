@@ -5,11 +5,9 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.instituteatri.backendblog.domain.entities.Post;
 import org.instituteatri.backendblog.domain.entities.Tag;
-import org.instituteatri.backendblog.dtos.TagDTO;
 import org.instituteatri.backendblog.service.TagService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,44 +31,44 @@ public class TagController {
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
-                    description = "Success.",
+                    description = "Posts list successfully returned.",
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(
                                     value = "[" +
                                             "  {" +
-                                            "    \"id\": \"string\"," +
-                                            "    \"title\": \"string\"," +
-                                            "    \"summary\": \"string\"," +
-                                            "    \"body\": \"string\"," +
-                                            "    \"slug\": \"string\"," +
+                                            "    \"id\": \"6620a722185c5e3107f13732\"," +
+                                            "    \"title\": \"title\"," +
+                                            "    \"summary\": \"summary\"," +
+                                            "    \"body\": \"body\"," +
+                                            "    \"slug\": \"slug\"," +
                                             "    \"createdAt\": \"2024-04-18T01:52:50.928\"," +
                                             "    \"updatedAt\": null," +
                                             "    \"categories\": [" +
                                             "      {" +
-                                            "        \"id\": \"string\"," +
-                                            "        \"name\": \"string\"," +
-                                            "        \"slug\": \"string\"" +
+                                            "        \"id\": \"6620a722185c5e3107f13730\"," +
+                                            "        \"name\": \"Technology\"," +
+                                            "        \"slug\": \"tech\"" +
                                             "      }" +
                                             "    ]," +
                                             "    \"tags\": [" +
                                             "      {" +
-                                            "        \"id\": \"string\"," +
-                                            "        \"name\": \"string\"," +
-                                            "        \"slug\": \"string\"" +
+                                            "        \"id\": \"6620a722185c5e3107f13731\"," +
+                                            "        \"name\": \"Java\"," +
+                                            "        \"slug\": \"java\"" +
                                             "      }" +
                                             "    ]," +
                                             "    \"authorDTO\": {" +
-                                            "      \"name\": \"string\"," +
-                                            "      \"lastName\": \"string\"" +
+                                            "      \"name\": \"Rafael\"," +
+                                            "      \"lastName\": \"Silva\"" +
                                             "    }," +
                                             "    \"comments\": [" +
                                             "      {" +
-                                            "        \"text\": \"string\"," +
+                                            "        \"text\": \"Falando sobre java\"," +
                                             "        \"createdAt\": \"2024-04-18T01:52:50.928\"," +
                                             "        \"updatedAt\": null," +
                                             "        \"authorDTO\": {" +
-                                            "          \"name\": \"string\"," +
-                                            "          \"lastName\": \"string\"" +
+                                            "          \"name\": \"User\"," +
+                                            "          \"lastName\": \"Test\"" +
                                             "        }" +
                                             "      }" +
                                             "    ]" +
@@ -78,7 +76,7 @@ public class TagController {
                                             "]"))),
             @ApiResponse(
                     responseCode = "404",
-                    description = "Not found.",
+                    description = "-Tag id not found.",
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(
                                     value = "{" +
@@ -96,16 +94,16 @@ public class TagController {
 
     @Operation(
             method = "GET",
-            summary = "Get all events.",
-            description = "Collection of events.")
+            summary = "List all tags.",
+            description = "Returns a list of tags.")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
-                    description = "Success.",
+                    description = "Tags list successfully returned.",
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(
                                     value = "[{" +
-                                            "\"id\":\"string\"" +
+                                            "\"id\":\"661eff024af2c96e8a7deda9\"" +
                                             ",\"name\":\"string\"," +
                                             "\"slug\":\"string\"" +
                                             "}]"))),
@@ -118,22 +116,22 @@ public class TagController {
 
     @Operation(
             method = "GET",
-            summary = "Get an event.",
-            description = "Event identifier {id}.")
+            summary = "Find tag by ID",
+            description = "Returns the tag with the specified ID.")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
-                    description = "Success.",
+                    description = "-Tag successfully found.",
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(
                                     value = "[{" +
-                                            "\"id\":\"string\"" +
+                                            "\"id\":\"661eff024af2c96e8a7deda9\"" +
                                             ",\"name\":\"string\"," +
                                             "\"slug\":\"string\"" +
                                             "}]"))),
             @ApiResponse(
                     responseCode = "404",
-                    description = "Not found.",
+                    description = "-Tag not found.",
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(
                                     value = "{" +
@@ -148,100 +146,76 @@ public class TagController {
 
     @Operation(
             method = "POST",
-            summary = "Create an event.",
-            description = "Creates a new tag based on a JSON object in the request body. " +
-                    "The JSON must contain: 'name' (String) and 'slug' (String). " +
-                    "Only the ADMIN role can create a new tag."
-    )
+            summary = "Create a new tag.",
+            description = "Create a new tag. Only the ADMIN role can create a new tag.")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "201",
-                    description = "Created.",
+                    description = "-Tag successfully created.",
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(
                                     value = "[{" +
-                                            "\"id\":\"string\"" +
+                                            "\"id\":\"661eff024af2c96e8a7deda9\"" +
                                             ",\"name\":\"string\"," +
                                             "\"slug\":\"string\"" +
                                             "}]"))),
-
-            @ApiResponse(responseCode = "400", description = "Bad Request.",
-                    content = @Content(mediaType = "application/json",
-                            examples = @ExampleObject(
-                                    value = "{" +
-                                            "\"name\": [\"Name is required.\", \"Name cannot be longer than 10 characters.\"]," +
-                                            "\"slug\": [\"Slug is required.\", \"Slug cannot be longer than 50 characters.\"]" +
-                                            "}"
-                            ))),
-
-            @ApiResponse(responseCode = "403", description = "Forbidden.",
+            @ApiResponse(responseCode = "403", description = "-Unauthorized user.",
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(
                                     value = "{\"message\":\"User isn't authorized.\"}"
                             )))
     })
     @PostMapping("/create")
-    public ResponseEntity<Tag> createTag(@RequestBody @Valid TagDTO tagDTO) {
-        return tagService.processCreateTag(tagDTO);
+    public ResponseEntity<Tag> createTag(@RequestBody Tag tag) {
+        return tagService.processCreateTag(tag);
     }
 
 
     @Operation(
             method = "PUT",
-            summary = "Update an event.",
-            description = "Updates an existing tag based on a JSON object in the request body. " +
-                    "The JSON must contain: 'name' (String) and 'slug' (String). " +
-                    "Only the ADMIN role can update an existing tag."
-    )
+            summary = "Update an existing tag.",
+            description = "Updates an existing tag. Only the ADMIN role can update an existing tag.")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "204",
-                    description = "No Content."),
-
-            @ApiResponse(responseCode = "400", description = "Bad request.",
+                    description = "-Tag successfully updated.",
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(
-                                    value = "{" +
-                                            "\"name\": [\"Name is required.\", \"Name cannot be longer than 10 characters.\"]," +
-                                            "\"slug\": [\"Slug is required.\", \"Slug cannot be longer than 50 characters.\"]" +
-                                            "}"
-                            ))),
+                                    value = "[{" +
+                                            "\"id\":\"661eff024af2c96e8a7deda9\"" +
+                                            ",\"name\":\"string\"," +
+                                            "\"slug\":\"string\"" +
+                                            "}]"))),
 
-            @ApiResponse(responseCode = "403", description = "Forbidden.",
+            @ApiResponse(responseCode = "403", description = "-Unauthorized user.",
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(
                                     value = "{\"message\":\"User isn't authorized.\"}"
                             ))),
 
-            @ApiResponse(responseCode = "404", description = "Not found.",
+            @ApiResponse(responseCode = "404", description = "-Tag not found.",
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(
                                     value = "{\"message\":\"Could not find tag with id:661eff024af2c96e8a7deda9\"}"
                             )))
     })
     @PutMapping("/{id}")
-    public ResponseEntity<Void> updateTag(
+    public ResponseEntity<Tag> updateTag(
             @PathVariable String id,
-            @RequestBody @Valid TagDTO tagDTO) {
-        return tagService.processUpdateTag(id, tagDTO);
+            @RequestBody Tag tag) {
+        return tagService.processUpdateTag(id, tag);
     }
 
 
     @Operation(
             method = "DELETE",
-            summary = "Delete an event by ID.",
+            summary = "Delete an existing tag.",
             description = "Deletes an existing tag. Only the ADMIN role can delete an existing tag.")
     @ApiResponses(value = {
             @ApiResponse(
-                    responseCode = "204", description = "No content."),
-
-            @ApiResponse(responseCode = "403", description = "Forbidden.",
-                    content = @Content(mediaType = "application/json",
-                            examples = @ExampleObject(
-                                    value = "{\"message\":\"User isn't authorized.\"}"
-                            ))),
-
-            @ApiResponse(responseCode = "404", description = "Not found.",
+                    responseCode = "204", description = "-Tag successfully deleted."),
+            @ApiResponse(responseCode = "403", description = "-Unauthorized user."),
+            @ApiResponse(responseCode = "404", description = "-Tag not found.",
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(
                                     value = "{" +

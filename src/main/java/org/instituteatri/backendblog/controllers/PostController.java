@@ -30,49 +30,49 @@ public class PostController {
 
     @Operation(
             method = "GET",
-            summary = "Get all the events.",
-            description = "Collection of events.")
+            summary = "Get all posts.",
+            description = "Returns a list of posts.")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
-                    description = "Success.",
+                    description = "-Posts list successfully returned.",
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(
                                     value = "[" +
                                             "  {" +
-                                            "    \"id\": \"string\"," +
-                                            "    \"title\": \"string\"," +
-                                            "    \"summary\": \"string\"," +
-                                            "    \"body\": \"string\"," +
-                                            "    \"slug\": \"string\"," +
+                                            "    \"id\": \"6620a722185c5e3107f13732\"," +
+                                            "    \"title\": \"title\"," +
+                                            "    \"summary\": \"summary\"," +
+                                            "    \"body\": \"body\"," +
+                                            "    \"slug\": \"slug\"," +
                                             "    \"createdAt\": \"2024-04-18T01:52:50.928\"," +
                                             "    \"updatedAt\": null," +
                                             "    \"categories\": [" +
                                             "      {" +
-                                            "        \"id\": \"string\"," +
-                                            "        \"name\": \"string\"," +
-                                            "        \"slug\": \"string\"" +
+                                            "        \"id\": \"6620a722185c5e3107f13730\"," +
+                                            "        \"name\": \"Technology\"," +
+                                            "        \"slug\": \"tech\"" +
                                             "      }" +
                                             "    ]," +
                                             "    \"tags\": [" +
                                             "      {" +
-                                            "        \"id\": \"string\"," +
-                                            "        \"name\": \"string\"," +
-                                            "        \"slug\": \"string\"" +
+                                            "        \"id\": \"6620a722185c5e3107f13731\"," +
+                                            "        \"name\": \"Java\"," +
+                                            "        \"slug\": \"java\"" +
                                             "      }" +
                                             "    ]," +
                                             "    \"authorDTO\": {" +
-                                            "      \"name\": \"string\"," +
-                                            "      \"lastName\": \"string\"" +
+                                            "      \"name\": \"Rafael\"," +
+                                            "      \"lastName\": \"Silva\"" +
                                             "    }," +
                                             "    \"comments\": [" +
                                             "      {" +
-                                            "        \"text\": \"string\"," +
+                                            "        \"text\": \"Falando sobre java\"," +
                                             "        \"createdAt\": \"2024-04-18T01:52:50.928\"," +
                                             "        \"updatedAt\": null," +
                                             "        \"authorDTO\": {" +
-                                            "          \"name\": \"string\"," +
-                                            "          \"lastName\": \"string\"" +
+                                            "          \"name\": \"User\"," +
+                                            "          \"lastName\": \"Test\"" +
                                             "        }" +
                                             "      }" +
                                             "    ]" +
@@ -88,49 +88,49 @@ public class PostController {
 
     @Operation(
             method = "GET",
-            summary = "Get an event.",
-            description = "Event identifier {id}.")
+            summary = "Find post by ID.",
+            description = "Returns the post with the specified ID.")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
-                    description = "Success.",
+                    description = "-Posts successfully found.",
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(
                                     value = "[" +
                                             "  {" +
-                                            "    \"id\": \"string\"," +
-                                            "    \"title\": \"string\"," +
-                                            "    \"summary\": \"string\"," +
-                                            "    \"body\": \"string\"," +
-                                            "    \"slug\": \"string\"," +
+                                            "    \"id\": \"6620a722185c5e3107f13732\"," +
+                                            "    \"title\": \"title\"," +
+                                            "    \"summary\": \"summary\"," +
+                                            "    \"body\": \"body\"," +
+                                            "    \"slug\": \"slug\"," +
                                             "    \"createdAt\": \"2024-04-18T01:52:50.928\"," +
                                             "    \"updatedAt\": null," +
                                             "    \"categories\": [" +
                                             "      {" +
-                                            "        \"id\": \"string\"," +
-                                            "        \"name\": \"string\"," +
-                                            "        \"slug\": \"string\"" +
+                                            "        \"id\": \"6620a722185c5e3107f13730\"," +
+                                            "        \"name\": \"Technology\"," +
+                                            "        \"slug\": \"tech\"" +
                                             "      }" +
                                             "    ]," +
                                             "    \"tags\": [" +
                                             "      {" +
-                                            "        \"id\": \"string\"," +
-                                            "        \"name\": \"string\"," +
-                                            "        \"slug\": \"string\"" +
+                                            "        \"id\": \"6620a722185c5e3107f13731\"," +
+                                            "        \"name\": \"Java\"," +
+                                            "        \"slug\": \"java\"" +
                                             "      }" +
                                             "    ]," +
                                             "    \"authorDTO\": {" +
-                                            "      \"name\": \"string\"," +
-                                            "      \"lastName\": \"string\"" +
+                                            "      \"name\": \"Rafael\"," +
+                                            "      \"lastName\": \"Silva\"" +
                                             "    }," +
                                             "    \"comments\": [" +
                                             "      {" +
-                                            "        \"text\": \"string\"," +
+                                            "        \"text\": \"Falando sobre java\"," +
                                             "        \"createdAt\": \"2024-04-18T01:52:50.928\"," +
                                             "        \"updatedAt\": null," +
                                             "        \"authorDTO\": {" +
-                                            "          \"name\": \"string\"," +
-                                            "          \"lastName\": \"string\"" +
+                                            "          \"name\": \"User\"," +
+                                            "          \"lastName\": \"User\"" +
                                             "        }" +
                                             "      }" +
                                             "    ]" +
@@ -138,7 +138,7 @@ public class PostController {
                                             "]"))),
             @ApiResponse(
                     responseCode = "404",
-                    description = "Not found.",
+                    description = "-Post not found.",
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(
                                     value = "{" +
@@ -154,52 +154,44 @@ public class PostController {
 
     @Operation(
             method = "POST",
-            summary = "Create an event.",
-            description = "Creates a new post based on a JSON object in the request body. The JSON must contain: " +
-                    "'title' (String)," +
-                    " 'summary' (String)," +
-                    " 'body' (String)," +
-                    " 'slug' (String), " +
-                    "'categories' (array of 'id' as String), and" +
-                    " 'tags' (array of 'id' as String). " +
-                    "Requires authentication."
-    )
+            summary = "Create a new post.",
+            description = "Create a new post. Only with authenticated users.")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "201",
-                    description = "Created.",
+                    description = "-Post successfully created.",
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(
                                     value = "{" +
-                                            "    \"id\": \"string\"," +
-                                            "    \"title\": \"string\"," +
-                                            "    \"summary\": \"string\"," +
-                                            "    \"body\": \"string\"," +
-                                            "    \"slug\": \"string\"," +
+                                            "    \"id\": \"6620b59605666035d093e091\"," +
+                                            "    \"title\": \"title example\"," +
+                                            "    \"summary\": \"summary example\"," +
+                                            "    \"body\": \"bodies example\"," +
+                                            "    \"slug\": \"slug example\"," +
                                             "    \"createdAt\": \"2024-04-18T02:54:29.9783407\"," +
                                             "    \"updatedAt\": null," +
                                             "    \"categories\": [" +
                                             "        {" +
-                                            "            \"id\": \"string\"," +
-                                            "            \"name\": \"string\"," +
-                                            "            \"slug\": \"string\"" +
+                                            "            \"id\": \"6620b57c05666035d093e08a\"," +
+                                            "            \"name\": \"Technology\"," +
+                                            "            \"slug\": \"tech\"" +
                                             "        }" +
                                             "    ]," +
                                             "    \"tags\": [" +
                                             "        {" +
-                                            "            \"id\": \"string\"," +
-                                            "            \"name\": \"string\"," +
-                                            "            \"slug\": \"string\"" +
+                                            "            \"id\": \"6620b57c05666035d093e08b\"," +
+                                            "            \"name\": \"Java\"," +
+                                            "            \"slug\": \"java\"" +
                                             "        }" +
                                             "    ]," +
                                             "    \"authorDTO\": {" +
-                                            "        \"name\": \"string\"," +
-                                            "        \"lastName\": \"string\"" +
+                                            "        \"name\": \"User\"," +
+                                            "        \"lastName\": \"User\"" +
                                             "    }," +
                                             "    \"comments\": []" +
                                             "}"))),
 
-            @ApiResponse(responseCode = "400", description = "Bad request.",
+            @ApiResponse(responseCode = "400", description = "-Property validation ",
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(
                                     value = "{" +
@@ -210,7 +202,7 @@ public class PostController {
                                             "}"
                             ))),
 
-            @ApiResponse(responseCode = "401", description = "Unauthorized.",
+            @ApiResponse(responseCode = "401", description = "-Unauthenticated user.",
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(
                                     value = "{\"message\":\"User isn't authenticated.\"}"
@@ -218,7 +210,7 @@ public class PostController {
 
             @ApiResponse(
                     responseCode = "404",
-                    description = "Not found.",
+                    description = "Tag and Category not found.",
                     content = @Content(
                             mediaType = "application/json",
                             examples = @ExampleObject(
@@ -235,22 +227,22 @@ public class PostController {
 
     @Operation(
             method = "PUT",
-            summary = "Update an event by ID.",
-            description = "Updates an existing post based on a JSON object in the request body. The JSON must contain: " +
-                    "'id' (String) of the post to update," +
-                    "'title' (String) for the new title," +
-                    "'summary' (String) for the new summary," +
-                    "'body' (String) for the new content," +
-                    "'slug' (String) for the new slug," +
-                    "'categories' (array of 'id' as String) for the new categories, and" +
-                    "'tags' (array of 'id' as String) for the new tags. " +
-                    "Requires authentication."
-    )
+            summary = "Update an existing post.",
+            description = "Updates an existing post. Only with authenticated users.")
     @ApiResponses(value = {
             @ApiResponse(
-                    responseCode = "204", description = "No content."),
+                    responseCode = "204",
+                    description = "-Post successfully updated.",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(
+                                    value = "{" +
+                                            "    \"title\": \"Changes post\"," +
+                                            "    \"body\": \"Changes\"," +
+                                            "    \"summary\": \"Changes summary\"," +
+                                            "    \"slug\": \"Changes slug\"" +
+                                            "}"))),
 
-            @ApiResponse(responseCode = "400", description = "Bad request.",
+            @ApiResponse(responseCode = "400", description = "-Property validation ",
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(
                                     value = "{" +
@@ -261,33 +253,26 @@ public class PostController {
                                             "}"
                             ))),
 
-            @ApiResponse(responseCode = "401", description = "Unauthorized.",
+            @ApiResponse(responseCode = "401", description = "-Unauthenticated user.",
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(
                                     value = "{\"message\":\"User isn't authenticated.\"}"
                             ))),
 
-            @ApiResponse(responseCode = "403", description = "Forbidden.",
+            @ApiResponse(responseCode = "403", description = "-Unauthorized user.",
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(
                                     value = "{\"message\":\"User isn't authorized.\"}"
                             ))),
 
-            @ApiResponse(
-                    responseCode = "404",
-                    description = "Not found.",
-                    content = @Content(
-                            mediaType = "application/json",
+            @ApiResponse(responseCode = "404", description = "-Post not found.",
+                    content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(
-                                    value = "[" +
-                                            "  {\"message\": \"Could not find post with id:661eff024af2c96e8a7deda9\"}," +
-                                            "  {\"message\": \"Could not find category with id:66219da1dfc2226d1141683f\"}," +
-                                            "  {\"message\": \"Could not find tag with id:66219da1dfc2226d1141683f\"}" +
-                                            "]")))
-
+                                    value = "{\"message\":\"Could not find post with id:661eff024af2c96e8a7deda9\"}"
+                            )))
     })
     @PutMapping("/{id}")
-    public ResponseEntity<Void> updatePost(
+    public ResponseEntity<Post> updatePost(
             @PathVariable String id,
             @RequestBody @Valid PostDTO postDTO,
             @AuthenticationPrincipal User currentUser
@@ -298,13 +283,13 @@ public class PostController {
 
     @Operation(
             method = "DELETE",
-            summary = "Delete an event by ID.",
+            summary = "Delete an existing post.",
             description = "Deletes an existing post. Only with authenticated users.")
     @ApiResponses(value = {
             @ApiResponse(
-                    responseCode = "204", description = "No content."),
-            @ApiResponse(responseCode = "403", description = "Forbidden."),
-            @ApiResponse(responseCode = "404", description = "Not found.",
+                    responseCode = "204", description = "-Post successfully deleted."),
+            @ApiResponse(responseCode = "403", description = "-Unauthorized user."),
+            @ApiResponse(responseCode = "404", description = "-Post not found.",
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(
                                     value = "{" +

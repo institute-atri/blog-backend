@@ -6,11 +6,9 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.instituteatri.backendblog.domain.entities.Category;
 import org.instituteatri.backendblog.domain.entities.Post;
-import org.instituteatri.backendblog.dtos.CategoryDTO;
 import org.instituteatri.backendblog.service.CategoryService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,44 +32,44 @@ public class CategoryController {
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
-                    description = "Success.",
+                    description = "Posts list successfully returned.",
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(
                                     value = "[" +
                                             "  {" +
-                                            "    \"id\": \"string\"," +
-                                            "    \"title\": \"string\"," +
-                                            "    \"summary\": \"string\"," +
-                                            "    \"body\": \"string\"," +
-                                            "    \"slug\": \"string\"," +
+                                            "    \"id\": \"6620a722185c5e3107f13732\"," +
+                                            "    \"title\": \"title\"," +
+                                            "    \"summary\": \"summary\"," +
+                                            "    \"body\": \"body\"," +
+                                            "    \"slug\": \"slug\"," +
                                             "    \"createdAt\": \"2024-04-18T01:52:50.928\"," +
                                             "    \"updatedAt\": null," +
                                             "    \"categories\": [" +
                                             "      {" +
-                                            "        \"id\": \"string\"," +
-                                            "        \"name\": \"string\"," +
-                                            "        \"slug\": \"string\"" +
+                                            "        \"id\": \"6620a722185c5e3107f13730\"," +
+                                            "        \"name\": \"Technology\"," +
+                                            "        \"slug\": \"tech\"" +
                                             "      }" +
                                             "    ]," +
                                             "    \"tags\": [" +
                                             "      {" +
-                                            "        \"id\": \"string\"," +
-                                            "        \"name\": \"string\"," +
-                                            "        \"slug\": \"string\"" +
+                                            "        \"id\": \"6620a722185c5e3107f13731\"," +
+                                            "        \"name\": \"Java\"," +
+                                            "        \"slug\": \"java\"" +
                                             "      }" +
                                             "    ]," +
                                             "    \"authorDTO\": {" +
-                                            "      \"name\": \"string\"," +
-                                            "      \"lastName\": \"string\"" +
+                                            "      \"name\": \"Rafael\"," +
+                                            "      \"lastName\": \"Silva\"" +
                                             "    }," +
                                             "    \"comments\": [" +
                                             "      {" +
-                                            "        \"text\": \"string\"," +
+                                            "        \"text\": \"Falando sobre java\"," +
                                             "        \"createdAt\": \"2024-04-18T01:52:50.928\"," +
                                             "        \"updatedAt\": null," +
                                             "        \"authorDTO\": {" +
-                                            "          \"name\": \"string\"," +
-                                            "          \"lastName\": \"string\"" +
+                                            "          \"name\": \"User\"," +
+                                            "          \"lastName\": \"Test\"" +
                                             "        }" +
                                             "      }" +
                                             "    ]" +
@@ -79,7 +77,7 @@ public class CategoryController {
                                             "]"))),
             @ApiResponse(
                     responseCode = "404",
-                    description = "Not found.",
+                    description = "-Category id not found.",
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(
                                     value = "{" +
@@ -97,16 +95,16 @@ public class CategoryController {
 
     @Operation(
             method = "GET",
-            summary = "Get all the events.",
-            description = "Collection of events.")
+            summary = "List all categories.",
+            description = "Returns a list of categories.")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
-                    description = "Success.",
+                    description = "Categories list successfully returned.",
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(
                                     value = "[{" +
-                                            "\"id\":\"string\"" +
+                                            "\"id\":\"661eff024af2c96e8a7deda9\"" +
                                             ",\"name\":\"string\"," +
                                             "\"slug\":\"string\"" +
                                             "}]"))),
@@ -119,22 +117,22 @@ public class CategoryController {
 
     @Operation(
             method = "GET",
-            summary = "Get an event.",
-            description = "Event identifier {id}.")
+            summary = "Find category by ID",
+            description = "Returns the category with the specified ID.")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
-                    description = "Success.",
+                    description = "-Category successfully found.",
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(
                                     value = "[{" +
-                                            "\"id\":\"string\"" +
+                                            "\"id\":\"661eff024af2c96e8a7deda9\"" +
                                             ",\"name\":\"string\"," +
                                             "\"slug\":\"string\"" +
                                             "}]"))),
             @ApiResponse(
                     responseCode = "404",
-                    description = "Not found.",
+                    description = "-Category not found.",
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(
                                     value = "{" +
@@ -149,100 +147,76 @@ public class CategoryController {
 
     @Operation(
             method = "POST",
-            summary = "Create an event.",
-            description = "Creates a new category based on a JSON object in the request body. " +
-                    "The JSON must contain: 'name' (String) and 'slug' (String). " +
-                    "Only the ADMIN role can create a new category."
-    )
+            summary = "Create a new category.",
+            description = "Create a new category. Only the ADMIN role can create a new category.")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "201",
-                    description = "Created.",
+                    description = "-Category successfully created.",
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(
                                     value = "[{" +
-                                            "\"id\":\"string\"" +
+                                            "\"id\":\"661eff024af2c96e8a7deda9\"" +
                                             ",\"name\":\"string\"," +
                                             "\"slug\":\"string\"" +
                                             "}]"))),
-
-            @ApiResponse(responseCode = "400", description = "Bad request.",
-                    content = @Content(mediaType = "application/json",
-                            examples = @ExampleObject(
-                                    value = "{" +
-                                            "\"name\": [\"Name is required.\", \"Name cannot be longer than 50 characters.\"]," +
-                                            "\"slug\": [\"Slug is required.\", \"Slug cannot be longer than 50 characters.\"]" +
-                                            "}"
-                            ))),
-
-            @ApiResponse(responseCode = "403", description = "Forbidden.",
+            @ApiResponse(responseCode = "403", description = "-Unauthorized user.",
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(
                                     value = "{\"message\":\"User isn't authorized.\"}"
                             )))
     })
     @PostMapping("/create")
-    public ResponseEntity<Category> createCategory(@RequestBody @Valid CategoryDTO categoryDTO) {
-        return categoryService.processCreateCategory(categoryDTO);
+    public ResponseEntity<Category> createCategory(@RequestBody Category category) {
+        return categoryService.processCreateCategory(category);
     }
 
 
     @Operation(
             method = "PUT",
-            summary = "Update an event by ID.",
-            description = "Updates an existing category based on a JSON object in the request body. " +
-                    "The JSON must contain: 'name' (String) and 'slug' (String). " +
-                    "Only the ADMIN role can update an existing category."
-    )
+            summary = "Update an existing category.",
+            description = "Updates an existing category. Only the ADMIN role can update an existing category.")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "204",
-                    description = "No content."),
-
-            @ApiResponse(responseCode = "400", description = "Bad request.",
+                    description = "-Category successfully updated.",
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(
-                                    value = "{" +
-                                            "\"name\": [\"Name is required.\", \"Name cannot be longer than 50 characters.\"]," +
-                                            "\"slug\": [\"Slug is required.\", \"Slug cannot be longer than 50 characters.\"]" +
-                                            "}"
-                            ))),
+                                    value = "[{" +
+                                            "\"id\":\"661eff024af2c96e8a7deda9\"" +
+                                            ",\"name\":\"string\"," +
+                                            "\"slug\":\"string\"" +
+                                            "}]"))),
 
-            @ApiResponse(responseCode = "403", description = "Forbidden.",
+            @ApiResponse(responseCode = "403", description = "-Unauthorized user.",
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(
                                     value = "{\"message\":\"User isn't authorized.\"}"
                             ))),
 
-            @ApiResponse(responseCode = "404", description = "Not found.",
+            @ApiResponse(responseCode = "404", description = "-Category not found.",
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(
                                     value = "{\"message\":\"Could not find category with id:661eff024af2c96e8a7deda9\"}"
                             )))
     })
     @PutMapping("/{id}")
-    public ResponseEntity<Void> updateCategory(
+    public ResponseEntity<Category> updateCategory(
             @PathVariable String id,
-            @RequestBody @Valid CategoryDTO categoryDTO) {
-        return categoryService.processUpdateCategory(id, categoryDTO);
+            @RequestBody Category category) {
+        return categoryService.processUpdateCategory(id, category);
     }
 
 
     @Operation(
             method = "DELETE",
-            summary = "Delete an event by ID.",
+            summary = "Delete an existing category.",
             description = "Deletes an existing category. Only the ADMIN role can delete an existing category.")
     @ApiResponses(value = {
             @ApiResponse(
-                    responseCode = "204", description = "No content."),
-
-            @ApiResponse(responseCode = "403", description = "Forbidden.",
-                    content = @Content(mediaType = "application/json",
-                            examples = @ExampleObject(
-                                    value = "{\"message\":\"User isn't authorized.\"}"
-                            ))),
-
-            @ApiResponse(responseCode = "404", description = "Not found.",
+                    responseCode = "204", description = "-Tag successfully deleted."),
+            @ApiResponse(responseCode = "403", description = "-Unauthorized user."),
+            @ApiResponse(responseCode = "404", description = "-Category not found.",
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(
                                     value = "{" +

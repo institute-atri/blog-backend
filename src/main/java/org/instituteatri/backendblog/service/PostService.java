@@ -50,7 +50,7 @@ public class PostService {
     }
 
 
-    public ResponseEntity<Void> processUpdatePost(String id, PostDTO updatedPostDto, User currentUser) {
+    public ResponseEntity<Post> processUpdatePost(String id, PostDTO updatedPostDto, User currentUser) {
         helperValidateUser.validateCurrentUser(currentUser);
 
         Post existingPost = findById(id);

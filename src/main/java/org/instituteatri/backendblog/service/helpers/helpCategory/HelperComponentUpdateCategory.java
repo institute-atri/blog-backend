@@ -2,7 +2,6 @@ package org.instituteatri.backendblog.service.helpers.helpCategory;
 
 import lombok.RequiredArgsConstructor;
 import org.instituteatri.backendblog.domain.entities.Category;
-import org.instituteatri.backendblog.dtos.CategoryDTO;
 import org.instituteatri.backendblog.infrastructure.exceptions.CategoryNotFoundException;
 import org.instituteatri.backendblog.repository.CategoryRepository;
 import org.springframework.stereotype.Component;
@@ -13,18 +12,18 @@ public class HelperComponentUpdateCategory {
 
     private final CategoryRepository categoryRepository;
 
-    public void helperUpdate(String id, CategoryDTO updatedCategoryDTO) {
+    public void helperUpdate(String id, Category updatedCategory) {
         Category existingCategory = categoryRepository.findById(id)
                 .orElseThrow(() -> new CategoryNotFoundException(id));
 
-        helperUpdateName(existingCategory, updatedCategoryDTO.name());
-        helperUpdateSlug(existingCategory, updatedCategoryDTO.slug());
+        helperUpdateName(existingCategory, updatedCategory.getName());
+        helperUpdateSlug(existingCategory, updatedCategory.getSlug());
 
         categoryRepository.save(existingCategory);
     }
 
-    public void helperUpdatedCategory(CategoryDTO categoryDTO) {
-        new Category(categoryDTO.name(), categoryDTO.slug());
+    public void helperUpdatedCategory(Category category) {
+        new Category(category.getName(), category.getSlug());
     }
 
     private void helperUpdateName(Category existingCategory, String newName) {

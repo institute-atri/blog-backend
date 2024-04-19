@@ -29,28 +29,28 @@ public class UserController {
 
     @Operation(
             method = "GET",
-            summary = "Get all events.",
+            summary = "List all users.",
             description = "Returns a list of all users registered in the system, only with the admin token.",
             responses = {
                     @ApiResponse(
                             responseCode = "200",
-                            description = "Success.",
+                            description = "User list successfully returned.",
                             content = @Content(mediaType = "application/json",
                                     examples = @ExampleObject(
                                             value = "[{" +
-                                                    "\"id\":\"string\"" +
-                                                    ",\"name\":\"string\"," +
-                                                    "\"lastName\":\"string\"," +
-                                                    "\"phoneNumber\":\"string\"," +
+                                                    "\"id\":\"661eff024af2c96e8a7deda9\"" +
+                                                    ",\"name\":\"Lorem\"," +
+                                                    "\"lastName\":\"Ipsum\"," +
+                                                    "\"phoneNumber\":\"123456789\"," +
                                                     "\"bio\":\"string\"," +
-                                                    "\"email\":\"string\"," +
+                                                    "\"email\":\"bLs2d@example.com\"," +
                                                     "\"password\":\"string\"," +
-                                                    "\"role\":\"string\"," +
+                                                    "\"role\":\"ADMIN\"," +
                                                     "\"enabled\":\"true\"," +
                                                     "\"active\":\"true\"," +
                                                     "\"lockExpirationTime\":\"null\"}]"))
                     ),
-                    @ApiResponse(responseCode = "403", description = "Forbidden.",
+                    @ApiResponse(responseCode = "403", description = "-Unauthorized user.",
                             content = @Content(mediaType = "application/json",
                                     examples = @ExampleObject(
                                             value = "{\"message\":\"User isn't authorized.\"}"
@@ -63,41 +63,42 @@ public class UserController {
 
     @Operation(
             method = "GET",
-            summary = "Get an event by ID",
+            summary = "Find user by ID",
             description = "Returns the user with the specified ID. Only users with the ADMIN role can search by user.",
             responses = {
                     @ApiResponse(
                             responseCode = "200",
-                            description = "Success.",
+                            description = "-User successfully found.",
                             content = @Content(mediaType = "application/json",
                                     examples = @ExampleObject(
                                             value = "[{" +
-                                                    "\"id\":\"string\"" +
-                                                    ",\"name\":\"string\"," +
-                                                    "\"lastName\":\"string\"," +
-                                                    "\"phoneNumber\":\"string\"," +
+                                                    "\"id\":\"661eff024af2c96e8a7deda9\"" +
+                                                    ",\"name\":\"Lorem\"," +
+                                                    "\"lastName\":\"Ipsum\"," +
+                                                    "\"phoneNumber\":\"123456789\"," +
                                                     "\"bio\":\"string\"," +
-                                                    "\"email\":\"string\"," +
+                                                    "\"email\":\"bLs2d@example.com\"," +
                                                     "\"password\":\"string\"," +
-                                                    "\"role\":\"string\"," +
+                                                    "\"role\":\"ADMIN\"," +
                                                     "\"enabled\":\"true\"," +
                                                     "\"active\":\"true\"," +
                                                     "\"lockExpirationTime\":\"null\"}]"))),
                     @ApiResponse(
                             responseCode = "404",
-                            description = "Not found.",
+                            description = "-User not found.",
                             content = @Content(mediaType = "application/json",
                                     examples = @ExampleObject(
                                             value = "{\"message\":\"Could not find user with id:661eff5e4af2c96e8a7dedc92\"}"
                                     ))),
                     @ApiResponse(
                             responseCode = "403",
-                            description = "Forbidden.",
+                            description = "-Unauthorized user.",
                             content = @Content(mediaType = "application/json",
                                     examples = @ExampleObject(
                                             value = "{\"message\":\"User isn't authorized.\"}"
                                     )))
-            })
+            }
+    )
     @GetMapping("/{id}")
     public ResponseEntity<User> findByIdUser(@PathVariable String id) {
         User user = userService.findById(id);
@@ -107,19 +108,27 @@ public class UserController {
 
     @Operation(
             method = "PUT",
-            summary = "Update an event.",
-            description = "Updates the user with the specified ID." +
-                    "'name' (string), " +
-                    "'lastName' (string), " +
-                    "'phoneNumber' (string)," +
-                    "'bio' (string), " +
-                    "'email' (string), " +
-                    "'password' (string)." +
-                    " Only users authenticated with their token can update.")
+            summary = "Update user by ID",
+            description = "Updates the user with the specified ID. Only users authenticated with their token can update.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "No content."),
+            @ApiResponse(responseCode = "204", description = "-User successfully updated.",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(
+                                    value = "[{" +
+                                            "\"id\":\"661eff024af2c96e8a7deda9\"" +
+                                            ",\"name\":\"Lorem\"," +
+                                            "\"lastName\":\"Ipsum\"," +
+                                            "\"phoneNumber\":\"123456789\"," +
+                                            "\"bio\":\"string\"," +
+                                            "\"email\":\"bLs2d@example.com\"," +
+                                            "\"password\":\"string\"," +
+                                            "\"role\":\"ADMIN\"," +
+                                            "\"enabled\":\"true\"," +
+                                            "\"active\":\"true\"," +
+                                            "\"lockExpirationTime\":\"null\"}]"
+                            ))),
 
-            @ApiResponse(responseCode = "400", description = "Bad Request.",
+            @ApiResponse(responseCode = "400", description = "-Property validation ",
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(
                                     value = "{" +
@@ -131,25 +140,25 @@ public class UserController {
                                             "}"
                             ))),
 
-            @ApiResponse(responseCode = "401", description = "Unauthorized.",
+            @ApiResponse(responseCode = "401", description = "-Unauthenticated user.",
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(
                                     value = "{\"message\":\"User isn't authenticated.\"}"
                             ))),
 
-            @ApiResponse(responseCode = "403", description = "Forbidden.",
+            @ApiResponse(responseCode = "403", description = "-Unauthorized user.",
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(
                                     value = "{\"message\":\"User isn't authorized.\"}"
                             ))),
 
-            @ApiResponse(responseCode = "404", description = "Not found.",
+            @ApiResponse(responseCode = "404", description = "-User not found.",
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(
                                     value = "{\"message\":\"Could not find user with id:661eff5e4af2c96e8a7dedc92\"}"
                             ))),
 
-            @ApiResponse(responseCode = "409", description = "Conflicts.",
+            @ApiResponse(responseCode = "409", description = "-E-mail not available.",
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(
                                     value = "{\"message\":\"E-mail not available.\"}"
@@ -166,18 +175,12 @@ public class UserController {
 
     @Operation(
             method = "DELETE",
-            summary = "Delete an event by ID",
+            summary = "Delete user by ID",
             description = "Deletes the user with the specified ID. Only users with the ADMIN role can delete the user.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "No content."),
-
-            @ApiResponse(responseCode = "403", description = "Forbidden.",
-                    content = @Content(mediaType = "application/json",
-                            examples = @ExampleObject(
-                                    value = "{\"message\":\"User isn't authorized.\"}"
-                            ))),
-
-            @ApiResponse(responseCode = "404", description = "Not found.",
+            @ApiResponse(responseCode = "204", description = "-User successfully deleted."),
+            @ApiResponse(responseCode = "403", description = "-Unauthorized user."),
+            @ApiResponse(responseCode = "404", description = "-User not found.",
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(
                                     value = "{\"message\":\"Could not find user with id:661eff5e4af2c96e8a7dedc92\"}"
@@ -197,44 +200,44 @@ public class UserController {
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
-                    description = "Success.",
+                    description = "Posts list successfully returned.",
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(
                                     value = "[" +
                                             "  {" +
-                                            "    \"id\": \"string\"," +
-                                            "    \"title\": \"string\"," +
-                                            "    \"summary\": \"string\"," +
-                                            "    \"body\": \"string\"," +
-                                            "    \"slug\": \"string\"," +
+                                            "    \"id\": \"6620a722185c5e3107f13732\"," +
+                                            "    \"title\": \"title\"," +
+                                            "    \"summary\": \"summary\"," +
+                                            "    \"body\": \"body\"," +
+                                            "    \"slug\": \"slug\"," +
                                             "    \"createdAt\": \"2024-04-18T01:52:50.928\"," +
                                             "    \"updatedAt\": null," +
                                             "    \"categories\": [" +
                                             "      {" +
-                                            "        \"id\": \"string\"," +
-                                            "        \"name\": \"string\"," +
-                                            "        \"slug\": \"string\"" +
+                                            "        \"id\": \"6620a722185c5e3107f13730\"," +
+                                            "        \"name\": \"Technology\"," +
+                                            "        \"slug\": \"tech\"" +
                                             "      }" +
                                             "    ]," +
                                             "    \"tags\": [" +
                                             "      {" +
-                                            "        \"id\": \"string\"," +
-                                            "        \"name\": \"string\"," +
-                                            "        \"slug\": \"string\"" +
+                                            "        \"id\": \"6620a722185c5e3107f13731\"," +
+                                            "        \"name\": \"Java\"," +
+                                            "        \"slug\": \"java\"" +
                                             "      }" +
                                             "    ]," +
                                             "    \"authorDTO\": {" +
-                                            "      \"name\": \"string\"," +
-                                            "      \"lastName\": \"string\"" +
+                                            "      \"name\": \"Rafael\"," +
+                                            "      \"lastName\": \"Silva\"" +
                                             "    }," +
                                             "    \"comments\": [" +
                                             "      {" +
-                                            "        \"text\": \"string\"," +
+                                            "        \"text\": \"Falando sobre java\"," +
                                             "        \"createdAt\": \"2024-04-18T01:52:50.928\"," +
                                             "        \"updatedAt\": null," +
                                             "        \"authorDTO\": {" +
-                                            "          \"name\": \"string\"," +
-                                            "          \"lastName\": \"string\"" +
+                                            "          \"name\": \"User\"," +
+                                            "          \"lastName\": \"Test\"" +
                                             "        }" +
                                             "      }" +
                                             "    ]" +
@@ -242,7 +245,7 @@ public class UserController {
                                             "]"))),
             @ApiResponse(
                     responseCode = "404",
-                    description = "Not found.",
+                    description = "-User id not found.",
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(
                                     value = "{" +

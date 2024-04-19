@@ -3,7 +3,6 @@ package org.instituteatri.backendblog.service;
 import lombok.RequiredArgsConstructor;
 import org.instituteatri.backendblog.domain.entities.Category;
 import org.instituteatri.backendblog.domain.entities.Post;
-import org.instituteatri.backendblog.dtos.CategoryDTO;
 import org.instituteatri.backendblog.infrastructure.exceptions.CategoryNotFoundException;
 import org.instituteatri.backendblog.repository.CategoryRepository;
 import org.instituteatri.backendblog.service.helpers.helpCategory.HelperComponentUpdateCategory;
@@ -37,22 +36,19 @@ public class CategoryService {
         return category.orElseThrow(() -> new CategoryNotFoundException(id));
     }
 
-    public ResponseEntity<Category> processCreateCategory(CategoryDTO categoryDTO) {
-        Category category = new Category(categoryDTO.name(), categoryDTO.slug());
-
-        categoryRepository.save(category);
-
+    public ResponseEntity<Category> processCreateCategory(Category category) {
         URI uri = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
                 .buildAndExpand(category.getId())
                 .toUri();
-        return ResponseEntity.created(uri).body(category);
+        return ResponseEntity.created(uri).body(categoryRepository.save(category));
     }
 
-    public ResponseEntity<Void> processUpdateCategory(String id, CategoryDTO updatedCategoryDTO) {
-        helperComponentUpdateCategory.helperUpdatedCategory(updatedCategoryDTO);
-        helperComponentUpdateCategory.helperUpdate(id, updatedCategoryDTO);
+    public ResponseEntity<Category> processUpdateCategory(String id, Category updatedCategory) {
+        helperComponentUpdateCategory.helperUpdatedCategory(updatedCategory);
+        updatedCategory.setId(id);
+        helperComponentUpdateCategory.helperUpdate(id, updatedCategory);
 
         return ResponseEntity.noContent().build();
     }
