@@ -9,15 +9,16 @@ import org.springframework.security.web.DefaultSecurityFilterChain;
 @Configuration
 public class CategorySecurityConfig extends SecurityConfigurerAdapter<DefaultSecurityFilterChain, HttpSecurity> {
 
+    private static final String ADMIN_ROLE = "ADMIN";
     @Override
     public void configure(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(authorize -> authorize
-                .requestMatchers(HttpMethod.GET, "/v1/category/categories").permitAll()
-                .requestMatchers(HttpMethod.GET, "/v1/category/{id}").permitAll()
-                .requestMatchers(HttpMethod.GET, "/v1/category/{id}/posts").permitAll()
-                .requestMatchers(HttpMethod.POST, "/v1/category/create").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.PUT, "/v1/category/{id}").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.DELETE, "/v1/category/{id}").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.GET, "/v1/categories").permitAll()
+                .requestMatchers(HttpMethod.GET, "/v1/categories/find/{id}").permitAll()
+                .requestMatchers(HttpMethod.GET, "/v1/categories/posts/{id}").permitAll()
+                .requestMatchers(HttpMethod.POST, "/v1/categories/create").hasRole(ADMIN_ROLE)
+                .requestMatchers(HttpMethod.PUT, "/v1/categories/update/{id}").hasRole(ADMIN_ROLE)
+                .requestMatchers(HttpMethod.DELETE, "/v1/categories/delete/{id}").hasRole(ADMIN_ROLE)
         );
     }
 }

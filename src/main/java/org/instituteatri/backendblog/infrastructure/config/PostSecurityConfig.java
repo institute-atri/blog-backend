@@ -12,11 +12,11 @@ public class PostSecurityConfig extends SecurityConfigurerAdapter<DefaultSecurit
     @Override
     public void configure(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(authorize -> authorize
-                .requestMatchers(HttpMethod.GET, "/v1/post/posts").permitAll()
-                .requestMatchers(HttpMethod.GET, "/v1/post/{id}").permitAll()
-                .requestMatchers(HttpMethod.POST, "/v1/post/create").permitAll()
-                .requestMatchers(HttpMethod.PUT, "/v1/post/{id}").permitAll()
-                .requestMatchers(HttpMethod.DELETE, "/v1/post/{id}").permitAll()
+                .requestMatchers(HttpMethod.GET, "/v1/posts").permitAll()
+                .requestMatchers(HttpMethod.GET, "/v1/posts/find/{id}").permitAll()
+                .requestMatchers(HttpMethod.POST, "/v1/posts/create").permitAll()
+                .requestMatchers(HttpMethod.PUT, "/v1/posts/update/{id}").permitAll()
+                .requestMatchers(HttpMethod.DELETE, "/v1/posts/delete/{id}").permitAll()
         );
     }
 }
