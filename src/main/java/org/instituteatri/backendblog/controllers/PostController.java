@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/v1/post")
+@RequestMapping("/v1/posts")
 @RequiredArgsConstructor
 @Tag(name = "Posts", description = "Endpoints for managing Posts")
 public class PostController {
@@ -79,7 +79,7 @@ public class PostController {
                                             "]"))),
 
     })
-    @GetMapping("/posts")
+    @GetMapping()
     public ResponseEntity<List<PostDTO>> findAllPosts() {
         return postService.processFindAllPosts();
     }
@@ -145,7 +145,7 @@ public class PostController {
                                             "}")))
 
     })
-    @GetMapping("/{id}")
+    @GetMapping("/find/{id}")
     public ResponseEntity<PostDTO> findByIdPost(@PathVariable String id) {
         return ResponseEntity.ok(postService.processFindById(id));
     }
@@ -314,7 +314,7 @@ public class PostController {
                                             "]")))
 
     })
-    @PutMapping("/{id}")
+    @PutMapping("/update/{id}")
     public ResponseEntity<Void> updatePost(
             @PathVariable String id,
             @RequestBody @Valid PostDTO postDTO,
@@ -339,7 +339,7 @@ public class PostController {
                                             "\"message\":\"Could not find post with id:661eff024af2c96e8a7deda9\"" +
                                             "}")))
     })
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deletePost(@PathVariable String id, Authentication authentication) {
         return postService.processDeletePost(id, authentication);
     }

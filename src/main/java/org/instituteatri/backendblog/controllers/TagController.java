@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/v1/tag")
+@RequestMapping("/v1/tags")
 @RequiredArgsConstructor
 @io.swagger.v3.oas.annotations.tags.Tag(name = "Tag", description = "Endpoints for tags")
 public class TagController {
@@ -84,7 +84,7 @@ public class TagController {
                                             "}")))
 
     })
-    @GetMapping("/{id}/posts")
+    @GetMapping("/posts/{id}")
     public ResponseEntity<List<PostDTO>> getPostsByCategoryId(@PathVariable String id) {
         List<PostDTO> postDTOS = tagService.findPostsByTagId(id);
         return ResponseEntity.ok(postDTOS);
@@ -107,7 +107,7 @@ public class TagController {
                                             "\"slug\":\"string\"" +
                                             "}]"))),
     })
-    @GetMapping("/tags")
+    @GetMapping()
     public ResponseEntity<List<TagDTO>> findAllTags() {
         return tagService.processFindAllTags();
     }
@@ -137,7 +137,7 @@ public class TagController {
                                             "\"message\":\"Could not find tag with id:661eff024af2c96e8a7deda9\"" +
                                             "}")))
     })
-    @GetMapping("/{id}")
+    @GetMapping("/find/{id}")
     public ResponseEntity<TagDTO> findByIdTag(@PathVariable String id) {
         return ResponseEntity.ok(tagService.findById(id));
     }
@@ -228,7 +228,7 @@ public class TagController {
                                     value = "{\"message\":\"Could not find tag with id:661eff024af2c96e8a7deda9\"}"
                             )))
     })
-    @PutMapping("/{id}")
+    @PutMapping("/update/{id}")
     public ResponseEntity<Void> updateTag(
             @PathVariable String id,
             @RequestBody @Valid TagDTO tagDTO) {
@@ -257,7 +257,7 @@ public class TagController {
                                             "\"message\":\"Could not find tag with id:661eff024af2c96e8a7deda9\"" +
                                             "}")))
     })
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteTag(@PathVariable String id) {
         return tagService.processDeleteTag(id);
     }

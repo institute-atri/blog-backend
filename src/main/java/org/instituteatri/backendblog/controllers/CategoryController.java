@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/v1/category")
+@RequestMapping("/v1/categories")
 @RequiredArgsConstructor
 @Tag(name = "Category", description = "Endpoints for managing Category")
 public class CategoryController {
@@ -86,7 +86,7 @@ public class CategoryController {
                                             "}")))
 
     })
-    @GetMapping("/{id}/posts")
+    @GetMapping("/posts/{id}")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<List<PostDTO>> getPostsByCategoryId(@PathVariable String id) {
         List<PostDTO> postDTOS = categoryService.findPostsByCategoryId(id);
@@ -110,7 +110,7 @@ public class CategoryController {
                                             "\"slug\":\"string\"" +
                                             "}]"))),
     })
-    @GetMapping("/categories")
+    @GetMapping()
     public ResponseEntity<List<CategoryDTO>> findAllCategories() {
         return categoryService.processFindAllCategories();
     }
@@ -140,7 +140,7 @@ public class CategoryController {
                                             "\"message\":\"Could not find category with id:661eff024af2c96e8a7deda9\"" +
                                             "}")))
     })
-    @GetMapping("/{id}")
+    @GetMapping("/find/{id}")
     public ResponseEntity<CategoryDTO> findCategoryById(@PathVariable String id) {
         return ResponseEntity.ok(categoryService.findById(id));
     }
@@ -231,7 +231,7 @@ public class CategoryController {
                                     value = "{\"message\":\"Could not find category with id:661eff024af2c96e8a7deda9\"}"
                             )))
     })
-    @PutMapping("/{id}")
+    @PutMapping("update/{id}")
     public ResponseEntity<Void> updateCategory(
             @PathVariable String id,
             @RequestBody @Valid CategoryDTO categoryDTO) {
@@ -260,7 +260,7 @@ public class CategoryController {
                                             "\"message\":\"Could not find category with id:661eff024af2c96e8a7deda9\"" +
                                             "}")))
     })
-    @DeleteMapping("/{id}")
+    @DeleteMapping("delete/{id}")
     public ResponseEntity<Void> deleteCategory(@PathVariable String id) {
         return categoryService.processDeleteCategory(id);
     }

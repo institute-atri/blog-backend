@@ -21,7 +21,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/v1/user")
+@RequestMapping("/v1/users")
 @Tag(name = "User", description = "Endpoints for user management")
 public class UserController {
 
@@ -51,7 +51,7 @@ public class UserController {
                                             value = "{\"message\":\"User isn't authorized.\"}"
                                     )))
             })
-    @GetMapping("/users")
+    @GetMapping()
     public ResponseEntity<List<UserDTO>> findAllUsers() {
         return userService.processFindAllUsers();
     }
@@ -89,7 +89,7 @@ public class UserController {
                                             value = "{\"message\":\"User isn't authorized.\"}"
                                     )))
             })
-    @GetMapping("/{id}")
+    @GetMapping("/find/{id}")
     public ResponseEntity<UserDTO> findByIdUser(@PathVariable String id) {
         UserDTO user = userService.findById(id);
         return ResponseEntity.ok().body(user);
@@ -149,7 +149,7 @@ public class UserController {
                                     value = "{\"message\":\"E-mail not available.\"}"
                             )))
     })
-    @PutMapping("/{id}")
+    @PutMapping("/update/{id}")
     public ResponseEntity<Void> updateUser(
             @PathVariable String id,
             @RequestBody @Valid RegisterDTO registerDTO,
@@ -177,7 +177,7 @@ public class UserController {
                                     value = "{\"message\":\"Could not find user with id:661eff5e4af2c96e8a7dedc92\"}"
                             ))),
     })
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable String id) {
         return userService.processDeleteUser(id);
     }
@@ -243,7 +243,7 @@ public class UserController {
                                             "}")))
 
     })
-    @GetMapping("/{id}/posts")
+    @GetMapping("/posts/{id}")
     public ResponseEntity<List<PostDTO>> findAllPostsByUserId(@PathVariable String id) {
         List<PostDTO> postDTOs = userService.findPostsByUserId(id);
         return ResponseEntity.ok(postDTOs);
