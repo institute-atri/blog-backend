@@ -7,11 +7,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.instituteatri.backendblog.domain.entities.Post;
-import org.instituteatri.backendblog.domain.entities.Tag;
+import org.instituteatri.backendblog.dtos.PostDTO;
 import org.instituteatri.backendblog.dtos.TagDTO;
 import org.instituteatri.backendblog.service.TagService;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -87,10 +85,9 @@ public class TagController {
 
     })
     @GetMapping("/{id}/posts")
-    @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<List<Post>> getPostsByCategoryId(@PathVariable String id) {
-        List<Post> posts = tagService.findPostsByTagId(id);
-        return ResponseEntity.ok(posts);
+    public ResponseEntity<List<PostDTO>> getPostsByCategoryId(@PathVariable String id) {
+        List<PostDTO> postDTOS = tagService.findPostsByTagId(id);
+        return ResponseEntity.ok(postDTOS);
     }
 
 
@@ -111,8 +108,8 @@ public class TagController {
                                             "}]"))),
     })
     @GetMapping("/tags")
-    public ResponseEntity<List<Tag>> findAllTags() {
-        return ResponseEntity.ok(tagService.findAllTags());
+    public ResponseEntity<List<TagDTO>> findAllTags() {
+        return tagService.processFindAllTags();
     }
 
 
@@ -141,7 +138,7 @@ public class TagController {
                                             "}")))
     })
     @GetMapping("/{id}")
-    public ResponseEntity<Tag> findByIdTag(@PathVariable String id) {
+    public ResponseEntity<TagDTO> findByIdTag(@PathVariable String id) {
         return ResponseEntity.ok(tagService.findById(id));
     }
 
@@ -151,7 +148,13 @@ public class TagController {
             summary = "Create an event.",
             description = "Creates a new tag based on a JSON object in the request body. " +
                     "The JSON must contain: 'name' (String) and 'slug' (String). " +
-                    "Only the ADMIN role can create a new tag."
+                    "Only the ADMIN role can create a new tag." +
+                    "{{COPY THIS JSON AND PASTE IT INTO THE REQUEST BODY}}" +
+                    "{{EXAMPLE JSON}} " +
+                    " {" +
+                    "        \"name\": \"string\"," +
+                    "        \"slug\": \"string\"" +
+                    " }"
     )
     @ApiResponses(value = {
             @ApiResponse(
@@ -181,7 +184,7 @@ public class TagController {
                             )))
     })
     @PostMapping("/create")
-    public ResponseEntity<Tag> createTag(@RequestBody @Valid TagDTO tagDTO) {
+    public ResponseEntity<TagDTO> createTag(@RequestBody @Valid TagDTO tagDTO) {
         return tagService.processCreateTag(tagDTO);
     }
 
@@ -191,7 +194,13 @@ public class TagController {
             summary = "Update an event.",
             description = "Updates an existing tag based on a JSON object in the request body. " +
                     "The JSON must contain: 'name' (String) and 'slug' (String). " +
-                    "Only the ADMIN role can update an existing tag."
+                    "Only the ADMIN role can update an existing tag." +
+                    "{{COPY THIS JSON AND PASTE IT INTO THE REQUEST BODY}}" +
+                    "{{EXAMPLE JSON}} " +
+                    " {" +
+                    "        \"name\": \"string\"," +
+                    "        \"slug\": \"string\"" +
+                    " }"
     )
     @ApiResponses(value = {
             @ApiResponse(
@@ -250,7 +259,6 @@ public class TagController {
     })
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTag(@PathVariable String id) {
-        tagService.deleteTag(id);
-        return ResponseEntity.noContent().build();
+        return tagService.processDeleteTag(id);
     }
 }
