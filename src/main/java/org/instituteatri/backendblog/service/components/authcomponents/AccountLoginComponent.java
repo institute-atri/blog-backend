@@ -1,4 +1,4 @@
-package org.instituteatri.backendblog.service.components.authComponents;
+package org.instituteatri.backendblog.service.components.authcomponents;
 
 import lombok.RequiredArgsConstructor;
 import org.instituteatri.backendblog.domain.entities.User;

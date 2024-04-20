@@ -1,4 +1,4 @@
-package org.instituteatri.backendblog.service.components.postComponents;
+package org.instituteatri.backendblog.service.components.postcomponents;
 
 import lombok.RequiredArgsConstructor;
 import org.instituteatri.backendblog.domain.entities.Category;
