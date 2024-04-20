@@ -8,8 +8,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.instituteatri.backendblog.domain.entities.Post;
-import org.instituteatri.backendblog.domain.entities.User;
+import org.instituteatri.backendblog.dtos.PostDTO;
+import org.instituteatri.backendblog.dtos.RegisterDTO;
 import org.instituteatri.backendblog.dtos.UserDTO;
 import org.instituteatri.backendblog.service.UserService;
 import org.springframework.http.ResponseEntity;
@@ -37,19 +37,14 @@ public class UserController {
                             description = "Success.",
                             content = @Content(mediaType = "application/json",
                                     examples = @ExampleObject(
-                                            value = "[{" +
+                                            value = "{" +
                                                     "\"id\":\"string\"" +
                                                     ",\"name\":\"string\"," +
                                                     "\"lastName\":\"string\"," +
                                                     "\"phoneNumber\":\"string\"," +
-                                                    "\"bio\":\"string\"," +
-                                                    "\"email\":\"string\"," +
-                                                    "\"password\":\"string\"," +
-                                                    "\"role\":\"string\"," +
-                                                    "\"enabled\":\"true\"," +
-                                                    "\"active\":\"true\"," +
-                                                    "\"lockExpirationTime\":\"null\"}]"))
-                    ),
+                                                    "\"bio\":\"string\"}"
+                                    ))),
+
                     @ApiResponse(responseCode = "403", description = "Forbidden.",
                             content = @Content(mediaType = "application/json",
                                     examples = @ExampleObject(
@@ -57,8 +52,8 @@ public class UserController {
                                     )))
             })
     @GetMapping("/users")
-    public ResponseEntity<List<User>> findAllUsers() {
-        return ResponseEntity.ok(userService.findAllUsers());
+    public ResponseEntity<List<UserDTO>> findAllUsers() {
+        return userService.processFindAllUsers();
     }
 
     @Operation(
@@ -71,18 +66,14 @@ public class UserController {
                             description = "Success.",
                             content = @Content(mediaType = "application/json",
                                     examples = @ExampleObject(
-                                            value = "[{" +
-                                                    "\"id\":\"string\"" +
-                                                    ",\"name\":\"string\"," +
-                                                    "\"lastName\":\"string\"," +
-                                                    "\"phoneNumber\":\"string\"," +
-                                                    "\"bio\":\"string\"," +
-                                                    "\"email\":\"string\"," +
-                                                    "\"password\":\"string\"," +
-                                                    "\"role\":\"string\"," +
-                                                    "\"enabled\":\"true\"," +
-                                                    "\"active\":\"true\"," +
-                                                    "\"lockExpirationTime\":\"null\"}]"))),
+                                            value = "{" +
+                                                    "  \"id\": \"string\"," +
+                                                    "  \"name\": \"string\"," +
+                                                    "  \"lastName\": \"string\"," +
+                                                    "  \"phoneNumber\": \"string\"," +
+                                                    "  \"bio\": \"string\"" +
+                                                    "}"
+                                    ))),
                     @ApiResponse(
                             responseCode = "404",
                             description = "Not found.",
@@ -99,8 +90,8 @@ public class UserController {
                                     )))
             })
     @GetMapping("/{id}")
-    public ResponseEntity<User> findByIdUser(@PathVariable String id) {
-        User user = userService.findById(id);
+    public ResponseEntity<UserDTO> findByIdUser(@PathVariable String id) {
+        UserDTO user = userService.findById(id);
         return ResponseEntity.ok().body(user);
     }
 
@@ -115,6 +106,7 @@ public class UserController {
                     "'bio' (string), " +
                     "'email' (string), " +
                     "'password' (string)." +
+                    "'confirmPassword' (string)." +
                     " Only users authenticated with their token can update.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "No content."),
@@ -127,7 +119,9 @@ public class UserController {
                                             "\"lastName\": [\"Last name is required.\", \"Last name must be between 5 and 30 characters.\"]," +
                                             "\"phoneNumber\": [\"Phone number is required.\", \"Phone number must be less than 11 characters.\", \"Phone number must contain only digits.\"]," +
                                             "\"email\": [\"Email is required.\", \"Invalid email format.\", \"Email must be between 10 and 30 characters.\"]," +
-                                            "\"password\": [\"Password must be strong and contain at least one uppercase letter, one lowercase letter, one digit, and one special character.\", \"Password must be between 10 and 30 characters.\", \"Password is required.\"]" +
+                                            "\"password\": [\"Password must be strong and contain at least one uppercase letter, one lowercase letter, one digit, and one special character.\", \"Password must be between 10 and 30 characters.\", \"Password is required.\"]," +
+                                            "\"confirmPassword\": [\"Password must be strong and contain at least one uppercase letter, one lowercase letter, one digit, and one special character.\", \"Password must be between 10 and 30 characters.\", \"Password is required.\"]," +
+                                            "\"message\": [\"Passwords do not match.\"]" +
                                             "}"
                             ))),
 
@@ -158,10 +152,10 @@ public class UserController {
     @PutMapping("/{id}")
     public ResponseEntity<Void> updateUser(
             @PathVariable String id,
-            @RequestBody @Valid UserDTO user,
+            @RequestBody @Valid RegisterDTO registerDTO,
             Authentication authentication
     ) {
-        return userService.processUpdateUser(id, user, authentication);
+        return userService.processUpdateUser(id, registerDTO, authentication);
     }
 
     @Operation(
@@ -185,8 +179,7 @@ public class UserController {
     })
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable String id) {
-        userService.deleteUser(id);
-        return ResponseEntity.noContent().build();
+        return userService.processDeleteUser(id);
     }
 
 
@@ -209,6 +202,10 @@ public class UserController {
                                             "    \"slug\": \"string\"," +
                                             "    \"createdAt\": \"2024-04-18T01:52:50.928\"," +
                                             "    \"updatedAt\": null," +
+                                            "    \"authorDTO\": {" +
+                                            "      \"name\": \"string\"," +
+                                            "      \"lastName\": \"string\"" +
+                                            "    }," +
                                             "    \"categories\": [" +
                                             "      {" +
                                             "        \"id\": \"string\"," +
@@ -223,10 +220,6 @@ public class UserController {
                                             "        \"slug\": \"string\"" +
                                             "      }" +
                                             "    ]," +
-                                            "    \"authorDTO\": {" +
-                                            "      \"name\": \"string\"," +
-                                            "      \"lastName\": \"string\"" +
-                                            "    }," +
                                             "    \"comments\": [" +
                                             "      {" +
                                             "        \"text\": \"string\"," +
@@ -251,8 +244,8 @@ public class UserController {
 
     })
     @GetMapping("/{id}/posts")
-    public ResponseEntity<List<Post>> findAllPosts(@PathVariable String id) {
-        User obj = userService.findById(id);
-        return ResponseEntity.ok().body(obj.getPosts());
+    public ResponseEntity<List<PostDTO>> findAllPostsByUserId(@PathVariable String id) {
+        List<PostDTO> postDTOs = userService.findPostsByUserId(id);
+        return ResponseEntity.ok(postDTOs);
     }
 }
