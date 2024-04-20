@@ -17,6 +17,10 @@ import java.util.Map;
 
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(PasswordsNotMatchException.class)
+    public ResponseEntity<Object> handlePasswordsNotMatchException(PasswordsNotMatchException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.singletonMap("message", ex.getMessage()));
+    }
     @ExceptionHandler(AccountLockedException.class)
     public ResponseEntity<Object> handleAccountLockedException(AccountLockedException ex) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Collections.singletonMap("message", ex.getMessage()));
@@ -44,8 +48,8 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.singletonMap("message", ex.getMessage()));
     }
 
-    @ExceptionHandler(DomainAccessDeniedException.class)
-    public ResponseEntity<Object> handleAccessDeniedException(DomainAccessDeniedException ex) {
+    @ExceptionHandler(UserAccessDeniedException.class)
+    public ResponseEntity<Object> handleAccessDeniedException(UserAccessDeniedException ex) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Collections.singletonMap("message", ex.getMessage()));
     }
 
