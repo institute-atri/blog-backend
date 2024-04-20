@@ -26,7 +26,7 @@ public class Comment implements Serializable {
     @JsonIgnore
     private User user;
 
-    private AuthorDTO authorDTO;
+    private transient AuthorDTO authorDTO;
 
     public Comment(String text, LocalDateTime createdAt, User user) {
         this.text = text;

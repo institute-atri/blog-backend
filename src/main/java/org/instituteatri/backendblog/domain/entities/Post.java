@@ -40,7 +40,7 @@ public class Post implements Serializable {
     private List<Category> categories = new ArrayList<>();
     private List<Tag> tags = new ArrayList<>();
 
-    private AuthorDTO authorDTO;
+    private transient AuthorDTO authorDTO;
     private List<Comment> comments = new ArrayList<>();
 
     public Post(String title, String summary, String body, String slug, LocalDateTime createdAt, User user) {
