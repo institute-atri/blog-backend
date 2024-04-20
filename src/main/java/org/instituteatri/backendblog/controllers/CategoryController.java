@@ -8,9 +8,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.instituteatri.backendblog.domain.entities.Category;
-import org.instituteatri.backendblog.domain.entities.Post;
 import org.instituteatri.backendblog.dtos.CategoryDTO;
+import org.instituteatri.backendblog.dtos.PostDTO;
 import org.instituteatri.backendblog.service.CategoryService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/v1/category")
+@RequestMapping("/v1/categories")
 @RequiredArgsConstructor
 @Tag(name = "Category", description = "Endpoints for managing Category")
 public class CategoryController {
@@ -46,6 +45,10 @@ public class CategoryController {
                                             "    \"slug\": \"string\"," +
                                             "    \"createdAt\": \"2024-04-18T01:52:50.928\"," +
                                             "    \"updatedAt\": null," +
+                                            "    \"authorDTO\": {" +
+                                            "      \"name\": \"string\"," +
+                                            "      \"lastName\": \"string\"" +
+                                            "    }," +
                                             "    \"categories\": [" +
                                             "      {" +
                                             "        \"id\": \"string\"," +
@@ -60,10 +63,6 @@ public class CategoryController {
                                             "        \"slug\": \"string\"" +
                                             "      }" +
                                             "    ]," +
-                                            "    \"authorDTO\": {" +
-                                            "      \"name\": \"string\"," +
-                                            "      \"lastName\": \"string\"" +
-                                            "    }," +
                                             "    \"comments\": [" +
                                             "      {" +
                                             "        \"text\": \"string\"," +
@@ -87,11 +86,11 @@ public class CategoryController {
                                             "}")))
 
     })
-    @GetMapping("/{id}/posts")
+    @GetMapping("/posts/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<List<Post>> getPostsByCategoryId(@PathVariable String id) {
-        List<Post> posts = categoryService.findPostsByCategoryId(id);
-        return ResponseEntity.ok(posts);
+    public ResponseEntity<List<PostDTO>> getPostsByCategoryId(@PathVariable String id) {
+        List<PostDTO> postDTOS = categoryService.findPostsByCategoryId(id);
+        return ResponseEntity.ok(postDTOS);
     }
 
 
@@ -111,9 +110,9 @@ public class CategoryController {
                                             "\"slug\":\"string\"" +
                                             "}]"))),
     })
-    @GetMapping("/categories")
-    public ResponseEntity<List<Category>> findAllCategories() {
-        return ResponseEntity.ok(categoryService.findAllCategories());
+    @GetMapping()
+    public ResponseEntity<List<CategoryDTO>> findAllCategories() {
+        return categoryService.processFindAllCategories();
     }
 
 
@@ -141,8 +140,8 @@ public class CategoryController {
                                             "\"message\":\"Could not find category with id:661eff024af2c96e8a7deda9\"" +
                                             "}")))
     })
-    @GetMapping("/{id}")
-    public ResponseEntity<Category> findCategoryById(@PathVariable String id) {
+    @GetMapping("/find/{id}")
+    public ResponseEntity<CategoryDTO> findCategoryById(@PathVariable String id) {
         return ResponseEntity.ok(categoryService.findById(id));
     }
 
@@ -152,7 +151,13 @@ public class CategoryController {
             summary = "Create an event.",
             description = "Creates a new category based on a JSON object in the request body. " +
                     "The JSON must contain: 'name' (String) and 'slug' (String). " +
-                    "Only the ADMIN role can create a new category."
+                    "Only the ADMIN role can create a new category." +
+                    "{{COPY THIS JSON AND PASTE IT INTO THE REQUEST BODY}}" +
+                    "{{EXAMPLE JSON}} " +
+                    " {" +
+                    "        \"name\": \"string\"," +
+                    "        \"slug\": \"string\"" +
+                    " }"
     )
     @ApiResponses(value = {
             @ApiResponse(
@@ -182,7 +187,7 @@ public class CategoryController {
                             )))
     })
     @PostMapping("/create")
-    public ResponseEntity<Category> createCategory(@RequestBody @Valid CategoryDTO categoryDTO) {
+    public ResponseEntity<CategoryDTO> createCategory(@RequestBody @Valid CategoryDTO categoryDTO) {
         return categoryService.processCreateCategory(categoryDTO);
     }
 
@@ -192,7 +197,13 @@ public class CategoryController {
             summary = "Update an event by ID.",
             description = "Updates an existing category based on a JSON object in the request body. " +
                     "The JSON must contain: 'name' (String) and 'slug' (String). " +
-                    "Only the ADMIN role can update an existing category."
+                    "Only the ADMIN role can update an existing category." +
+                    "{{COPY THIS JSON AND PASTE IT INTO THE REQUEST BODY}}" +
+                    "{{EXAMPLE JSON}} " +
+                    " {" +
+                    "        \"name\": \"string\"," +
+                    "        \"slug\": \"string\"" +
+                    " }"
     )
     @ApiResponses(value = {
             @ApiResponse(
@@ -220,7 +231,7 @@ public class CategoryController {
                                     value = "{\"message\":\"Could not find category with id:661eff024af2c96e8a7deda9\"}"
                             )))
     })
-    @PutMapping("/{id}")
+    @PutMapping("update/{id}")
     public ResponseEntity<Void> updateCategory(
             @PathVariable String id,
             @RequestBody @Valid CategoryDTO categoryDTO) {
@@ -249,9 +260,8 @@ public class CategoryController {
                                             "\"message\":\"Could not find category with id:661eff024af2c96e8a7deda9\"" +
                                             "}")))
     })
-    @DeleteMapping("/{id}")
+    @DeleteMapping("delete/{id}")
     public ResponseEntity<Void> deleteCategory(@PathVariable String id) {
-        categoryService.deleteCategory(id);
-        return ResponseEntity.noContent().build();
+        return categoryService.processDeleteCategory(id);
     }
 }

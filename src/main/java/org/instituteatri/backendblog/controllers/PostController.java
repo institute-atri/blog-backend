@@ -8,7 +8,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.instituteatri.backendblog.domain.entities.Post;
 import org.instituteatri.backendblog.domain.entities.User;
 import org.instituteatri.backendblog.dtos.PostDTO;
 import org.instituteatri.backendblog.service.PostService;
@@ -20,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/v1/post")
+@RequestMapping("/v1/posts")
 @RequiredArgsConstructor
 @Tag(name = "Posts", description = "Endpoints for managing Posts")
 public class PostController {
@@ -47,6 +46,10 @@ public class PostController {
                                             "    \"slug\": \"string\"," +
                                             "    \"createdAt\": \"2024-04-18T01:52:50.928\"," +
                                             "    \"updatedAt\": null," +
+                                            "    \"authorDTO\": {" +
+                                            "      \"name\": \"string\"," +
+                                            "      \"lastName\": \"string\"" +
+                                            "    }," +
                                             "    \"categories\": [" +
                                             "      {" +
                                             "        \"id\": \"string\"," +
@@ -61,10 +64,6 @@ public class PostController {
                                             "        \"slug\": \"string\"" +
                                             "      }" +
                                             "    ]," +
-                                            "    \"authorDTO\": {" +
-                                            "      \"name\": \"string\"," +
-                                            "      \"lastName\": \"string\"" +
-                                            "    }," +
                                             "    \"comments\": [" +
                                             "      {" +
                                             "        \"text\": \"string\"," +
@@ -80,9 +79,9 @@ public class PostController {
                                             "]"))),
 
     })
-    @GetMapping("/posts")
-    public ResponseEntity<List<Post>> findAllPosts() {
-        return ResponseEntity.ok(postService.findAllPosts());
+    @GetMapping()
+    public ResponseEntity<List<PostDTO>> findAllPosts() {
+        return postService.processFindAllPosts();
     }
 
 
@@ -105,6 +104,10 @@ public class PostController {
                                             "    \"slug\": \"string\"," +
                                             "    \"createdAt\": \"2024-04-18T01:52:50.928\"," +
                                             "    \"updatedAt\": null," +
+                                            "    \"authorDTO\": {" +
+                                            "      \"name\": \"string\"," +
+                                            "      \"lastName\": \"string\"" +
+                                            "    }," +
                                             "    \"categories\": [" +
                                             "      {" +
                                             "        \"id\": \"string\"," +
@@ -119,10 +122,6 @@ public class PostController {
                                             "        \"slug\": \"string\"" +
                                             "      }" +
                                             "    ]," +
-                                            "    \"authorDTO\": {" +
-                                            "      \"name\": \"string\"," +
-                                            "      \"lastName\": \"string\"" +
-                                            "    }," +
                                             "    \"comments\": [" +
                                             "      {" +
                                             "        \"text\": \"string\"," +
@@ -146,9 +145,9 @@ public class PostController {
                                             "}")))
 
     })
-    @GetMapping("/{id}")
-    public ResponseEntity<Post> findByIdPost(@PathVariable String id) {
-        return ResponseEntity.ok(postService.findById(id));
+    @GetMapping("/find/{id}")
+    public ResponseEntity<PostDTO> findByIdPost(@PathVariable String id) {
+        return ResponseEntity.ok(postService.processFindById(id));
     }
 
 
@@ -162,7 +161,21 @@ public class PostController {
                     " 'slug' (String), " +
                     "'categories' (array of 'id' as String), and" +
                     " 'tags' (array of 'id' as String). " +
-                    "Requires authentication."
+                    "Requires authentication." +
+                    "{{COPY THIS JSON AND PASTE IT INTO THE REQUEST BODY}}" +
+                    "{{EXAMPLE JSON}} " +
+                    " {" +
+                    "        \"title\": \"string\"," +
+                    "        \"summary\": \"string\"," +
+                    "        \"body\": \"string\"," +
+                    "        \"slug\": \"string\"," +
+                    "        \"categories\": [" +
+                    "            {\"id\": \"string\"}" +
+                    "        ]," +
+                    "        \"tags\": [" +
+                    "            {\"id\": \"string\"}" +
+                    "        ]" +
+                    " }"
     )
     @ApiResponses(value = {
             @ApiResponse(
@@ -170,35 +183,36 @@ public class PostController {
                     description = "Created.",
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(
-                                    value = "{" +
+                                    value = "[" +
+                                            "  {" +
                                             "    \"id\": \"string\"," +
                                             "    \"title\": \"string\"," +
                                             "    \"summary\": \"string\"," +
                                             "    \"body\": \"string\"," +
                                             "    \"slug\": \"string\"," +
-                                            "    \"createdAt\": \"2024-04-18T02:54:29.9783407\"," +
+                                            "    \"createdAt\": \"2024-04-18T01:52:50.928\"," +
                                             "    \"updatedAt\": null," +
+                                            "    \"authorDTO\": {" +
+                                            "      \"name\": \"string\"," +
+                                            "      \"lastName\": \"string\"" +
+                                            "    }," +
                                             "    \"categories\": [" +
-                                            "        {" +
-                                            "            \"id\": \"string\"," +
-                                            "            \"name\": \"string\"," +
-                                            "            \"slug\": \"string\"" +
-                                            "        }" +
+                                            "      {" +
+                                            "        \"id\": \"string\"," +
+                                            "        \"name\": \"string\"," +
+                                            "        \"slug\": \"string\"" +
+                                            "      }" +
                                             "    ]," +
                                             "    \"tags\": [" +
-                                            "        {" +
-                                            "            \"id\": \"string\"," +
-                                            "            \"name\": \"string\"," +
-                                            "            \"slug\": \"string\"" +
-                                            "        }" +
-                                            "    ]," +
-                                            "    \"authorDTO\": {" +
+                                            "      {" +
+                                            "        \"id\": \"string\"," +
                                             "        \"name\": \"string\"," +
-                                            "        \"lastName\": \"string\"" +
-                                            "    }," +
+                                            "        \"slug\": \"string\"" +
+                                            "      }" +
+                                            "    ]," +
                                             "    \"comments\": []" +
-                                            "}"))),
-
+                                            "  }" +
+                                            "]"))),
             @ApiResponse(responseCode = "400", description = "Bad request.",
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(
@@ -228,7 +242,7 @@ public class PostController {
 
     })
     @PostMapping("/create")
-    public ResponseEntity<Post> createPost(@RequestBody @Valid PostDTO postDTO, Authentication authentication) {
+    public ResponseEntity<PostDTO> createPost(@RequestBody @Valid PostDTO postDTO, Authentication authentication) {
         return postService.processCreatePost(postDTO, authentication);
     }
 
@@ -244,7 +258,21 @@ public class PostController {
                     "'slug' (String) for the new slug," +
                     "'categories' (array of 'id' as String) for the new categories, and" +
                     "'tags' (array of 'id' as String) for the new tags. " +
-                    "Requires authentication."
+                    "Requires authentication." +
+                    "{{COPY THIS JSON AND PASTE IT INTO THE REQUEST BODY}}" +
+                    "{{EXAMPLE JSON}} " +
+                    " {" +
+                    "        \"title\": \"string\"," +
+                    "        \"summary\": \"string\"," +
+                    "        \"body\": \"string\"," +
+                    "        \"slug\": \"string\"," +
+                    "        \"categories\": [" +
+                    "            {\"id\": \"string\"}" +
+                    "        ]," +
+                    "        \"tags\": [" +
+                    "            {\"id\": \"string\"}" +
+                    "        ]" +
+                    " }"
     )
     @ApiResponses(value = {
             @ApiResponse(
@@ -286,7 +314,7 @@ public class PostController {
                                             "]")))
 
     })
-    @PutMapping("/{id}")
+    @PutMapping("/update/{id}")
     public ResponseEntity<Void> updatePost(
             @PathVariable String id,
             @RequestBody @Valid PostDTO postDTO,
@@ -311,9 +339,8 @@ public class PostController {
                                             "\"message\":\"Could not find post with id:661eff024af2c96e8a7deda9\"" +
                                             "}")))
     })
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deletePost(@PathVariable String id, Authentication authentication) {
-        postService.deletePost(id, authentication);
-        return ResponseEntity.noContent().build();
+        return postService.processDeletePost(id, authentication);
     }
 }

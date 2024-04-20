@@ -1,7 +1,7 @@
 package org.instituteatri.backendblog.infrastructure.exceptions;
 
-public class DomainAccessDeniedException extends RuntimeException {
-    public DomainAccessDeniedException() {
+public class UserAccessDeniedException extends RuntimeException {
+    public UserAccessDeniedException() {
         super("User isn't authorized.");
     }
 }

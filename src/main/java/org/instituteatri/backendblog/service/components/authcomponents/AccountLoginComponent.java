@@ -1,4 +1,4 @@
-package org.instituteatri.backendblog.service.helpers.auth;
+package org.instituteatri.backendblog.service.components.authcomponents;
 
 import lombok.RequiredArgsConstructor;
 import org.instituteatri.backendblog.domain.entities.User;
@@ -16,16 +16,16 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class HelperAuthComponentLogin {
+public class AccountLoginComponent {
 
     private final UserRepository userRepository;
 
-    public Authentication authenticateUser(AuthenticationDTO authDto, AuthenticationManager authManager) {
+    public Authentication authenticateUserComponent(AuthenticationDTO authDto, AuthenticationManager authManager) {
         var usernamePassword = new UsernamePasswordAuthenticationToken(authDto.email(), authDto.password());
         return authManager.authenticate(usernamePassword);
     }
 
-    public void handleSuccessfulLogin(User user) {
+    public void handleSuccessfulLoginComponent(User user) {
         if (!user.isActive()) {
             user.setFailedLoginAttempts(user.getFailedLoginAttempts() + 1);
             userRepository.save(user);
@@ -39,11 +39,11 @@ public class HelperAuthComponentLogin {
         userRepository.save(user);
     }
 
-    public ResponseEntity<ResponseDTO> handleLockedAccount() {
+    public ResponseEntity<ResponseDTO> handleLockedAccountComponent() {
         throw new AccountLockedException();
     }
 
-    public ResponseEntity<ResponseDTO> handleBadCredentials(String email) {
+    public ResponseEntity<ResponseDTO> handleBadCredentialsComponent(String email) {
         var user = (User) userRepository.findByEmail(email);
         if (user != null) {
             user.setFailedLoginAttempts(user.getFailedLoginAttempts() + 1);

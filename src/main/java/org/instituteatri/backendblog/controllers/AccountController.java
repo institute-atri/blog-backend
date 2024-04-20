@@ -9,8 +9,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.instituteatri.backendblog.dtos.AuthenticationDTO;
+import org.instituteatri.backendblog.dtos.RegisterDTO;
 import org.instituteatri.backendblog.dtos.ResponseDTO;
-import org.instituteatri.backendblog.dtos.UserDTO;
 import org.instituteatri.backendblog.service.AccountService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -62,6 +62,7 @@ public class AccountController {
 
     @Operation(
             method = "POST",
+            summary = "Register a new user.",
             description = "Endpoint for user registration." +
                     " Accepts " +
                     "'name' (string), " +
@@ -69,8 +70,8 @@ public class AccountController {
                     " 'phoneNumber' (string)," +
                     " 'email' (string), and" +
                     " 'password' (string)." +
-                    " Upon successful registration, returns a token and email.",
-            summary = "Register a new user.")
+                    " 'confirmPassword' (string)." +
+                    " Upon successful registration, returns a token and email.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success.",
                     content = @Content(mediaType = "application/json",
@@ -89,7 +90,9 @@ public class AccountController {
                                             "\"lastName\": [\"Last name is required.\", \"Last name must be between 5 and 30 characters.\"]," +
                                             "\"phoneNumber\": [\"Phone number is required.\", \"Phone number must be less than 11 characters.\", \"Phone number must contain only digits.\"]," +
                                             "\"email\": [\"Email is required.\", \"Invalid email format.\", \"Email must be between 10 and 30 characters.\"]," +
-                                            "\"password\": [\"Password must be strong and contain at least one uppercase letter, one lowercase letter, one digit, and one special character.\", \"Password must be between 10 and 30 characters.\", \"Password is required.\"]" +
+                                            "\"password\": [\"Password must be strong and contain at least one uppercase letter, one lowercase letter, one digit, and one special character.\", \"Password must be between 10 and 30 characters.\", \"Password is required.\"]," +
+                                            "\"confirmPassword\": [\"Password must be strong and contain at least one uppercase letter, one lowercase letter, one digit, and one special character.\", \"Password must be between 10 and 30 characters.\", \"Password is required.\"]," +
+                                            "\"message\": [\"Passwords do not match.\"]" +
                                             "}"
                             ))),
             @ApiResponse(responseCode = "409", description = "Conflicts.",
@@ -99,7 +102,7 @@ public class AccountController {
                             )))
     })
     @PostMapping("/register")
-    public ResponseEntity<ResponseDTO> register(@RequestBody @Valid UserDTO userDto) {
-        return accountService.processRegister(userDto);
+    public ResponseEntity<ResponseDTO> register(@RequestBody @Valid RegisterDTO registerDTO) {
+        return accountService.processRegister(registerDTO);
     }
 }
