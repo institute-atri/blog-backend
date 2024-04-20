@@ -8,9 +8,9 @@ import org.instituteatri.backendblog.infrastructure.exceptions.NotAuthenticatedE
 import org.instituteatri.backendblog.infrastructure.exceptions.PostNotFoundException;
 import org.instituteatri.backendblog.mappings.PostMapper;
 import org.instituteatri.backendblog.repository.PostRepository;
-import org.instituteatri.backendblog.service.components.postComponents.PostCreateComponent;
-import org.instituteatri.backendblog.service.components.postComponents.PostDeleteComponent;
-import org.instituteatri.backendblog.service.components.postComponents.PostUpdateComponent;
+import org.instituteatri.backendblog.service.components.postcomponents.PostCreateComponent;
+import org.instituteatri.backendblog.service.components.postcomponents.PostDeleteComponent;
+import org.instituteatri.backendblog.service.components.postcomponents.PostUpdateComponent;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -19,7 +19,6 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.net.URI;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -35,7 +34,9 @@ public class PostService {
     public ResponseEntity<List<PostDTO>> processFindAllPosts() {
         List<Post> posts = postRepository.findAll();
 
-        return ResponseEntity.ok(posts.stream().map(postMapper::toPostDto).collect(Collectors.toList()));
+        return ResponseEntity.ok(posts.stream()
+                .map(postMapper::toPostDto)
+                .toList());
     }
 
     public PostDTO processFindById(String id) {

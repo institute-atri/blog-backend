@@ -15,7 +15,6 @@ import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -28,7 +27,9 @@ public class TagService {
     public ResponseEntity<List<TagDTO>> processFindAllTags() {
         List<Tag> tags = tagRepository.findAll();
 
-        return ResponseEntity.ok(tags.stream().map(tagMapper::toTagDto).collect(Collectors.toList()));
+        return ResponseEntity.ok(tags.stream()
+                .map(tagMapper::toTagDto)
+                .toList());
     }
 
     public TagDTO findById(String id) {

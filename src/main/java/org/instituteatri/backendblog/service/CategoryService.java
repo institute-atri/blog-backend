@@ -15,7 +15,6 @@ import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -27,7 +26,9 @@ public class CategoryService {
     public ResponseEntity<List<CategoryDTO>> processFindAllCategories() {
         List<Category> categories = categoryRepository.findAll();
 
-        return ResponseEntity.ok(categories.stream().map(categoryMapper::toCategoryDto).collect(Collectors.toList()));
+        return ResponseEntity.ok(categories.stream()
+                .map(categoryMapper::toCategoryDto)
+                .toList());
     }
 
     public CategoryDTO findById(String id) {

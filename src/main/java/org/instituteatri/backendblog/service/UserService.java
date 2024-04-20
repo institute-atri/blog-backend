@@ -17,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -31,7 +30,9 @@ public class UserService {
     public ResponseEntity<List<UserDTO>> processFindAllUsers() {
         List<User> users = userRepository.findAll();
 
-        return ResponseEntity.ok(users.stream().map(userMapper::toUserDto).collect(Collectors.toList()));
+        return ResponseEntity.ok(users.stream()
+                .map(userMapper::toUserDto)
+                .toList());
     }
 
     public UserDTO findById(String id) {

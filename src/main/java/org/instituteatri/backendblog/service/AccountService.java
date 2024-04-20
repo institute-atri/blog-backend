@@ -10,7 +10,7 @@ import org.instituteatri.backendblog.infrastructure.exceptions.EmailAlreadyExist
 import org.instituteatri.backendblog.infrastructure.exceptions.PasswordsNotMatchException;
 import org.instituteatri.backendblog.infrastructure.security.TokenService;
 import org.instituteatri.backendblog.repository.UserRepository;
-import org.instituteatri.backendblog.service.components.authComponents.AccountLoginComponent;
+import org.instituteatri.backendblog.service.components.authcomponents.AccountLoginComponent;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
