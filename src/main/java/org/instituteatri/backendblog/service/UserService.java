@@ -2,45 +2,123 @@ package org.instituteatri.backendblog.service;
 
 import lombok.RequiredArgsConstructor;
 import org.instituteatri.backendblog.domain.entities.User;
+import org.instituteatri.backendblog.dtos.PostDTO;
+import org.instituteatri.backendblog.dtos.RegisterDTO;
 import org.instituteatri.backendblog.dtos.UserDTO;
-import org.instituteatri.backendblog.infrastructure.exceptions.UserNotFoundException;
+import org.instituteatri.backendblog.infrastructure.exceptions.*;
+import org.instituteatri.backendblog.mappings.UserMapper;
 import org.instituteatri.backendblog.repository.UserRepository;
-import org.instituteatri.backendblog.service.helpers.helpUser.HelperComponentAuthenticationUser;
-import org.instituteatri.backendblog.service.helpers.helpUser.HelperComponentUserUpdate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
-    private final HelperComponentUserUpdate helperComponentUserUpdate;
-    private final HelperComponentAuthenticationUser helperAuthenticationUser;
+    private final PasswordEncoder passwordEncoder;
+    private final UserMapper userMapper;
 
-    public List<User> findAllUsers() {
-        return userRepository.findAll();
+
+    public ResponseEntity<List<UserDTO>> processFindAllUsers() {
+        List<User> users = userRepository.findAll();
+
+        return ResponseEntity.ok(users.stream().map(userMapper::toUserDto).collect(Collectors.toList()));
     }
 
-    public User findById(String id) {
+    public UserDTO findById(String id) {
         Optional<User> user = userRepository.findById(id);
-        return user.orElseThrow(() -> new UserNotFoundException(id));
+
+        return user.map(userMapper::toUserDto).orElseThrow(() -> new UserNotFoundException(id));
     }
 
-    public ResponseEntity<Void> processUpdateUser(String id, UserDTO user, Authentication authentication) {
-        helperAuthenticationUser.validateAuthentication(authentication);
-        String authenticatedUserId = helperAuthenticationUser.getAuthenticatedUserId(authentication);
-        helperAuthenticationUser.validateUserAccess(id, authenticatedUserId);
-        helperComponentUserUpdate.helperUpdateUserInformation(id, user);
+    public List<PostDTO> findPostsByUserId(String userId) {
+        UserDTO userDTO = findById(userId);
+        return userDTO.postDTOS();
+    }
+
+    public ResponseEntity<Void> processDeleteUser(String id) {
+        findById(id);
+        userRepository.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 
-    public void deleteUser(String id) {
-        findById(id);
-        userRepository.deleteById(id);
+    @Transactional
+    public ResponseEntity<Void> processUpdateUser(String id, RegisterDTO user, Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new NotAuthenticatedException();
+        }
+
+        if (!user.password().equals(user.confirmPassword())) {
+            throw new PasswordsNotMatchException();
+        }
+
+        String authenticatedUserId = ((User) authentication.getPrincipal()).getId();
+
+        if (!id.equals(authenticatedUserId)) {
+            throw new UserAccessDeniedException();
+        }
+
+        performUserUpdate(id, user);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    public void performUserUpdate(String userId, RegisterDTO updatedUserDto) {
+        User existingUser = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException(userId));
+
+        validateEmailUpdate(existingUser, updatedUserDto);
+
+        updateUserProperties(existingUser, updatedUserDto);
+
+        saveUser(existingUser);
+    }
+
+    private void updateUserProperties(User existingUser, RegisterDTO updatedUserDto) {
+        updateField(existingUser::setName, existingUser.getName(), updatedUserDto.name());
+        updateField(existingUser::setLastName, existingUser.getLastName(), updatedUserDto.lastName());
+        updateField(existingUser::setPhoneNumber, existingUser.getPhoneNumber(), updatedUserDto.phoneNumber());
+        updateField(existingUser::setBio, existingUser.getBio(), updatedUserDto.bio());
+        updateField(existingUser::setEmail, existingUser.getEmail(), updatedUserDto.email());
+        updatePassword(existingUser, updatedUserDto.password());
+    }
+
+    private <T> void updateField(Consumer<T> setter, T currentValue, T newValue) {
+        if (newValue != null && !newValue.equals(currentValue)) {
+            setter.accept(newValue);
+        }
+    }
+
+    private void validateEmailUpdate(User existingUser, RegisterDTO updatedUserDto) {
+        String newEmail = updatedUserDto.email();
+
+        if (!existingUser.getEmail().equals(newEmail) && checkIfEmailExists(newEmail, existingUser.getId())) {
+            throw new EmailAlreadyExistsException();
+        }
+    }
+
+    private boolean checkIfEmailExists(String email, String userIdToExclude) {
+        User user = (User) userRepository.findByEmail(email);
+        return user != null && !user.getId().equals(userIdToExclude);
+    }
+
+    private void updatePassword(User existingUser, String newPassword) {
+        if (newPassword != null && !passwordEncoder.matches(newPassword, existingUser.getPassword())) {
+            String encryptedPassword = passwordEncoder.encode(newPassword);
+            existingUser.setPassword(encryptedPassword);
+        }
+    }
+
+    private void saveUser(User user) {
+        userRepository.save(user);
     }
 }
