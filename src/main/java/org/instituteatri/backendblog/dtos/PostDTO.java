@@ -6,9 +6,12 @@ import org.instituteatri.backendblog.domain.entities.Category;
 import org.instituteatri.backendblog.domain.entities.Comment;
 import org.instituteatri.backendblog.domain.entities.Tag;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public record PostDTO(
+
+        String id,
         @NotBlank(message = "Title is required.")
         @Size(min = 5, max = 30, message = "Title must be between 5 and 30 characters.")
         String title,
@@ -24,7 +27,9 @@ public record PostDTO(
         @NotBlank(message = "Slug is required.")
         @Size(min = 3, max = 50, message = "Slug must be between 3 and 50 characters.")
         String slug,
-
+        LocalDateTime createdAt,
+        LocalDateTime updatedAt,
+        AuthorDTO authorDTO,
         List<Category> categories,
         List<Tag> tags,
         List<Comment> comments
