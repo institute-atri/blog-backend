@@ -2,11 +2,11 @@ package org.instituteatri.backendblog.service;
 
 import lombok.RequiredArgsConstructor;
 import org.instituteatri.backendblog.domain.entities.Category;
-import org.instituteatri.backendblog.domain.entities.Post;
 import org.instituteatri.backendblog.dtos.CategoryDTO;
+import org.instituteatri.backendblog.dtos.PostDTO;
 import org.instituteatri.backendblog.infrastructure.exceptions.CategoryNotFoundException;
+import org.instituteatri.backendblog.mappings.CategoryMapper;
 import org.instituteatri.backendblog.repository.CategoryRepository;
-import org.instituteatri.backendblog.service.helpers.helpCategory.HelperComponentUpdateCategory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -14,51 +14,71 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.net.URI;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class CategoryService {
 
     private final CategoryRepository categoryRepository;
-    private final HelperComponentUpdateCategory helperComponentUpdateCategory;
+    private final CategoryMapper categoryMapper;
 
-    public List<Post> findPostsByCategoryId(String categoryId) {
-        Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new CategoryNotFoundException(categoryId));
-        return category.getPosts();
+    public ResponseEntity<List<CategoryDTO>> processFindAllCategories() {
+        List<Category> categories = categoryRepository.findAll();
+
+        return ResponseEntity.ok(categories.stream().map(categoryMapper::toCategoryDto).collect(Collectors.toList()));
     }
 
-    public List<Category> findAllCategories() {
-        return categoryRepository.findAll();
-    }
-
-    public Category findById(String id) {
+    public CategoryDTO findById(String id) {
         Optional<Category> category = categoryRepository.findById(id);
-        return category.orElseThrow(() -> new CategoryNotFoundException(id));
+
+        return category.map(categoryMapper::toCategoryDto).orElseThrow(() -> new CategoryNotFoundException(id));
     }
 
-    public ResponseEntity<Category> processCreateCategory(CategoryDTO categoryDTO) {
+    public List<PostDTO> findPostsByCategoryId(String categoryId) {
+        CategoryDTO categoryDTO = findById(categoryId);
+        return categoryDTO.postDTOS();
+    }
+
+    public ResponseEntity<CategoryDTO> processCreateCategory(CategoryDTO categoryDTO) {
         Category category = new Category(categoryDTO.name(), categoryDTO.slug());
 
-        categoryRepository.save(category);
+        category = categoryRepository.save(category);
 
-        URI uri = ServletUriComponentsBuilder
-                .fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(category.getId())
-                .toUri();
-        return ResponseEntity.created(uri).body(category);
+        CategoryDTO createdCategoryDTO = categoryMapper.toCategoryDto(category);
+
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(category.getId()).toUri();
+
+        return ResponseEntity.created(uri).body(createdCategoryDTO);
     }
 
-    public ResponseEntity<Void> processUpdateCategory(String id, CategoryDTO updatedCategoryDTO) {
-        helperComponentUpdateCategory.helperUpdatedCategory(updatedCategoryDTO);
-        helperComponentUpdateCategory.helperUpdate(id, updatedCategoryDTO);
+    public ResponseEntity<Void> processDeleteCategory(String id) {
+        Category existingCategory = categoryRepository.findById(id).orElseThrow(() -> new CategoryNotFoundException(id));
+
+        categoryRepository.delete(existingCategory);
 
         return ResponseEntity.noContent().build();
     }
 
-    public void deleteCategory(String id) {
-        Category existingCategory = findById(id);
-        categoryRepository.delete(existingCategory);
+    public ResponseEntity<Void> processUpdateCategory(String id, CategoryDTO updatedCategoryDTO) {
+        Category existingCategory = categoryRepository.findById(id).orElseThrow(() -> new CategoryNotFoundException(id));
+
+        updateCategoryProperties(existingCategory, updatedCategoryDTO);
+
+        categoryRepository.save(existingCategory);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    private void updateCategoryProperties(Category existingCategory, CategoryDTO updatedCategoryDTO) {
+        updateField(existingCategory::setName, existingCategory.getName(), updatedCategoryDTO.name());
+        updateField(existingCategory::setSlug, existingCategory.getSlug(), updatedCategoryDTO.slug());
+    }
+
+    private <T> void updateField(Consumer<T> setter, T currentValue, T newValue) {
+        if (newValue != null && !newValue.equals(currentValue)) {
+            setter.accept(newValue);
+        }
     }
 }
