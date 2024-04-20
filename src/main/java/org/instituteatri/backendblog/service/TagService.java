@@ -1,12 +1,12 @@
 package org.instituteatri.backendblog.service;
 
 import lombok.RequiredArgsConstructor;
-import org.instituteatri.backendblog.domain.entities.Post;
 import org.instituteatri.backendblog.domain.entities.Tag;
+import org.instituteatri.backendblog.dtos.PostDTO;
 import org.instituteatri.backendblog.dtos.TagDTO;
 import org.instituteatri.backendblog.infrastructure.exceptions.TagNotFoundException;
+import org.instituteatri.backendblog.mappings.TagMapper;
 import org.instituteatri.backendblog.repository.TagRepository;
-import org.instituteatri.backendblog.service.helpers.helpTag.HelperComponentUpdateTag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -14,51 +14,78 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.net.URI;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class TagService {
 
+
     private final TagRepository tagRepository;
-    private final HelperComponentUpdateTag helperComponentUpdateTag;
+    private final TagMapper tagMapper;
 
-    public List<Post> findPostsByTagId(String tagId) {
-        Tag tag = tagRepository.findById(tagId)
-                .orElseThrow(() -> new TagNotFoundException(tagId));
-        return tag.getPosts();
+    public ResponseEntity<List<TagDTO>> processFindAllTags() {
+        List<Tag> tags = tagRepository.findAll();
+
+        return ResponseEntity.ok(tags.stream().map(tagMapper::toTagDto).collect(Collectors.toList()));
     }
 
-    public List<Tag> findAllTags() {
-        return tagRepository.findAll();
-    }
-
-    public Tag findById(String id) {
+    public TagDTO findById(String id) {
         Optional<Tag> tag = tagRepository.findById(id);
-        return tag.orElseThrow(() -> new TagNotFoundException(id));
+
+        return tag.map(tagMapper::toTagDto).orElseThrow(() -> new TagNotFoundException(id));
     }
 
-    public ResponseEntity<Tag> processCreateTag(TagDTO tagDTO) {
+    public List<PostDTO> findPostsByTagId(String tagId) {
+        TagDTO tagDTO = findById(tagId);
+        return tagDTO.postDTOS();
+    }
+
+    public ResponseEntity<TagDTO> processCreateTag(TagDTO tagDTO) {
         Tag tag = new Tag(tagDTO.name(), tagDTO.slug());
 
         tag = tagRepository.save(tag);
+
+        TagDTO createdTagDTO = tagMapper.toTagDto(tag);
 
         URI uri = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
                 .buildAndExpand(tag.getId())
                 .toUri();
-        return ResponseEntity.created(uri).body(tag);
+
+        return ResponseEntity.created(uri).body(createdTagDTO);
     }
 
-    public ResponseEntity<Void> processUpdateTag(String id, TagDTO updatedTagDTO) {
-        helperComponentUpdateTag.helperUpdatedTag(updatedTagDTO);
-        helperComponentUpdateTag.helperUpdate(id, updatedTagDTO);
+    public ResponseEntity<Void> processDeleteTag(String id) {
+        Tag existingTag = tagRepository.findById(id)
+                .orElseThrow(() -> new TagNotFoundException(id));
+
+        tagRepository.delete(existingTag);
 
         return ResponseEntity.noContent().build();
     }
 
-    public void deleteTag(String id) {
-        Tag existingTag = findById(id);
-        tagRepository.delete(existingTag);
+    public ResponseEntity<Void> processUpdateTag(String id, TagDTO updatedTagDTO) {
+        Tag existingTag = tagRepository.findById(id)
+                .orElseThrow(() -> new TagNotFoundException(id));
+
+        updateTagProperties(existingTag, updatedTagDTO);
+
+        tagRepository.save(existingTag);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    private void updateTagProperties(Tag existingTag, TagDTO updatedTagDTO) {
+        updateField(existingTag::setName, existingTag.getName(), updatedTagDTO.name());
+        updateField(existingTag::setSlug, existingTag.getSlug(), updatedTagDTO.slug());
+    }
+
+    private <T> void updateField(Consumer<T> setter, T currentValue, T newValue) {
+        if (newValue != null && !newValue.equals(currentValue)) {
+            setter.accept(newValue);
+        }
     }
 }
