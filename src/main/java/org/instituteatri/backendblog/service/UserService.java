@@ -2,6 +2,7 @@ package org.instituteatri.backendblog.service;
 
 import lombok.RequiredArgsConstructor;
 import org.instituteatri.backendblog.domain.entities.User;
+import org.instituteatri.backendblog.dtos.ChangePasswordDTO;
 import org.instituteatri.backendblog.dtos.PostDTO;
 import org.instituteatri.backendblog.dtos.RegisterDTO;
 import org.instituteatri.backendblog.dtos.UserDTO;
@@ -54,9 +55,7 @@ public class UserService {
 
     @Transactional
     public ResponseEntity<Void> processUpdateUser(String id, RegisterDTO user, Authentication authentication) {
-        if (authentication == null || !authentication.isAuthenticated()) {
-            throw new NotAuthenticatedException();
-        }
+        validateAuthentication(authentication);
 
         if (!user.password().equals(user.confirmPassword())) {
             throw new PasswordsNotMatchException();
@@ -73,7 +72,33 @@ public class UserService {
         return ResponseEntity.noContent().build();
     }
 
-    public void performUserUpdate(String userId, RegisterDTO updatedUserDto) {
+
+
+    @Transactional
+    public ResponseEntity<Void> processChangePassword(ChangePasswordDTO changePasswordDTO, Authentication authentication) {
+        validateAuthentication(authentication);
+
+        User user = (User) authentication.getPrincipal();
+        User existingUser = userRepository.findById(user.getId())
+                .orElseThrow(() -> new UserNotFoundException(user.getId()));
+
+        if (!passwordEncoder.matches(changePasswordDTO.oldPassword(), existingUser.getPassword())) {
+            throw new InvalidOldPasswordException();
+        }
+
+        existingUser.setPassword(passwordEncoder.encode(changePasswordDTO.newPassword()));
+        saveUser(existingUser);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    private void validateAuthentication(Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new NotAuthenticatedException();
+        }
+    }
+
+    private void performUserUpdate(String userId, RegisterDTO updatedUserDto) {
         User existingUser = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException(userId));
 
@@ -83,7 +108,6 @@ public class UserService {
 
         saveUser(existingUser);
     }
-
     private void updateUserProperties(User existingUser, RegisterDTO updatedUserDto) {
         updateField(existingUser::setName, existingUser.getName(), updatedUserDto.name());
         updateField(existingUser::setLastName, existingUser.getLastName(), updatedUserDto.lastName());
