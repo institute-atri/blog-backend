@@ -19,6 +19,7 @@ class UserSecurityConfig extends SecurityConfigurerAdapter<DefaultSecurityFilter
                 .requestMatchers(HttpMethod.DELETE, "/v1/users/delete/{id}").hasRole(ADMIN_ROLE)
                 .requestMatchers(HttpMethod.PUT, "/v1/users/update/{id}").permitAll()
                 .requestMatchers(HttpMethod.GET, "/v1/users/posts/{id}").permitAll()
+                .requestMatchers(HttpMethod.POST, "/v1/users/change-password").permitAll()
         );
     }
 }
