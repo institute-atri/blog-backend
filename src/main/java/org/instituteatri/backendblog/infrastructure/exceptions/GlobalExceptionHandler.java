@@ -14,10 +14,19 @@ import java.util.Map;
 
 @RestControllerAdvice
 @ControllerAdvice
-
 public class GlobalExceptionHandler {
 
     private static final String MESSAGE_KEY = "message";
+
+    @ExceptionHandler(TokenInvalidException.class)
+    public ResponseEntity<Object> handleTokenInvalidException(TokenInvalidException ex) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Collections.singletonMap(MESSAGE_KEY, ex.getMessage()));
+    }
+
+    @ExceptionHandler(InvalidOldPasswordException.class)
+    public ResponseEntity<Object> handleInvalidOldPasswordException(InvalidOldPasswordException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.singletonMap(MESSAGE_KEY, ex.getMessage()));
+    }
 
     @ExceptionHandler(PasswordsNotMatchException.class)
     public ResponseEntity<Object> handlePasswordsNotMatchException(PasswordsNotMatchException ex) {
