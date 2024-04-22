@@ -6,6 +6,8 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.instituteatri.backendblog.dtos.AuthenticationDTO;
@@ -14,6 +16,8 @@ import org.instituteatri.backendblog.dtos.ResponseDTO;
 import org.instituteatri.backendblog.service.AccountService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -104,5 +108,18 @@ public class AccountController {
     @PostMapping("/register")
     public ResponseEntity<ResponseDTO> register(@RequestBody @Valid RegisterDTO registerDTO) {
         return accountService.processRegister(registerDTO);
+    }
+
+    @Operation(
+            method = "POST",
+            summary = "Logout the current user.",
+            description = "Endpoint to logout the currently authenticated user. " +
+                    "Invalidates the current session and clears the security context.",
+            responses = @ApiResponse(responseCode = "200", description = "Success.")
+    )
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
+        new SecurityContextLogoutHandler().logout(request, response, authentication);
+        return ResponseEntity.ok().build();
     }
 }
