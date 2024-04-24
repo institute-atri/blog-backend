@@ -12,12 +12,9 @@
     <artifactId>backend-blog</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>backend-blog</name>
-    <description>Back-End project for the ATRI blog</description>
+    <description>backend project for the ATRI blog</description>
     <properties>
-        <!-- Java version -->
         <java.version>21</java.version>
-
-        <!-- SonarCloud properties -->
         <sonar.organization>institute-atri</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
     </properties>
@@ -71,8 +68,12 @@
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
             <version>2.5.0</version>
         </dependency>
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct</artifactId>
+            <version>1.5.5.Final</version>
+        </dependency>
     </dependencies>
-
     <build>
         <plugins>
             <plugin>
