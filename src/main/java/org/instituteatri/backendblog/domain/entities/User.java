@@ -2,6 +2,7 @@ package org.instituteatri.backendblog.domain.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
+import org.instituteatri.backendblog.domain.token.Token;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.DBRef;
@@ -40,6 +41,10 @@ public class User implements UserDetails {
     @DBRef(lazy = true)
     @JsonIgnore
     private List<Post> posts = new ArrayList<>();
+
+    @DBRef(lazy = true)
+    @JsonIgnore
+    private List<Token> tokens = new ArrayList<>();
 
     @JsonIgnore
     @Transient
