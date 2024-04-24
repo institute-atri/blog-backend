@@ -39,6 +39,11 @@ git clone https://github.com/institute-atri/blog-backend.git
    - POST /v1/auth/login - Authenticate user by verifying credentials.
 
    - POST /v1/auth/register - Endpoint for user registration.
+
+   - POST /v1/auth/logout - Endpoint for logging out the current user.
+
+   - POST /v1/auth/refresh-token - Endpoint to refresh the access token using a valid refresh token.
+
    ```
 <hr/>
 
@@ -54,6 +59,9 @@ git clone https://github.com/institute-atri/blog-backend.git
    - DELETE - /v1/users/delete/{id} - Deletes the user with the specified ID. Only users with the ADMIN role can delete the user.
 
    - GET - /v1/users/posts/id - Returns posts by user id.
+
+   - POST - /v1/users/change-password - Endpoint to change the password of the currently authenticated user.
+
    ```
 <hr/>
 
