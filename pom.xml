@@ -12,7 +12,7 @@
     <artifactId>backend-blog</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>backend-blog</name>
-    <description>backend project for the ATRI blog</description>
+    <description>Back-End project for the ATRI blog</description>
     <properties>
         <!-- Java version -->
         <java.version>21</java.version>
