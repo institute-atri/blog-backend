@@ -1,3 +1,6 @@
+# Created by https://www.toptal.com/developers/gitignore/api/windows,macos,linux,java,kotlin,gradle,maven,visualstudiocode,intellij+all,netbeans,eclipse
+# Edit at https://www.toptal.com/developers/gitignore?templates=windows,macos,linux,java,kotlin,gradle,maven,visualstudiocode,intellij+all,netbeans,eclipse
+
 ### Eclipse ###
 .metadata
 bin/
@@ -341,7 +344,4 @@ gradle-app.setting
 # Java heap dump
 *.hprof
 
-
-# Ignore configuration files
-src/main/resources/application.properties
-src/main/resources/application.yml
+# End of https://www.toptal.com/developers/gitignore/api/windows,macos,linux,java,kotlin,gradle,maven,visualstudiocode,intellij+all,netbeans,eclipse
