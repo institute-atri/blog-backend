@@ -7,10 +7,8 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.instituteatri.backendblog.domain.entities.User;
-import org.instituteatri.backendblog.domain.token.InvalidToken;
 import org.instituteatri.backendblog.infrastructure.exceptions.TokenGenerationException;
 import org.instituteatri.backendblog.infrastructure.exceptions.TokenInvalidException;
-import org.instituteatri.backendblog.repository.InvalidTokenRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -26,7 +24,12 @@ public class TokenService {
 
     @Value("${api.security.token.secret}")
     private String secret;
-    private final InvalidTokenRepository invalidTokenRepository;
+
+    @Value("${api.security.token.expiration}")
+    private Integer expiration;
+
+    @Value("${api.security.token.refresh-token-expiration}")
+    private Integer refreshTokenExpiration;
 
     /**
      * Generates a JSON Web Token (JWT) for the given user.
@@ -35,22 +38,29 @@ public class TokenService {
      * @return the JWT for the given user
      * @throws TokenGenerationException if an error occurs while generating the JWT
      */
-    public String generateToken(User user) {
+    public String generateToken(User user, String audience, Integer expiration) {
         try {
-            Algorithm algorithm = Algorithm.HMAC256(secret);
+            Algorithm algorithm = getAlgorithm(secret);
             return JWT.create()
                     .withIssuer("auth-api")
                     .withSubject(user.getEmail())
                     .withClaim("Name", user.getName())
                     .withClaim("Role", user.getRole().name())
-                    .withAudience("backend-api")
-                    .withExpiresAt(getExpirationDate())
+                    .withAudience(audience)
+                    .withExpiresAt(getExpirationDate(expiration))
                     .sign(algorithm);
         } catch (JWTCreationException exception) {
             throw new TokenGenerationException("Error while generating token", exception);
         }
     }
 
+    public String generateAccessToken(User user) {
+        return generateToken(user, "backend-api", expiration);
+    }
+
+    public String generateRefreshToken(User user) {
+        return generateToken(user, "refresh-token-api", refreshTokenExpiration);
+    }
 
     /**
      * Checks if the given JWT token is valid and not blocklisted.
@@ -62,14 +72,8 @@ public class TokenService {
      * @throws TokenInvalidException if the token is invalid or blocklisted
      */
     public String isValidateToken(String token) {
-
-        if (invalidTokenRepository.existsByToken(token)) {
-            log.warn("Token is invalid due to being blocklisted: {}", token);
-            throw new TokenInvalidException(token);
-        }
-
         try {
-            Algorithm algorithm = Algorithm.HMAC256(secret);
+            Algorithm algorithm = getAlgorithm(secret);
             if (JWT.require(algorithm).withIssuer("auth-api")
                     .build()
                     .verify(token)
@@ -91,18 +95,11 @@ public class TokenService {
         }
     }
 
-
-    public void invalidateToken(String token) {
-        if (!invalidTokenRepository.existsByToken(token)) {
-            invalidTokenRepository.save(new InvalidToken(token));
-        }
+    private Algorithm getAlgorithm(String secretKey) {
+        return Algorithm.HMAC256(secretKey);
     }
 
-    public boolean isTokenInvalid(String token) {
-        return invalidTokenRepository.existsByToken(token);
-    }
-
-    private Instant getExpirationDate() {
-        return LocalDateTime.now().plusHours(1).toInstant(ZoneOffset.of("-03:00"));
+    private Instant getExpirationDate(Integer expiration) {
+        return LocalDateTime.now().plusHours(expiration).toInstant(ZoneOffset.of("-03:00"));
     }
 }
