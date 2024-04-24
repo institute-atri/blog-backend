@@ -1,9 +1,12 @@
 package org.instituteatri.backendblog.service;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.instituteatri.backendblog.domain.entities.User;
 import org.instituteatri.backendblog.domain.entities.UserRole;
 import org.instituteatri.backendblog.dtos.AuthenticationDTO;
+import org.instituteatri.backendblog.dtos.RefreshTokenDTO;
 import org.instituteatri.backendblog.dtos.RegisterDTO;
 import org.instituteatri.backendblog.dtos.ResponseDTO;
 import org.instituteatri.backendblog.infrastructure.exceptions.EmailAlreadyExistsException;
@@ -11,6 +14,7 @@ import org.instituteatri.backendblog.infrastructure.exceptions.PasswordsNotMatch
 import org.instituteatri.backendblog.infrastructure.security.TokenService;
 import org.instituteatri.backendblog.repository.UserRepository;
 import org.instituteatri.backendblog.service.components.authcomponents.AccountLoginComponent;
+import org.instituteatri.backendblog.service.components.authcomponents.AccountTokenComponent;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -26,10 +30,12 @@ import java.net.URI;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AccountService implements UserDetailsService {
 
     private final UserRepository userRepository;
     private final TokenService tokenService;
+    private final AccountTokenComponent accountTokenComponent;
     private final AccountLoginComponent accountLoginComponent;
 
     @Override
@@ -43,9 +49,9 @@ public class AccountService implements UserDetailsService {
             var user = (User) authResult.getPrincipal();
 
             accountLoginComponent.handleSuccessfulLoginComponent(user);
+            accountTokenComponent.revokeAllUserTokens(user);
 
-            var token = tokenService.generateToken(user);
-            return ResponseEntity.ok(new ResponseDTO(token, user.getEmail()));
+            return ResponseEntity.ok(accountTokenComponent.generateTokenResponse(user));
 
         } catch (LockedException e) {
             return accountLoginComponent.handleLockedAccountComponent();
@@ -54,7 +60,6 @@ public class AccountService implements UserDetailsService {
             return accountLoginComponent.handleBadCredentialsComponent(authDto.email());
         }
     }
-
 
     public ResponseEntity<ResponseDTO> processRegister(RegisterDTO registerDTO) {
         if (isEmailExists(registerDTO.email())) {
@@ -68,9 +73,26 @@ public class AccountService implements UserDetailsService {
         User savedUser = userRepository.insert(newUser);
         URI uri = buildUserUri(savedUser);
 
-        String token = tokenService.generateToken(savedUser);
+        return ResponseEntity.created(uri).body(accountTokenComponent.generateTokenResponse(savedUser));
+    }
 
-        return ResponseEntity.created(uri).body(new ResponseDTO(token, savedUser.getEmail()));
+    public ResponseEntity<ResponseDTO> processRefreshToken(RefreshTokenDTO refreshTokenDTO) {
+        try {
+            String userEmail = tokenService.isValidateToken(refreshTokenDTO.refreshToken());
+            UserDetails userDetails = loadUserByUsername(userEmail);
+
+            if (userDetails == null) {
+                throw new UsernameNotFoundException("User not found.");
+            }
+
+            var user = (User) userDetails;
+            accountTokenComponent.revokeAllUserTokens(user);
+
+            return ResponseEntity.ok(accountTokenComponent.generateTokenResponse(user));
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpServletResponse.SC_INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     private boolean isEmailExists(String email) {

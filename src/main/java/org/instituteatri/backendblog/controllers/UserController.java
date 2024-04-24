@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.instituteatri.backendblog.dtos.ChangePasswordDTO;
 import org.instituteatri.backendblog.dtos.PostDTO;
 import org.instituteatri.backendblog.dtos.RegisterDTO;
 import org.instituteatri.backendblog.dtos.UserDTO;
@@ -247,5 +248,45 @@ public class UserController {
     public ResponseEntity<List<PostDTO>> findAllPostsByUserId(@PathVariable String id) {
         List<PostDTO> postDTOs = userService.findPostsByUserId(id);
         return ResponseEntity.ok(postDTOs);
+    }
+
+
+    @Operation(
+            method = "POST",
+            summary = "Change user password.",
+            description = "Endpoint to change the password of the currently authenticated user. " +
+                    "Requires the old password and the new password."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "No content."),
+
+            @ApiResponse(responseCode = "400", description = "Bad request.",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(
+                                    value = "{" +
+                                            "\"errors\":[" +
+                                            "\"Password must be strong and contain at least one uppercase letter, one lowercase letter, one digit, and one special character.\", " +
+                                            "\"Password must be between 10 and 30 characters.\", " +
+                                            "\"Password is required.\"" +
+                                            "]" +
+                                            "}"))),
+
+            @ApiResponse(responseCode = "401", description = "Unauthorized.",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(
+                                    value = "{\"message\":\"Unauthorized.\"}"
+                            ))),
+
+            @ApiResponse(responseCode = "403", description = "Forbidden.",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(
+                                    value = "{\"message\":\"User isn't authorized.\"}"
+                            )))
+    })
+    @PostMapping("/change-password")
+    public ResponseEntity<Void> processChangePassword(
+            @RequestBody @Valid ChangePasswordDTO changePasswordDTO,
+            Authentication authentication) {
+        return userService.processChangePassword(changePasswordDTO, authentication);
     }
 }

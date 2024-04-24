@@ -10,8 +10,6 @@ import org.mapstruct.MapperConfig;
 import org.mapstruct.ReportingPolicy;
 import org.springframework.stereotype.Component;
 
-import java.util.stream.Collectors;
-
 @Mapper(componentModel = "spring")
 @MapperConfig(unmappedTargetPolicy = ReportingPolicy.IGNORE)
 @Component
@@ -50,7 +48,7 @@ public class UserMapperImpl implements UserMapper {
                         post.getCategories(),
                         post.getTags(),
                         post.getComments()
-                )).collect(Collectors.toList())
+                )).toList()
         );
     }
 }

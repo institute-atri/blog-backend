@@ -9,8 +9,6 @@ import org.mapstruct.MapperConfig;
 import org.mapstruct.ReportingPolicy;
 import org.springframework.stereotype.Component;
 
-import java.util.stream.Collectors;
-
 @Component
 @Mapper(componentModel = "spring")
 @MapperConfig(unmappedTargetPolicy = ReportingPolicy.IGNORE)
@@ -34,7 +32,7 @@ public class TagMapperImpl implements TagMapper {
                         post.getCategories(),
                         post.getTags(),
                         post.getComments()
-                )).collect(Collectors.toList())
+                )).toList()
         );
     }
 }

@@ -1,6 +1,7 @@
 package org.instituteatri.backendblog.infrastructure.config;
 
 import lombok.RequiredArgsConstructor;
+import org.instituteatri.backendblog.infrastructure.security.CustomLogoutHandler;
 import org.instituteatri.backendblog.infrastructure.security.SecurityFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,6 +11,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -26,6 +28,7 @@ public class SecurityConfigurations {
     final PostSecurityConfig postSecurityConfig;
     final TagSecurityConfig tagSecurityConfig;
     final CategorySecurityConfig categorySecurityConfig;
+    final CustomLogoutHandler logoutHandler;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
@@ -57,6 +60,10 @@ public class SecurityConfigurations {
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
+                .logout(logout -> logout.logoutUrl("/v1/auth/logout")
+                        .logoutSuccessUrl("/v1/auth/login")
+                        .addLogoutHandler(logoutHandler)
+                        .logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext()))
                 .build();
     }
 
