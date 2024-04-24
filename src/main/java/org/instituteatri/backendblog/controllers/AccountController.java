@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.instituteatri.backendblog.dtos.AuthenticationDTO;
+import org.instituteatri.backendblog.dtos.RefreshTokenDTO;
 import org.instituteatri.backendblog.dtos.RegisterDTO;
 import org.instituteatri.backendblog.dtos.ResponseDTO;
 import org.instituteatri.backendblog.service.AccountService;
@@ -115,11 +116,28 @@ public class AccountController {
             summary = "Logout the current user.",
             description = "Endpoint to logout the currently authenticated user. " +
                     "Invalidates the current session and clears the security context.",
-            responses = @ApiResponse(responseCode = "200", description = "Success.")
+            responses ={
+                    @ApiResponse(responseCode = "200", description = "Success."),
+                    @ApiResponse(responseCode = "401", description = "Unauthorized.")
+            }
     )
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
         new SecurityContextLogoutHandler().logout(request, response, authentication);
         return ResponseEntity.ok().build();
+    }
+
+
+    @Operation(
+            summary = "Refresh the access token using a refresh token.",
+            description = "Endpoint to refresh the access token using a valid refresh token.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Success."),
+                    @ApiResponse(responseCode = "500", description = "Internal server error.")
+            }
+    )
+    @PostMapping("/refresh-token")
+    public ResponseEntity<ResponseDTO> refreshToken(@RequestBody RefreshTokenDTO tokenDTO) {
+        return accountService.processRefreshToken(tokenDTO);
     }
 }
