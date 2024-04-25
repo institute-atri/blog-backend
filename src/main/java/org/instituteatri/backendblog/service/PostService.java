@@ -1,13 +1,19 @@
 package org.instituteatri.backendblog.service;
 
 import lombok.RequiredArgsConstructor;
+import org.instituteatri.backendblog.domain.entities.Category;
 import org.instituteatri.backendblog.domain.entities.Post;
+import org.instituteatri.backendblog.domain.entities.Tag;
 import org.instituteatri.backendblog.domain.entities.User;
 import org.instituteatri.backendblog.dtos.PostDTO;
 import org.instituteatri.backendblog.infrastructure.exceptions.NotAuthenticatedException;
 import org.instituteatri.backendblog.infrastructure.exceptions.PostNotFoundException;
 import org.instituteatri.backendblog.mappings.PostMapper;
+import org.instituteatri.backendblog.repository.CategoryRepository;
 import org.instituteatri.backendblog.repository.PostRepository;
+import org.instituteatri.backendblog.repository.TagRepository;
+import org.instituteatri.backendblog.repository.UserRepository;
+import org.instituteatri.backendblog.service.components.postcomponents.PostComponentFindAllUsers;
 import org.instituteatri.backendblog.service.components.postcomponents.PostCreateComponent;
 import org.instituteatri.backendblog.service.components.postcomponents.PostDeleteComponent;
 import org.instituteatri.backendblog.service.components.postcomponents.PostUpdateComponent;
@@ -24,17 +30,39 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class PostService {
 
-    private final PostRepository postRepository;
     private final PostMapper postMapper;
+    private final UserRepository userRepository;
+    private final PostRepository postRepository;
+    private final TagRepository tagRepository;
+    private final CategoryRepository categoryRepository;
+    private final PostComponentFindAllUsers postFindAllUsers;
     private final PostUpdateComponent postUpdateComponent;
     private final PostCreateComponent postCreateComponent;
     private final PostDeleteComponent postDeleteComponent;
 
 
     public ResponseEntity<List<PostDTO>> processFindAllPosts() {
+        List<Tag> updatedTags = tagRepository.findAll();
+        List<Category> updatedCategories = categoryRepository.findAll();
+        List<User> updatedUsers = userRepository.findAll();
+
         List<Post> posts = postRepository.findAll();
 
-        return ResponseEntity.ok(posts.stream()
+        for (Post post : posts) {
+            String userId = post.getUser().getId();
+            if (updatedUsers.stream().noneMatch(user -> user.getId().equals(userId))) {
+                postRepository.delete(post);
+            } else {
+                postFindAllUsers.updatePostAuthorWithUpdatedUser(post, updatedUsers);
+                postFindAllUsers.updatePostTagsWithUpdatedEntities(post, updatedTags);
+                postFindAllUsers.updatePostCategoriesWithUpdatedEntities(post, updatedCategories);
+                postRepository.save(post);
+            }
+        }
+
+        List<Post> updatedPosts = postRepository.findAll();
+
+        return ResponseEntity.ok(updatedPosts.stream()
                 .map(postMapper::toPostDto)
                 .toList());
     }
