@@ -1,6 +1,7 @@
 package org.instituteatri.backendblog.service;
 
 import lombok.RequiredArgsConstructor;
+import org.instituteatri.backendblog.domain.entities.Post;
 import org.instituteatri.backendblog.domain.entities.User;
 import org.instituteatri.backendblog.dtos.ChangePasswordDTO;
 import org.instituteatri.backendblog.dtos.PostDTO;
@@ -8,6 +9,7 @@ import org.instituteatri.backendblog.dtos.RegisterDTO;
 import org.instituteatri.backendblog.dtos.UserDTO;
 import org.instituteatri.backendblog.infrastructure.exceptions.*;
 import org.instituteatri.backendblog.mappings.UserMapper;
+import org.instituteatri.backendblog.repository.PostRepository;
 import org.instituteatri.backendblog.repository.UserRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -23,9 +25,10 @@ import java.util.function.Consumer;
 @RequiredArgsConstructor
 public class UserService {
 
+    private final UserMapper userMapper;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final UserMapper userMapper;
+    private final PostRepository postRepository;
 
 
     public ResponseEntity<List<UserDTO>> processFindAllUsers() {
@@ -48,8 +51,14 @@ public class UserService {
     }
 
     public ResponseEntity<Void> processDeleteUser(String id) {
-        findById(id);
-        userRepository.deleteById(id);
+        User existingUser = userRepository.findById(id).orElseThrow(
+                () -> new UserNotFoundException(id));
+
+        List<Post> posts = postRepository.findPostsById(id);
+        postRepository.deleteAll(posts);
+
+        userRepository.delete(existingUser);
+
         return ResponseEntity.noContent().build();
     }
 
@@ -71,7 +80,6 @@ public class UserService {
 
         return ResponseEntity.noContent().build();
     }
-
 
 
     @Transactional
@@ -108,6 +116,7 @@ public class UserService {
 
         saveUser(existingUser);
     }
+
     private void updateUserProperties(User existingUser, RegisterDTO updatedUserDto) {
         updateField(existingUser::setName, existingUser.getName(), updatedUserDto.name());
         updateField(existingUser::setLastName, existingUser.getLastName(), updatedUserDto.lastName());
