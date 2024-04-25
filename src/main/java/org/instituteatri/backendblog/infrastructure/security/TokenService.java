@@ -49,18 +49,25 @@ public class TokenService {
                     .withAudience(audience)
                     .withExpiresAt(getExpirationDate(expiration))
                     .sign(algorithm);
+
         } catch (JWTCreationException exception) {
+            log.error("[TOKEN] Error while generating token for user {}: {}", user.getEmail(), exception.getMessage());
             throw new TokenGenerationException("Error while generating token", exception);
         }
     }
 
     public String generateAccessToken(User user) {
-        return generateToken(user, "backend-api", expiration);
+        String token = generateToken(user, "backend-api", expiration);
+        log.info("[TOKEN] Generated access token for user {}: {}", user.getEmail(), token);
+        return token;
     }
 
     public String generateRefreshToken(User user) {
-        return generateToken(user, "refresh-token-api", refreshTokenExpiration);
+        String refreshToken = generateToken(user, "refresh-token-api", refreshTokenExpiration);
+        log.info("[TOKEN] Generated refresh token for user {}: {}", user.getEmail(), refreshToken);
+        return refreshToken;
     }
+
 
     /**
      * Checks if the given JWT token is valid and not blocklisted.
@@ -80,18 +87,21 @@ public class TokenService {
                     .getExpiresAt()
                     .before(new Date())) {
 
-                log.warn("Token is expired: {}", token);
-                throw new TokenInvalidException(token);
+                log.warn("[TOKEN] Token is expired: {}", token);
+                return null;
             }
 
-            return JWT.require(algorithm)
+            String subject = JWT.require(algorithm)
                     .withIssuer("auth-api")
                     .build()
                     .verify(token)
                     .getSubject();
+
+            log.info("[TOKEN] Token is valid for subject: {}", subject);
+            return subject;
         } catch (JWTVerificationException exception) {
-            log.warn("Token is invalid: {}", token);
-            throw new TokenInvalidException(token);
+            log.error("[TOKEN] Token is invalid: {}", token);
+            return null;
         }
     }
 

@@ -3,6 +3,7 @@ package org.instituteatri.backendblog.infrastructure.security;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.instituteatri.backendblog.domain.token.Token;
 import org.instituteatri.backendblog.repository.TokenRepository;
 import org.springframework.http.HttpStatus;
@@ -15,6 +16,7 @@ import java.io.IOException;
 
 
 @Component
+@Slf4j
 @RequiredArgsConstructor
 public class CustomLogoutHandler implements LogoutHandler {
 
@@ -29,8 +31,8 @@ public class CustomLogoutHandler implements LogoutHandler {
      * invalidates it, and clears the authentication context. If the token is not found, it sends an
      * unauthorized response.
      *
-     * @param request  the HTTP request containing the logout information
-     * @param response the HTTP response to be sent back to the client
+     * @param request        the HTTP request containing the logout information
+     * @param response       the HTTP response to be sent back to the client
      * @param authentication the Authentication object representing the user being logged out
      */
     @Override
@@ -41,28 +43,31 @@ public class CustomLogoutHandler implements LogoutHandler {
 
         if (storedToken != null) {
             invalidateToken(storedToken);
-            clearAuthenticationContext();
+            SecurityContextHolder.clearContext();
+            log.info("[LOGOUT] User logged out successfully. Token invalidated: {}", token);
         } else {
+            log.error("[LOGOUT] Token not found during logout: {}", token);
             try {
                 sendUnauthorizedResponse(response);
             } catch (IOException e) {
+                log.error("[LOGOUT] Error sending unauthorized response", e);
                 throw new RuntimeException(e);
             }
         }
     }
 
     private Token findTokenByValue(String tokenValue) {
-        return tokenRepository.findByToken(tokenValue).orElse(null);
+        Token token = tokenRepository.findByToken(tokenValue).orElse(null);
+        if (token == null) {
+            log.warn("[LOGOUT] Token not found in repository during logout for value: {}", tokenValue);
+        }
+        return token;
     }
 
     private void invalidateToken(Token token) {
         token.setExpired(true);
         token.setRevoked(true);
         tokenRepository.save(token);
-    }
-
-    private void clearAuthenticationContext() {
-        SecurityContextHolder.clearContext();
     }
 
     private void sendUnauthorizedResponse(HttpServletResponse response) throws IOException {
