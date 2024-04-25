@@ -1,11 +1,13 @@
 package org.instituteatri.backendblog.service;
 
 import lombok.RequiredArgsConstructor;
+import org.instituteatri.backendblog.domain.entities.Post;
 import org.instituteatri.backendblog.domain.entities.Tag;
 import org.instituteatri.backendblog.dtos.PostDTO;
 import org.instituteatri.backendblog.dtos.TagDTO;
 import org.instituteatri.backendblog.infrastructure.exceptions.TagNotFoundException;
 import org.instituteatri.backendblog.mappings.TagMapper;
+import org.instituteatri.backendblog.repository.PostRepository;
 import org.instituteatri.backendblog.repository.TagRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -23,6 +25,7 @@ public class TagService {
 
     private final TagRepository tagRepository;
     private final TagMapper tagMapper;
+    private final PostRepository postRepository;
 
     public ResponseEntity<List<TagDTO>> processFindAllTags() {
         List<Tag> tags = tagRepository.findAll();
@@ -62,6 +65,12 @@ public class TagService {
     public ResponseEntity<Void> processDeleteTag(String id) {
         Tag existingTag = tagRepository.findById(id)
                 .orElseThrow(() -> new TagNotFoundException(id));
+
+        List<Post> posts = postRepository.findPostsById(id);
+        for (Post post : posts) {
+            post.getTags().removeIf(tag -> tag.getId().equals(id));
+            postRepository.save(post);
+        }
 
         tagRepository.delete(existingTag);
 
