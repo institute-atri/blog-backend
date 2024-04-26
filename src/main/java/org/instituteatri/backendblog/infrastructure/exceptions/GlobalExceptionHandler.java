@@ -18,6 +18,11 @@ public class GlobalExceptionHandler {
 
     private static final String MESSAGE_KEY = "message";
 
+    @ExceptionHandler(TooManyRequestsException.class)
+    public ResponseEntity<Object> handleTooManyRequestsException(TooManyRequestsException ex) {
+        return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(Collections.singletonMap(MESSAGE_KEY, ex.getMessage()));
+    }
+
     @ExceptionHandler(TokenInvalidException.class)
     public ResponseEntity<Object> handleTokenInvalidException(TokenInvalidException ex) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Collections.singletonMap(MESSAGE_KEY, ex.getMessage()));

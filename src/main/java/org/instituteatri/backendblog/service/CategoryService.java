@@ -2,11 +2,13 @@ package org.instituteatri.backendblog.service;
 
 import lombok.RequiredArgsConstructor;
 import org.instituteatri.backendblog.domain.entities.Category;
+import org.instituteatri.backendblog.domain.entities.Post;
 import org.instituteatri.backendblog.dtos.CategoryDTO;
 import org.instituteatri.backendblog.dtos.PostDTO;
 import org.instituteatri.backendblog.infrastructure.exceptions.CategoryNotFoundException;
 import org.instituteatri.backendblog.mappings.CategoryMapper;
 import org.instituteatri.backendblog.repository.CategoryRepository;
+import org.instituteatri.backendblog.repository.PostRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -22,6 +24,7 @@ public class CategoryService {
 
     private final CategoryRepository categoryRepository;
     private final CategoryMapper categoryMapper;
+    private final PostRepository postRepository;
 
     public ResponseEntity<List<CategoryDTO>> processFindAllCategories() {
         List<Category> categories = categoryRepository.findAll();
@@ -56,6 +59,12 @@ public class CategoryService {
 
     public ResponseEntity<Void> processDeleteCategory(String id) {
         Category existingCategory = categoryRepository.findById(id).orElseThrow(() -> new CategoryNotFoundException(id));
+
+        List<Post> posts = postRepository.findPostsById(id);
+        for (Post post : posts) {
+            post.getCategories().removeIf(category -> category.getId().equals(id));
+            postRepository.save(post);
+        }
 
         categoryRepository.delete(existingCategory);
 
