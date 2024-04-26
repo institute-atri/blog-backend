@@ -90,6 +90,7 @@ public class TokenService {
     }
 
     private String verifyToken(String token, String ipAddress, String userAgent) {
+
         try {
             Algorithm algorithm = getAlgorithm();
             DecodedJWT decodedJWT = JWT
