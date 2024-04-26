@@ -1,0 +1,22 @@
+spring:
+  application:
+    name: backend-blog
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/blog
+
+security:
+  token:
+    private-key: 'classpath:app.key'
+    public-key: 'classpath:app.pub'
+    expiration-token: 15
+    expiration-refresh-token: 30
+
+blog:
+  openapi:
+    dev-url: http://localhost:8080
+    prod-url: https://blogAtri-api.com
+admin:
+  password: '@Admin23k+'
+user:
+  password: '@User23k+'
