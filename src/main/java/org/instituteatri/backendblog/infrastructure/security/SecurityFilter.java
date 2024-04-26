@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.instituteatri.backendblog.infrastructure.exceptions.TokenInvalidException;
 import org.instituteatri.backendblog.repository.TokenRepository;
 import org.instituteatri.backendblog.repository.UserRepository;
@@ -20,13 +21,14 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 
 @Component
+@Slf4j
 @RequiredArgsConstructor
 public class SecurityFilter extends OncePerRequestFilter {
 
     final TokenService tokenService;
     final TokenRepository tokenRepository;
     final UserRepository userRepository;
-
+    final HttpServletRequest request;
 
     /**
      * Spring calls this method for each request.
@@ -47,19 +49,27 @@ public class SecurityFilter extends OncePerRequestFilter {
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
 
-        String token = recoverTokenFromRequest(request);
-
-        if (token != null) {
-            handleAuthentication(token, response);
+        try {
+            String token = recoverTokenFromRequest(request);
+            if (token != null) {
+                handleAuthentication(token, response);
+            }
+            filterChain.doFilter(request, response);
+        } catch (Exception e) {
+            log.error("[ERROR_FILTER] Error processing security filter: {}", e.getMessage());
+            throw e;
         }
-
-        filterChain.doFilter(request, response);
     }
 
     public String recoverTokenFromRequest(HttpServletRequest request) {
         var authHeader = request.getHeader("Authorization");
-        if (authHeader == null) return null;
-        return authHeader.replace("Bearer ", "");
+        if (authHeader == null) {
+            log.debug("[NO_AUTH_HEADER] No Authorization header found in the request.");
+            return null;
+        }
+        String token = authHeader.replace("Bearer ", "");
+        log.debug("[RECOVERED] Token recovered from Authorization header: {}", token);
+        return token;
     }
 
 
@@ -69,22 +79,34 @@ public class SecurityFilter extends OncePerRequestFilter {
      *
      * @param token    the JWT token to be validated
      * @param response the outgoing HTTP response
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     private void handleAuthentication(String token, HttpServletResponse response)
             throws IOException {
 
         try {
-            String email = tokenService.isValidateToken(token);
+            String email = tokenService.validateToken(token);
             UserDetails userDetails = getUserDetailsByEmail(email);
             boolean isTokenValid = isTokenValid(token);
 
             if (userDetails != null && isTokenValid) {
                 setAuthenticationInSecurityContext(userDetails);
+                log.info("[USER_AUTHENTICATED] User: {} successfully authenticated with token: {}.", userDetails.getUsername(), token);
+            } else {
+                log.error("[TOKEN_FAILED] User-Agent: {}. IP Address: {}. Validation failed for token: {}", getUserAgent(), getIpAddress(), token);
             }
         } catch (TokenInvalidException e) {
             handleInvalidToken(response, e);
+            log.error("[TOKEN_FAILED] User-Agent: {}. IP Address: {}. Validation failed for token: {}", getUserAgent(), getIpAddress(), token);
         }
+    }
+
+    private String getIpAddress() {
+        return request.getRemoteAddr();
+    }
+
+    private String getUserAgent() {
+        return request.getHeader("User-Agent");
     }
 
     private UserDetails getUserDetailsByEmail(String email) {
@@ -111,5 +133,6 @@ public class SecurityFilter extends OncePerRequestFilter {
 
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
         response.getWriter().write(e.getMessage());
+        log.warn("[TOKEN_INVALID] Invalid token detected: {}", e.getMessage());
     }
 }

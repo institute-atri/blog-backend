@@ -44,13 +44,13 @@ public class CustomLogoutHandler implements LogoutHandler {
         if (storedToken != null) {
             invalidateToken(storedToken);
             SecurityContextHolder.clearContext();
-            log.info("[LOGOUT] User logged out successfully. Token invalidated: {}", token);
+            log.info("[LOGOUT_SUCCESS] User logged out successfully. Token invalidated: {}", token);
         } else {
-            log.error("[LOGOUT] Token not found during logout: {}", token);
+            log.error("[TOKEN_EXPIRED] Token not found during logout: {}", token);
             try {
                 sendUnauthorizedResponse(response);
             } catch (IOException e) {
-                log.error("[LOGOUT] Error sending unauthorized response", e);
+                log.error("[LOGOUT_ERROR] Error sending unauthorized response", e);
                 throw new RuntimeException(e);
             }
         }
@@ -59,7 +59,7 @@ public class CustomLogoutHandler implements LogoutHandler {
     private Token findTokenByValue(String tokenValue) {
         Token token = tokenRepository.findByToken(tokenValue).orElse(null);
         if (token == null) {
-            log.warn("[LOGOUT] Token not found in repository during logout for value: {}", tokenValue);
+            log.warn("[TOKEN_EXPIRED] Token not found in repository during logout for value: {}", tokenValue);
         }
         return token;
     }
