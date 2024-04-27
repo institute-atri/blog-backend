@@ -10,10 +10,10 @@ import java.io.Serial;
 import java.io.Serializable;
 
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Document
 public class Token implements Serializable {
 
@@ -23,13 +23,13 @@ public class Token implements Serializable {
     @Id
     private String id;
 
-    private String token;
+    private String tokenValue;
 
-    public TokenType tokenType = TokenType.BEARER;
+    private TokenType tokenType = TokenType.BEARER;
 
     private User user;
 
-    public boolean revoked;
+    private boolean revoked;
 
-    public boolean expired;
+    private boolean expired;
 }

@@ -99,7 +99,7 @@ public class TokenService {
                     .build()
                     .verify(token);
 
-            Optional<Token> optionalToken = tokenRepository.findByToken(token);
+            Optional<Token> optionalToken = tokenRepository.findByTokenValue(token);
             if (optionalToken.isEmpty()) {
                 log.warn("[TOKEN_NOT_FOUND] Token not found in the database: {}", token);
                 return null;

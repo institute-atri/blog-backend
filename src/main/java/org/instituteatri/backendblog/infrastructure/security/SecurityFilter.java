@@ -114,7 +114,7 @@ public class SecurityFilter extends OncePerRequestFilter {
     }
 
     private boolean isTokenValid(String token) {
-        return tokenRepository.findByToken(token)
+        return tokenRepository.findByTokenValue(token)
                 .map(t -> !t.isExpired() && !t.isRevoked())
                 .orElse(false);
     }

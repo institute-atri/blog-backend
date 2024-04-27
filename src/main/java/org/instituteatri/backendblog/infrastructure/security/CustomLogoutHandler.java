@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.instituteatri.backendblog.domain.token.Token;
+import org.instituteatri.backendblog.infrastructure.exceptions.TokenGenerationException;
 import org.instituteatri.backendblog.repository.TokenRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -51,13 +52,13 @@ public class CustomLogoutHandler implements LogoutHandler {
                 sendUnauthorizedResponse(response);
             } catch (IOException e) {
                 log.error("[LOGOUT_ERROR] Error sending unauthorized response", e);
-                throw new RuntimeException(e);
+                throw new TokenGenerationException("Error sending unauthorized response", e);
             }
         }
     }
 
     private Token findTokenByValue(String tokenValue) {
-        Token token = tokenRepository.findByToken(tokenValue).orElse(null);
+        Token token = tokenRepository.findByTokenValue(tokenValue).orElse(null);
         if (token == null) {
             log.warn("[TOKEN_EXPIRED] Token not found in repository during logout for value: {}", tokenValue);
         }
