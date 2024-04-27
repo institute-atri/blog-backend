@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: backend-blog
+  profiles:
+    active:
+      - dev
