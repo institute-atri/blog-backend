@@ -31,7 +31,7 @@ public class AccountTokenComponent {
         user.getTokens().add(refreshTokenToken);
         userRepository.save(user);
 
-        return new ResponseDTO(accessTokenToken.getToken(), refreshTokenToken.getToken());
+        return new ResponseDTO(accessTokenToken.getTokenValue(), refreshTokenToken.getTokenValue());
     }
 
     private void clearTokens(String userId) {
@@ -44,7 +44,7 @@ public class AccountTokenComponent {
     private Token saveUserToken(User user, String jwtToken) {
         var token = Token.builder()
                 .user(user)
-                .token(jwtToken)
+                .tokenValue(jwtToken)
                 .tokenType(TokenType.BEARER)
                 .expired(false)
                 .revoked(false)
