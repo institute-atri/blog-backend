@@ -110,11 +110,6 @@ public class AccountService implements UserDetailsService {
             String userEmail = tokenService.validateToken(refreshTokenDTO.refreshToken());
             UserDetails userDetails = loadUserByUsername(userEmail);
 
-            if (userDetails == null) {
-                log.warn("User not found for token: {}", refreshTokenDTO.refreshToken());
-                throw new UsernameNotFoundException("User not found.");
-            }
-
             var user = (User) userDetails;
             accountTokenComponent.revokeAllUserTokens(user);
 
