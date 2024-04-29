@@ -1,4 +1,4 @@
-FROM openjdk:21-slim
+FROM openjdk:23-slim
 
 COPY target/backend-blog-0.0.1-SNAPSHOT.jar /app/backend-blog.jar
 
