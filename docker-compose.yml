@@ -1,16 +1,22 @@
+# FILEPATH: /Users/blackcrw/Desktop/blog-backend/docker-compose.yml
+
+# Docker Compose file for the blog backend services
+
 services:
+  # Configuration for the Atri Blog API service
   atri-blog-api:
     image: atri-blog-backend-api
     build:
       context: .
       dockerfile: Dockerfile
     ports:
-      - '8080:8080'      
+      - '8080:8080'
     depends_on:
       - atri-mongo-database
     networks:
       - atri-blog-network
 
+  # Configuration for the Atri MongoDB database service
   atri-mongo-database:
     image: mongo
     ports:
@@ -19,5 +25,6 @@ services:
       - atri-blog-network
 
 networks:
+  # Configuration for the Atri Blog network
   atri-blog-network:
     driver: bridge
