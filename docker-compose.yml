@@ -1,22 +1,23 @@
 services:
-  blog-backend:
+  atri-blog-api:
+    image: atri-blog-backend-api
     build:
       context: .
       dockerfile: Dockerfile
     ports:
       - '8080:8080'      
     depends_on:
-      - mongo-db
+      - atri-mongo-database
     networks:
-      - blog-network
+      - atri-blog-network
 
-  mongo-db:
+  atri-mongo-database:
     image: mongo
     ports:
       - '27017:27017'
     networks:
-      - blog-network
+      - atri-blog-network
 
 networks:
-  blog-network:
+  atri-blog-network:
     driver: bridge
