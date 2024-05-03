@@ -1,7 +1,4 @@
-# FILEPATH: /Users/blackcrw/Desktop/blog-backend/docker-compose.yml
-
 # Docker Compose file for the blog backend services
-
 services:
   # Configuration for the Atri Blog API service
   atri-blog-api:
