@@ -1,4 +1,4 @@
-package org.instituteatri.backendblog.controllers;
+package org.instituteatri.backendblog.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -10,10 +10,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.instituteatri.backendblog.dtos.AuthenticationDTO;
-import org.instituteatri.backendblog.dtos.RefreshTokenDTO;
-import org.instituteatri.backendblog.dtos.RegisterDTO;
-import org.instituteatri.backendblog.dtos.ResponseDTO;
+import org.instituteatri.backendblog.dto.response.LoginResponseDTO;
+import org.instituteatri.backendblog.dto.request.RefreshTokenRequestDTO;
+import org.instituteatri.backendblog.dto.request.RegisterRequestDTO;
+import org.instituteatri.backendblog.dto.response.TokenResponseDTO;
 import org.instituteatri.backendblog.service.AccountService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -60,7 +60,7 @@ public class AccountController {
                             ))),
     })
     @PostMapping("/login")
-    public ResponseEntity<ResponseDTO> login(@RequestBody AuthenticationDTO authDto) {
+    public ResponseEntity<TokenResponseDTO> login(@RequestBody LoginResponseDTO authDto) {
         return accountService.processLogin(authDto, authenticationManager);
     }
 
@@ -107,8 +107,8 @@ public class AccountController {
                             )))
     })
     @PostMapping("/register")
-    public ResponseEntity<ResponseDTO> register(@RequestBody @Valid RegisterDTO registerDTO) {
-        return accountService.processRegister(registerDTO);
+    public ResponseEntity<TokenResponseDTO> register(@RequestBody @Valid RegisterRequestDTO registerRequestDTO) {
+        return accountService.processRegister(registerRequestDTO);
     }
 
     @Operation(
@@ -137,7 +137,7 @@ public class AccountController {
             }
     )
     @PostMapping("/refresh-token")
-    public ResponseEntity<ResponseDTO> refreshToken(@RequestBody RefreshTokenDTO tokenDTO) {
+    public ResponseEntity<TokenResponseDTO> refreshToken(@RequestBody RefreshTokenRequestDTO tokenDTO) {
         return accountService.processRefreshToken(tokenDTO);
     }
 }

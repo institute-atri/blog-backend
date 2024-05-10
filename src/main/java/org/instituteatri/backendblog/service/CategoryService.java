@@ -3,8 +3,8 @@ package org.instituteatri.backendblog.service;
 import lombok.RequiredArgsConstructor;
 import org.instituteatri.backendblog.domain.entities.Category;
 import org.instituteatri.backendblog.domain.entities.Post;
-import org.instituteatri.backendblog.dtos.CategoryDTO;
-import org.instituteatri.backendblog.dtos.PostDTO;
+import org.instituteatri.backendblog.dto.request.CategoryRequestDTO;
+import org.instituteatri.backendblog.dto.request.PostRequestDTO;
 import org.instituteatri.backendblog.infrastructure.exceptions.CategoryNotFoundException;
 import org.instituteatri.backendblog.mappings.CategoryMapper;
 import org.instituteatri.backendblog.repository.CategoryRepository;
@@ -26,7 +26,7 @@ public class CategoryService {
     private final CategoryMapper categoryMapper;
     private final PostRepository postRepository;
 
-    public ResponseEntity<List<CategoryDTO>> processFindAllCategories() {
+    public ResponseEntity<List<CategoryRequestDTO>> processFindAllCategories() {
         List<Category> categories = categoryRepository.findAll();
 
         return ResponseEntity.ok(categories.stream()
@@ -34,27 +34,27 @@ public class CategoryService {
                 .toList());
     }
 
-    public CategoryDTO findById(String id) {
+    public CategoryRequestDTO findById(String id) {
         Optional<Category> category = categoryRepository.findById(id);
 
         return category.map(categoryMapper::toCategoryDto).orElseThrow(() -> new CategoryNotFoundException(id));
     }
 
-    public List<PostDTO> findPostsByCategoryId(String categoryId) {
-        CategoryDTO categoryDTO = findById(categoryId);
-        return categoryDTO.postDTOS();
+    public List<PostRequestDTO> findPostsByCategoryId(String categoryId) {
+        CategoryRequestDTO categoryRequestDTO = findById(categoryId);
+        return categoryRequestDTO.postRequestDTOS();
     }
 
-    public ResponseEntity<CategoryDTO> processCreateCategory(CategoryDTO categoryDTO) {
-        Category category = new Category(categoryDTO.name(), categoryDTO.slug());
+    public ResponseEntity<CategoryRequestDTO> processCreateCategory(CategoryRequestDTO categoryRequestDTO) {
+        Category category = new Category(categoryRequestDTO.name(), categoryRequestDTO.slug());
 
         category = categoryRepository.save(category);
 
-        CategoryDTO createdCategoryDTO = categoryMapper.toCategoryDto(category);
+        CategoryRequestDTO createdCategoryRequestDTO = categoryMapper.toCategoryDto(category);
 
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(category.getId()).toUri();
 
-        return ResponseEntity.created(uri).body(createdCategoryDTO);
+        return ResponseEntity.created(uri).body(createdCategoryRequestDTO);
     }
 
     public ResponseEntity<Void> processDeleteCategory(String id) {
@@ -71,19 +71,19 @@ public class CategoryService {
         return ResponseEntity.noContent().build();
     }
 
-    public ResponseEntity<Void> processUpdateCategory(String id, CategoryDTO updatedCategoryDTO) {
+    public ResponseEntity<Void> processUpdateCategory(String id, CategoryRequestDTO updatedCategoryRequestDTO) {
         Category existingCategory = categoryRepository.findById(id).orElseThrow(() -> new CategoryNotFoundException(id));
 
-        updateCategoryProperties(existingCategory, updatedCategoryDTO);
+        updateCategoryProperties(existingCategory, updatedCategoryRequestDTO);
 
         categoryRepository.save(existingCategory);
 
         return ResponseEntity.noContent().build();
     }
 
-    private void updateCategoryProperties(Category existingCategory, CategoryDTO updatedCategoryDTO) {
-        updateField(existingCategory::setName, existingCategory.getName(), updatedCategoryDTO.name());
-        updateField(existingCategory::setSlug, existingCategory.getSlug(), updatedCategoryDTO.slug());
+    private void updateCategoryProperties(Category existingCategory, CategoryRequestDTO updatedCategoryRequestDTO) {
+        updateField(existingCategory::setName, existingCategory.getName(), updatedCategoryRequestDTO.name());
+        updateField(existingCategory::setSlug, existingCategory.getSlug(), updatedCategoryRequestDTO.slug());
     }
 
     private <T> void updateField(Consumer<T> setter, T currentValue, T newValue) {

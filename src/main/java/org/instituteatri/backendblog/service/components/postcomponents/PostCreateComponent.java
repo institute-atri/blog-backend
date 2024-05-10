@@ -5,8 +5,8 @@ import org.instituteatri.backendblog.domain.entities.Category;
 import org.instituteatri.backendblog.domain.entities.Post;
 import org.instituteatri.backendblog.domain.entities.Tag;
 import org.instituteatri.backendblog.domain.entities.User;
-import org.instituteatri.backendblog.dtos.AuthorDTO;
-import org.instituteatri.backendblog.dtos.PostDTO;
+import org.instituteatri.backendblog.dto.response.AuthorResponseDTO;
+import org.instituteatri.backendblog.dto.request.PostRequestDTO;
 import org.instituteatri.backendblog.infrastructure.exceptions.CategoryNotFoundException;
 import org.instituteatri.backendblog.infrastructure.exceptions.TagNotFoundException;
 import org.instituteatri.backendblog.mappings.PostMapper;
@@ -29,27 +29,27 @@ public class PostCreateComponent {
     private final PostMapper postMapper;
     private final PostLoadEntitiesComponent postLoadEntitiesComponent;
 
-    public PostDTO createNewPostDTOComponent(PostDTO postDTO, User currentUser) {
+    public PostRequestDTO createNewPostDTOComponent(PostRequestDTO postRequestDTO, User currentUser) {
         Post post = new Post();
-        post.setTitle(postDTO.title());
-        post.setSummary(postDTO.summary());
-        post.setBody(postDTO.body());
-        post.setSlug(postDTO.slug());
+        post.setTitle(postRequestDTO.title());
+        post.setSummary(postRequestDTO.summary());
+        post.setBody(postRequestDTO.body());
+        post.setSlug(postRequestDTO.slug());
 
-        postMapper.createPostFromDto(postDTO, post);
+        postMapper.createPostFromDto(postRequestDTO, post);
 
-        post.setAuthorDTO(new AuthorDTO(currentUser.getName(), currentUser.getLastName()));
+        post.setAuthorResponseDTO(new AuthorResponseDTO(currentUser.getName(), currentUser.getLastName()));
 
         post.setUser(currentUser);
 
-        List<Category> categories = postLoadEntitiesComponent.loadCategoriesComponent(postDTO.categories());
-        List<Tag> tags = postLoadEntitiesComponent.loadTagsComponent(postDTO.tags());
+        List<Category> categories = postLoadEntitiesComponent.loadCategoriesComponent(postRequestDTO.categories());
+        List<Tag> tags = postLoadEntitiesComponent.loadTagsComponent(postRequestDTO.tags());
 
         post.setCategories(categories);
         post.setTags(tags);
 
         Post createdPost = postRepository.save(post);
-        PostDTO createdPostDTO = postMapper.toPostDto(createdPost);
+        PostRequestDTO createdPostRequestDTO = postMapper.toPostDto(createdPost);
 
         categories.forEach(category -> incrementCategoryPostCountComponent(category.getId(), createdPost));
         tags.forEach(tag -> incrementTagPostCountComponent(tag.getId(), createdPost));
@@ -57,7 +57,7 @@ public class PostCreateComponent {
         currentUser.getPosts().add(createdPost);
         userRepository.save(currentUser);
 
-        return createdPostDTO;
+        return createdPostRequestDTO;
     }
 
     private void incrementCategoryPostCountComponent(String categoryId, Post post) {

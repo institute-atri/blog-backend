@@ -1,4 +1,4 @@
-package org.instituteatri.backendblog.controllers;
+package org.instituteatri.backendblog.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -8,8 +8,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.instituteatri.backendblog.dtos.CategoryDTO;
-import org.instituteatri.backendblog.dtos.PostDTO;
+import org.instituteatri.backendblog.dto.request.CategoryRequestDTO;
+import org.instituteatri.backendblog.dto.request.PostRequestDTO;
 import org.instituteatri.backendblog.service.CategoryService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -88,9 +88,9 @@ public class CategoryController {
     })
     @GetMapping("/posts/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<List<PostDTO>> getPostsByCategoryId(@PathVariable String id) {
-        List<PostDTO> postDTOS = categoryService.findPostsByCategoryId(id);
-        return ResponseEntity.ok(postDTOS);
+    public ResponseEntity<List<PostRequestDTO>> getPostsByCategoryId(@PathVariable String id) {
+        List<PostRequestDTO> postRequestDTOS = categoryService.findPostsByCategoryId(id);
+        return ResponseEntity.ok(postRequestDTOS);
     }
 
 
@@ -111,7 +111,7 @@ public class CategoryController {
                                             "}]"))),
     })
     @GetMapping()
-    public ResponseEntity<List<CategoryDTO>> findAllCategories() {
+    public ResponseEntity<List<CategoryRequestDTO>> findAllCategories() {
         return categoryService.processFindAllCategories();
     }
 
@@ -141,7 +141,7 @@ public class CategoryController {
                                             "}")))
     })
     @GetMapping("/find/{id}")
-    public ResponseEntity<CategoryDTO> findCategoryById(@PathVariable String id) {
+    public ResponseEntity<CategoryRequestDTO> findCategoryById(@PathVariable String id) {
         return ResponseEntity.ok(categoryService.findById(id));
     }
 
@@ -187,8 +187,8 @@ public class CategoryController {
                             )))
     })
     @PostMapping("/create")
-    public ResponseEntity<CategoryDTO> createCategory(@RequestBody @Valid CategoryDTO categoryDTO) {
-        return categoryService.processCreateCategory(categoryDTO);
+    public ResponseEntity<CategoryRequestDTO> createCategory(@RequestBody @Valid CategoryRequestDTO categoryRequestDTO) {
+        return categoryService.processCreateCategory(categoryRequestDTO);
     }
 
 
@@ -234,8 +234,8 @@ public class CategoryController {
     @PutMapping("update/{id}")
     public ResponseEntity<Void> updateCategory(
             @PathVariable String id,
-            @RequestBody @Valid CategoryDTO categoryDTO) {
-        return categoryService.processUpdateCategory(id, categoryDTO);
+            @RequestBody @Valid CategoryRequestDTO categoryRequestDTO) {
+        return categoryService.processUpdateCategory(id, categoryRequestDTO);
     }
 
 

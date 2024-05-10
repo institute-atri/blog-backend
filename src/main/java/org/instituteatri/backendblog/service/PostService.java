@@ -5,7 +5,7 @@ import org.instituteatri.backendblog.domain.entities.Category;
 import org.instituteatri.backendblog.domain.entities.Post;
 import org.instituteatri.backendblog.domain.entities.Tag;
 import org.instituteatri.backendblog.domain.entities.User;
-import org.instituteatri.backendblog.dtos.PostDTO;
+import org.instituteatri.backendblog.dto.request.PostRequestDTO;
 import org.instituteatri.backendblog.infrastructure.exceptions.NotAuthenticatedException;
 import org.instituteatri.backendblog.infrastructure.exceptions.PostNotFoundException;
 import org.instituteatri.backendblog.mappings.PostMapper;
@@ -41,7 +41,7 @@ public class PostService {
     private final PostDeleteComponent postDeleteComponent;
 
 
-    public ResponseEntity<List<PostDTO>> processFindAllPosts() {
+    public ResponseEntity<List<PostRequestDTO>> processFindAllPosts() {
         List<Tag> updatedTags = tagRepository.findAll();
         List<Category> updatedCategories = categoryRepository.findAll();
         List<User> updatedUsers = userRepository.findAll();
@@ -67,17 +67,17 @@ public class PostService {
                 .toList());
     }
 
-    public PostDTO processFindById(String id) {
+    public PostRequestDTO processFindById(String id) {
         Optional<Post> post = postRepository.findById(id);
 
         return post.map(postMapper::toPostDto).orElseThrow(() -> new PostNotFoundException(id));
     }
 
-    public ResponseEntity<PostDTO> processCreatePost(PostDTO postDTO, Authentication authentication) {
+    public ResponseEntity<PostRequestDTO> processCreatePost(PostRequestDTO postRequestDTO, Authentication authentication) {
         User currentUser = getCurrentUser(authentication);
         validateCurrentUser(currentUser);
 
-        PostDTO createdPost = postCreateComponent.createNewPostDTOComponent(postDTO, currentUser);
+        PostRequestDTO createdPost = postCreateComponent.createNewPostDTOComponent(postRequestDTO, currentUser);
 
         URI uri = ServletUriComponentsBuilder
                 .fromCurrentRequest()
@@ -88,14 +88,14 @@ public class PostService {
         return ResponseEntity.created(uri).body(createdPost);
     }
 
-    public ResponseEntity<Void> processUpdatePost(String id, PostDTO updatedPostDto, User currentUser) {
+    public ResponseEntity<Void> processUpdatePost(String id, PostRequestDTO updatedPostRequestDto, User currentUser) {
         validateCurrentUser(currentUser);
 
         Post existingPost = postUpdateComponent.findPostByIdComponent(id);
 
         postUpdateComponent.authorizePostUpdateComponent(existingPost, currentUser);
 
-        postUpdateComponent.updatePostPropertiesComponent(existingPost, updatedPostDto);
+        postUpdateComponent.updatePostPropertiesComponent(existingPost, updatedPostRequestDto);
 
         postRepository.save(existingPost);
 
