@@ -1,7 +1,7 @@
 package org.instituteatri.backendblog.mappings.implconfigs;
 
 import org.instituteatri.backendblog.domain.entities.Post;
-import org.instituteatri.backendblog.dtos.PostDTO;
+import org.instituteatri.backendblog.dto.request.PostRequestDTO;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -10,11 +10,11 @@ import java.util.Objects;
 @Component
 public class MapPostsImplToDTO {
 
-    public List<PostDTO> mapPostsToDTO(List<Post> posts) {
+    public List<PostRequestDTO> mapPostsToDTO(List<Post> posts) {
         return posts != null
                 ? posts.stream()
                 .filter(Objects::nonNull)
-                .map(post -> new PostDTO(
+                .map(post -> new PostRequestDTO(
                         post.getId(),
                         post.getTitle(),
                         post.getSummary(),
@@ -22,7 +22,7 @@ public class MapPostsImplToDTO {
                         post.getSlug(),
                         post.getCreatedAt(),
                         post.getUpdatedAt(),
-                        post.getAuthorDTO(),
+                        post.getAuthorResponseDTO(),
                         post.getCategories(),
                         post.getTags(),
                         post.getComments()

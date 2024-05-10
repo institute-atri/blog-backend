@@ -2,8 +2,8 @@ package org.instituteatri.backendblog.mappings.implconfigs;
 
 import lombok.RequiredArgsConstructor;
 import org.instituteatri.backendblog.domain.entities.Category;
-import org.instituteatri.backendblog.dtos.CategoryDTO;
-import org.instituteatri.backendblog.dtos.PostDTO;
+import org.instituteatri.backendblog.dto.request.CategoryRequestDTO;
+import org.instituteatri.backendblog.dto.request.PostRequestDTO;
 import org.instituteatri.backendblog.mappings.CategoryMapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.MapperConfig;
@@ -22,18 +22,18 @@ public class CategoryMapperImpl implements CategoryMapper {
 
 
     @Override
-    public CategoryDTO toCategoryDto(Category category) {
+    public CategoryRequestDTO toCategoryDto(Category category) {
         if (category == null) {
             return null;
         }
 
-        List<PostDTO> postDTOs = mapPostsImplToDTO.mapPostsToDTO(category.getPosts());
+        List<PostRequestDTO> postRequestDTOS = mapPostsImplToDTO.mapPostsToDTO(category.getPosts());
 
-        return new CategoryDTO(
+        return new CategoryRequestDTO(
                 category.getId(),
                 category.getName(),
                 category.getSlug(),
-                postDTOs
+                postRequestDTOS
         );
     }
 }
