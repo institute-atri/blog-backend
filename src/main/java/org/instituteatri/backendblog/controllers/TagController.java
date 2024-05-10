@@ -1,4 +1,4 @@
-package org.instituteatri.backendblog.controller;
+package org.instituteatri.backendblog.controllers;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -7,8 +7,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.instituteatri.backendblog.dto.request.PostRequestDTO;
-import org.instituteatri.backendblog.dto.request.TagRequestDTO;
+import org.instituteatri.backendblog.dtos.PostDTO;
+import org.instituteatri.backendblog.dtos.TagDTO;
 import org.instituteatri.backendblog.service.TagService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -85,9 +85,9 @@ public class TagController {
 
     })
     @GetMapping("/posts/{id}")
-    public ResponseEntity<List<PostRequestDTO>> getPostsByCategoryId(@PathVariable String id) {
-        List<PostRequestDTO> postRequestDTOS = tagService.findPostsByTagId(id);
-        return ResponseEntity.ok(postRequestDTOS);
+    public ResponseEntity<List<PostDTO>> getPostsByCategoryId(@PathVariable String id) {
+        List<PostDTO> postDTOS = tagService.findPostsByTagId(id);
+        return ResponseEntity.ok(postDTOS);
     }
 
 
@@ -108,7 +108,7 @@ public class TagController {
                                             "}]"))),
     })
     @GetMapping()
-    public ResponseEntity<List<TagRequestDTO>> findAllTags() {
+    public ResponseEntity<List<TagDTO>> findAllTags() {
         return tagService.processFindAllTags();
     }
 
@@ -138,7 +138,7 @@ public class TagController {
                                             "}")))
     })
     @GetMapping("/find/{id}")
-    public ResponseEntity<TagRequestDTO> findByIdTag(@PathVariable String id) {
+    public ResponseEntity<TagDTO> findByIdTag(@PathVariable String id) {
         return ResponseEntity.ok(tagService.findById(id));
     }
 
@@ -184,8 +184,8 @@ public class TagController {
                             )))
     })
     @PostMapping("/create")
-    public ResponseEntity<TagRequestDTO> createTag(@RequestBody @Valid TagRequestDTO tagRequestDTO) {
-        return tagService.processCreateTag(tagRequestDTO);
+    public ResponseEntity<TagDTO> createTag(@RequestBody @Valid TagDTO tagDTO) {
+        return tagService.processCreateTag(tagDTO);
     }
 
 
@@ -231,8 +231,8 @@ public class TagController {
     @PutMapping("/update/{id}")
     public ResponseEntity<Void> updateTag(
             @PathVariable String id,
-            @RequestBody @Valid TagRequestDTO tagRequestDTO) {
-        return tagService.processUpdateTag(id, tagRequestDTO);
+            @RequestBody @Valid TagDTO tagDTO) {
+        return tagService.processUpdateTag(id, tagDTO);
     }
 
 

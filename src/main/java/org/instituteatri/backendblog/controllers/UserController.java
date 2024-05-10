@@ -1,4 +1,4 @@
-package org.instituteatri.backendblog.controller;
+package org.instituteatri.backendblog.controllers;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -8,10 +8,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.instituteatri.backendblog.dto.request.ChangePasswordRequestDTO;
-import org.instituteatri.backendblog.dto.request.PostRequestDTO;
-import org.instituteatri.backendblog.dto.request.RegisterRequestDTO;
-import org.instituteatri.backendblog.dto.response.UserResponseDTO;
+import org.instituteatri.backendblog.dtos.ChangePasswordDTO;
+import org.instituteatri.backendblog.dtos.PostDTO;
+import org.instituteatri.backendblog.dtos.RegisterDTO;
+import org.instituteatri.backendblog.dtos.UserDTO;
 import org.instituteatri.backendblog.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -53,7 +53,7 @@ public class UserController {
                                     )))
             })
     @GetMapping()
-    public ResponseEntity<List<UserResponseDTO>> findAllUsers() {
+    public ResponseEntity<List<UserDTO>> findAllUsers() {
         return userService.processFindAllUsers();
     }
 
@@ -91,8 +91,8 @@ public class UserController {
                                     )))
             })
     @GetMapping("/find/{id}")
-    public ResponseEntity<UserResponseDTO> findByIdUser(@PathVariable String id) {
-        UserResponseDTO user = userService.findById(id);
+    public ResponseEntity<UserDTO> findByIdUser(@PathVariable String id) {
+        UserDTO user = userService.findById(id);
         return ResponseEntity.ok().body(user);
     }
 
@@ -153,10 +153,10 @@ public class UserController {
     @PutMapping("/update/{id}")
     public ResponseEntity<Void> updateUser(
             @PathVariable String id,
-            @RequestBody @Valid RegisterRequestDTO registerRequestDTO,
+            @RequestBody @Valid RegisterDTO registerDTO,
             Authentication authentication
     ) {
-        return userService.processUpdateUser(id, registerRequestDTO, authentication);
+        return userService.processUpdateUser(id, registerDTO, authentication);
     }
 
     @Operation(
@@ -245,9 +245,9 @@ public class UserController {
 
     })
     @GetMapping("/posts/{id}")
-    public ResponseEntity<List<PostRequestDTO>> findAllPostsByUserId(@PathVariable String id) {
-        List<PostRequestDTO> postRequestDTOS = userService.findPostsByUserId(id);
-        return ResponseEntity.ok(postRequestDTOS);
+    public ResponseEntity<List<PostDTO>> findAllPostsByUserId(@PathVariable String id) {
+        List<PostDTO> postDTOs = userService.findPostsByUserId(id);
+        return ResponseEntity.ok(postDTOs);
     }
 
 
@@ -285,8 +285,8 @@ public class UserController {
     })
     @PostMapping("/change-password")
     public ResponseEntity<Void> processChangePassword(
-            @RequestBody @Valid ChangePasswordRequestDTO changePasswordRequestDTO,
+            @RequestBody @Valid ChangePasswordDTO changePasswordDTO,
             Authentication authentication) {
-        return userService.processChangePassword(changePasswordRequestDTO, authentication);
+        return userService.processChangePassword(changePasswordDTO, authentication);
     }
 }

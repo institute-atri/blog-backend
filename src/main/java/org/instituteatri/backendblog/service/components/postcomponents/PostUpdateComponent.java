@@ -5,7 +5,7 @@ import org.instituteatri.backendblog.domain.entities.Category;
 import org.instituteatri.backendblog.domain.entities.Post;
 import org.instituteatri.backendblog.domain.entities.Tag;
 import org.instituteatri.backendblog.domain.entities.User;
-import org.instituteatri.backendblog.dto.request.PostRequestDTO;
+import org.instituteatri.backendblog.dtos.PostDTO;
 import org.instituteatri.backendblog.infrastructure.exceptions.PostNotFoundException;
 import org.instituteatri.backendblog.infrastructure.exceptions.UserAccessDeniedException;
 import org.instituteatri.backendblog.repository.PostRepository;
@@ -33,16 +33,16 @@ public class PostUpdateComponent {
         }
     }
 
-    public void updatePostPropertiesComponent(Post existingPost, PostRequestDTO updatedPostRequestDto) {
-        updateFieldComponent(existingPost::setTitle, existingPost.getTitle(), updatedPostRequestDto.title());
-        updateFieldComponent(existingPost::setSummary, existingPost.getSummary(), updatedPostRequestDto.summary());
-        updateFieldComponent(existingPost::setBody, existingPost.getBody(), updatedPostRequestDto.body());
-        updateFieldComponent(existingPost::setSlug, existingPost.getSlug(), updatedPostRequestDto.slug());
+    public void updatePostPropertiesComponent(Post existingPost, PostDTO updatedPostDto) {
+        updateFieldComponent(existingPost::setTitle, existingPost.getTitle(), updatedPostDto.title());
+        updateFieldComponent(existingPost::setSummary, existingPost.getSummary(), updatedPostDto.summary());
+        updateFieldComponent(existingPost::setBody, existingPost.getBody(), updatedPostDto.body());
+        updateFieldComponent(existingPost::setSlug, existingPost.getSlug(), updatedPostDto.slug());
 
         existingPost.setUpdatedAt(LocalDateTime.now());
 
-        updateCategoriesComponent(existingPost, updatedPostRequestDto.categories());
-        updateTagsComponent(existingPost, updatedPostRequestDto.tags());
+        updateCategoriesComponent(existingPost, updatedPostDto.categories());
+        updateTagsComponent(existingPost, updatedPostDto.tags());
     }
 
     private <T> void updateFieldComponent(Consumer<T> setter, T currentValue, T newValue) {

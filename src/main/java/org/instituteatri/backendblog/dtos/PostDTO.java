@@ -1,16 +1,15 @@
-package org.instituteatri.backendblog.dto.request;
+package org.instituteatri.backendblog.dtos;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import org.instituteatri.backendblog.domain.entities.Category;
 import org.instituteatri.backendblog.domain.entities.Comment;
 import org.instituteatri.backendblog.domain.entities.Tag;
-import org.instituteatri.backendblog.dto.response.AuthorResponseDTO;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-public record PostRequestDTO(
+public record PostDTO(
 
         String id,
         @NotBlank(message = "Title is required.")
@@ -30,7 +29,7 @@ public record PostRequestDTO(
         String slug,
         LocalDateTime createdAt,
         LocalDateTime updatedAt,
-        AuthorResponseDTO authorResponseDTO,
+        AuthorDTO authorDTO,
         List<Category> categories,
         List<Tag> tags,
         List<Comment> comments

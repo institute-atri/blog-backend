@@ -3,10 +3,10 @@ package org.instituteatri.backendblog.service;
 import lombok.RequiredArgsConstructor;
 import org.instituteatri.backendblog.domain.entities.Post;
 import org.instituteatri.backendblog.domain.entities.User;
-import org.instituteatri.backendblog.dto.request.ChangePasswordRequestDTO;
-import org.instituteatri.backendblog.dto.request.PostRequestDTO;
-import org.instituteatri.backendblog.dto.request.RegisterRequestDTO;
-import org.instituteatri.backendblog.dto.response.UserResponseDTO;
+import org.instituteatri.backendblog.dtos.ChangePasswordDTO;
+import org.instituteatri.backendblog.dtos.PostDTO;
+import org.instituteatri.backendblog.dtos.RegisterDTO;
+import org.instituteatri.backendblog.dtos.UserDTO;
 import org.instituteatri.backendblog.infrastructure.exceptions.*;
 import org.instituteatri.backendblog.mappings.UserMapper;
 import org.instituteatri.backendblog.repository.PostRepository;
@@ -31,7 +31,7 @@ public class UserService {
     private final PostRepository postRepository;
 
 
-    public ResponseEntity<List<UserResponseDTO>> processFindAllUsers() {
+    public ResponseEntity<List<UserDTO>> processFindAllUsers() {
         List<User> users = userRepository.findAll();
 
         return ResponseEntity.ok(users.stream()
@@ -39,15 +39,15 @@ public class UserService {
                 .toList());
     }
 
-    public UserResponseDTO findById(String id) {
+    public UserDTO findById(String id) {
         Optional<User> user = userRepository.findById(id);
 
         return user.map(userMapper::toUserDto).orElseThrow(() -> new UserNotFoundException(id));
     }
 
-    public List<PostRequestDTO> findPostsByUserId(String userId) {
-        UserResponseDTO userResponseDTO = findById(userId);
-        return userResponseDTO.postRequestDTOS();
+    public List<PostDTO> findPostsByUserId(String userId) {
+        UserDTO userDTO = findById(userId);
+        return userDTO.postDTOS();
     }
 
     public ResponseEntity<Void> processDeleteUser(String id) {
@@ -63,7 +63,7 @@ public class UserService {
     }
 
     @Transactional
-    public ResponseEntity<Void> processUpdateUser(String id, RegisterRequestDTO user, Authentication authentication) {
+    public ResponseEntity<Void> processUpdateUser(String id, RegisterDTO user, Authentication authentication) {
         validateAuthentication(authentication);
 
         if (!user.password().equals(user.confirmPassword())) {
@@ -83,18 +83,18 @@ public class UserService {
 
 
     @Transactional
-    public ResponseEntity<Void> processChangePassword(ChangePasswordRequestDTO changePasswordRequestDTO, Authentication authentication) {
+    public ResponseEntity<Void> processChangePassword(ChangePasswordDTO changePasswordDTO, Authentication authentication) {
         validateAuthentication(authentication);
 
         User user = (User) authentication.getPrincipal();
         User existingUser = userRepository.findById(user.getId())
                 .orElseThrow(() -> new UserNotFoundException(user.getId()));
 
-        if (!passwordEncoder.matches(changePasswordRequestDTO.oldPassword(), existingUser.getPassword())) {
+        if (!passwordEncoder.matches(changePasswordDTO.oldPassword(), existingUser.getPassword())) {
             throw new InvalidOldPasswordException();
         }
 
-        existingUser.setPassword(passwordEncoder.encode(changePasswordRequestDTO.newPassword()));
+        existingUser.setPassword(passwordEncoder.encode(changePasswordDTO.newPassword()));
         saveUser(existingUser);
 
         return ResponseEntity.noContent().build();
@@ -106,7 +106,7 @@ public class UserService {
         }
     }
 
-    private void performUserUpdate(String userId, RegisterRequestDTO updatedUserDto) {
+    private void performUserUpdate(String userId, RegisterDTO updatedUserDto) {
         User existingUser = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException(userId));
 
@@ -117,7 +117,7 @@ public class UserService {
         saveUser(existingUser);
     }
 
-    private void updateUserProperties(User existingUser, RegisterRequestDTO updatedUserDto) {
+    private void updateUserProperties(User existingUser, RegisterDTO updatedUserDto) {
         updateField(existingUser::setName, existingUser.getName(), updatedUserDto.name());
         updateField(existingUser::setLastName, existingUser.getLastName(), updatedUserDto.lastName());
         updateField(existingUser::setPhoneNumber, existingUser.getPhoneNumber(), updatedUserDto.phoneNumber());
@@ -132,7 +132,7 @@ public class UserService {
         }
     }
 
-    private void validateEmailUpdate(User existingUser, RegisterRequestDTO updatedUserDto) {
+    private void validateEmailUpdate(User existingUser, RegisterDTO updatedUserDto) {
         String newEmail = updatedUserDto.email();
 
         if (!existingUser.getEmail().equals(newEmail) && checkIfEmailExists(newEmail, existingUser.getId())) {

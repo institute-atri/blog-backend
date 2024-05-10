@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.instituteatri.backendblog.dto.response.AuthorResponseDTO;
+import org.instituteatri.backendblog.dtos.AuthorDTO;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -40,7 +40,7 @@ public class Post implements Serializable {
     private List<Category> categories = new ArrayList<>();
     private List<Tag> tags = new ArrayList<>();
 
-    private transient AuthorResponseDTO authorResponseDTO;
+    private transient AuthorDTO authorDTO;
     private List<Comment> comments = new ArrayList<>();
 
     public Post(String title, String summary, String body, String slug, LocalDateTime createdAt, User user) {
@@ -50,6 +50,6 @@ public class Post implements Serializable {
         this.slug = slug;
         this.createdAt = createdAt;
         this.user = user;
-        this.authorResponseDTO = new AuthorResponseDTO(user.getName(), user.getLastName());
+        this.authorDTO = new AuthorDTO(user.getName(), user.getLastName());
     }
 }

@@ -4,7 +4,7 @@ import org.instituteatri.backendblog.domain.entities.Category;
 import org.instituteatri.backendblog.domain.entities.Post;
 import org.instituteatri.backendblog.domain.entities.Tag;
 import org.instituteatri.backendblog.domain.entities.User;
-import org.instituteatri.backendblog.dto.response.AuthorResponseDTO;
+import org.instituteatri.backendblog.dtos.AuthorDTO;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -37,7 +37,7 @@ public class PostComponentFindAllUsers {
                 .findFirst()
                 .orElse(post.getUser());
 
-        post.setAuthorResponseDTO(new AuthorResponseDTO(updatedUser.getName(), updatedUser.getLastName()));
+        post.setAuthorDTO(new AuthorDTO(updatedUser.getName(), updatedUser.getLastName()));
         post.setUser(updatedUser);
     }
 }

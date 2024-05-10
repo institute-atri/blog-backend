@@ -5,10 +5,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.instituteatri.backendblog.domain.entities.User;
 import org.instituteatri.backendblog.domain.entities.UserRole;
-import org.instituteatri.backendblog.dto.response.LoginResponseDTO;
-import org.instituteatri.backendblog.dto.request.RefreshTokenRequestDTO;
-import org.instituteatri.backendblog.dto.request.RegisterRequestDTO;
-import org.instituteatri.backendblog.dto.response.TokenResponseDTO;
+import org.instituteatri.backendblog.dtos.AuthenticationDTO;
+import org.instituteatri.backendblog.dtos.RefreshTokenDTO;
+import org.instituteatri.backendblog.dtos.RegisterDTO;
+import org.instituteatri.backendblog.dtos.ResponseDTO;
 import org.instituteatri.backendblog.infrastructure.exceptions.EmailAlreadyExistsException;
 import org.instituteatri.backendblog.infrastructure.exceptions.PasswordsNotMatchException;
 import org.instituteatri.backendblog.infrastructure.exceptions.TooManyRequestsException;
@@ -50,7 +50,7 @@ public class AccountService implements UserDetailsService {
         return userRepository.findByEmail(username);
     }
 
-    public ResponseEntity<TokenResponseDTO> processLogin(LoginResponseDTO authDto, AuthenticationManager authManager) {
+    public ResponseEntity<ResponseDTO> processLogin(AuthenticationDTO authDto, AuthenticationManager authManager) {
 
         String ipAddress = ipResolverService.getRealClientIP();
         log.debug("Processing login request from IP address: {}", ipAddress);
@@ -77,7 +77,7 @@ public class AccountService implements UserDetailsService {
         }
     }
 
-    public ResponseEntity<TokenResponseDTO> processRegister(RegisterRequestDTO registerRequestDTO) {
+    public ResponseEntity<ResponseDTO> processRegister(RegisterDTO registerDTO) {
 
         String ipAddress = ipResolverService.getRealClientIP();
         log.debug("Processing registration request from IP address: {}", ipAddress);
@@ -88,16 +88,16 @@ public class AccountService implements UserDetailsService {
             throw new TooManyRequestsException(ipAddress);
         }
 
-        if (isEmailExists(registerRequestDTO.email())) {
-            log.warn("Email already exists: {}", registerRequestDTO.email());
+        if (isEmailExists(registerDTO.email())) {
+            log.warn("Email already exists: {}", registerDTO.email());
             throw new EmailAlreadyExistsException();
         }
 
-        if (!registerRequestDTO.password().equals(registerRequestDTO.confirmPassword())) {
-            log.warn("Passwords do not match for email: {}", registerRequestDTO.email());
+        if (!registerDTO.password().equals(registerDTO.confirmPassword())) {
+            log.warn("Passwords do not match for email: {}", registerDTO.email());
             throw new PasswordsNotMatchException();
         }
-        User newUser = createUser(registerRequestDTO);
+        User newUser = createUser(registerDTO);
         User savedUser = userRepository.insert(newUser);
         URI uri = buildUserUri(savedUser);
 
@@ -105,9 +105,9 @@ public class AccountService implements UserDetailsService {
         return ResponseEntity.created(uri).body(accountTokenComponent.generateTokenResponse(savedUser));
     }
 
-    public ResponseEntity<TokenResponseDTO> processRefreshToken(RefreshTokenRequestDTO refreshTokenRequestDTO) {
+    public ResponseEntity<ResponseDTO> processRefreshToken(RefreshTokenDTO refreshTokenDTO) {
         try {
-            String userEmail = tokenService.validateToken(refreshTokenRequestDTO.refreshToken());
+            String userEmail = tokenService.validateToken(refreshTokenDTO.refreshToken());
             UserDetails userDetails = loadUserByUsername(userEmail);
 
             var user = (User) userDetails;
@@ -126,14 +126,14 @@ public class AccountService implements UserDetailsService {
         return loadUserByUsername(email) != null;
     }
 
-    private User createUser(RegisterRequestDTO registerRequestDTO) {
-        String encryptedPassword = new BCryptPasswordEncoder().encode(registerRequestDTO.password());
+    private User createUser(RegisterDTO registerDTO) {
+        String encryptedPassword = new BCryptPasswordEncoder().encode(registerDTO.password());
         return new User(
-                registerRequestDTO.name(),
-                registerRequestDTO.lastName(),
-                registerRequestDTO.phoneNumber(),
-                registerRequestDTO.bio(),
-                registerRequestDTO.email(),
+                registerDTO.name(),
+                registerDTO.lastName(),
+                registerDTO.phoneNumber(),
+                registerDTO.bio(),
+                registerDTO.email(),
                 encryptedPassword,
                 true,
                 UserRole.USER

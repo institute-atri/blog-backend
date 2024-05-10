@@ -1,9 +1,9 @@
 package org.instituteatri.backendblog.mappings.implconfigs;
 
 import org.instituteatri.backendblog.domain.entities.User;
-import org.instituteatri.backendblog.dto.request.PostRequestDTO;
-import org.instituteatri.backendblog.dto.request.RegisterRequestDTO;
-import org.instituteatri.backendblog.dto.response.UserResponseDTO;
+import org.instituteatri.backendblog.dtos.PostDTO;
+import org.instituteatri.backendblog.dtos.RegisterDTO;
+import org.instituteatri.backendblog.dtos.UserDTO;
 import org.instituteatri.backendblog.mappings.UserMapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.MapperConfig;
@@ -17,7 +17,7 @@ public class UserMapperImpl implements UserMapper {
 
 
     @Override
-    public User updateUserFromDto(RegisterRequestDTO dto, User existingUser) {
+    public User updateUserFromDto(RegisterDTO dto, User existingUser) {
         existingUser.setName(dto.name());
         existingUser.setLastName(dto.lastName());
         existingUser.setPhoneNumber(dto.phoneNumber());
@@ -29,14 +29,14 @@ public class UserMapperImpl implements UserMapper {
     }
 
     @Override
-    public UserResponseDTO toUserDto(User user) {
-        return new UserResponseDTO(
+    public UserDTO toUserDto(User user) {
+        return new UserDTO(
                 user.getId(),
                 user.getName(),
                 user.getLastName(),
                 user.getPhoneNumber(),
                 user.getBio(),
-                user.getPosts().stream().map(post -> new PostRequestDTO(
+                user.getPosts().stream().map(post -> new PostDTO(
                         post.getId(),
                         post.getTitle(),
                         post.getSummary(),
@@ -44,7 +44,7 @@ public class UserMapperImpl implements UserMapper {
                         post.getSlug(),
                         post.getCreatedAt(),
                         post.getUpdatedAt(),
-                        post.getAuthorResponseDTO(),
+                        post.getAuthorDTO(),
                         post.getCategories(),
                         post.getTags(),
                         post.getComments()
