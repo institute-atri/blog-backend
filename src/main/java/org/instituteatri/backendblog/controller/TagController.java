@@ -7,8 +7,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.instituteatri.backendblog.dto.request.PostRequestDTO;
 import org.instituteatri.backendblog.dto.request.TagRequestDTO;
+import org.instituteatri.backendblog.dto.response.PostResponseDTO;
+import org.instituteatri.backendblog.dto.response.TagResponseDTO;
 import org.instituteatri.backendblog.service.TagService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -85,9 +86,9 @@ public class TagController {
 
     })
     @GetMapping("/posts/{id}")
-    public ResponseEntity<List<PostRequestDTO>> getPostsByCategoryId(@PathVariable String id) {
-        List<PostRequestDTO> postRequestDTOS = tagService.findPostsByTagId(id);
-        return ResponseEntity.ok(postRequestDTOS);
+    public ResponseEntity<List<PostResponseDTO>> getPostsByCategoryId(@PathVariable String id) {
+        List<PostResponseDTO> postResponseDTOS = tagService.findPostsByTagId(id);
+        return ResponseEntity.ok(postResponseDTOS);
     }
 
 
@@ -108,7 +109,7 @@ public class TagController {
                                             "}]"))),
     })
     @GetMapping()
-    public ResponseEntity<List<TagRequestDTO>> findAllTags() {
+    public ResponseEntity<List<TagResponseDTO>> findAllTags() {
         return tagService.processFindAllTags();
     }
 
@@ -138,7 +139,7 @@ public class TagController {
                                             "}")))
     })
     @GetMapping("/find/{id}")
-    public ResponseEntity<TagRequestDTO> findByIdTag(@PathVariable String id) {
+    public ResponseEntity<TagResponseDTO> findByIdTag(@PathVariable String id) {
         return ResponseEntity.ok(tagService.findById(id));
     }
 
