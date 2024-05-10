@@ -9,7 +9,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.instituteatri.backendblog.domain.entities.User;
-import org.instituteatri.backendblog.dtos.PostDTO;
+import org.instituteatri.backendblog.dto.request.PostRequestDTO;
 import org.instituteatri.backendblog.service.PostService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -80,7 +80,7 @@ public class PostController {
 
     })
     @GetMapping()
-    public ResponseEntity<List<PostDTO>> findAllPosts() {
+    public ResponseEntity<List<PostRequestDTO>> findAllPosts() {
         return postService.processFindAllPosts();
     }
 
@@ -146,7 +146,7 @@ public class PostController {
 
     })
     @GetMapping("/find/{id}")
-    public ResponseEntity<PostDTO> findByIdPost(@PathVariable String id) {
+    public ResponseEntity<PostRequestDTO> findByIdPost(@PathVariable String id) {
         return ResponseEntity.ok(postService.processFindById(id));
     }
 
@@ -242,8 +242,8 @@ public class PostController {
 
     })
     @PostMapping("/create")
-    public ResponseEntity<PostDTO> createPost(@RequestBody @Valid PostDTO postDTO, Authentication authentication) {
-        return postService.processCreatePost(postDTO, authentication);
+    public ResponseEntity<PostRequestDTO> createPost(@RequestBody @Valid PostRequestDTO postRequestDTO, Authentication authentication) {
+        return postService.processCreatePost(postRequestDTO, authentication);
     }
 
 
@@ -317,10 +317,10 @@ public class PostController {
     @PutMapping("/update/{id}")
     public ResponseEntity<Void> updatePost(
             @PathVariable String id,
-            @RequestBody @Valid PostDTO postDTO,
+            @RequestBody @Valid PostRequestDTO postRequestDTO,
             @AuthenticationPrincipal User currentUser
     ) {
-        return postService.processUpdatePost(id, postDTO, currentUser);
+        return postService.processUpdatePost(id, postRequestDTO, currentUser);
     }
 
 
