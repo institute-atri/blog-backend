@@ -1,4 +1,4 @@
-package org.instituteatri.backendblog.dtos;
+package org.instituteatri.backendblog.dto.response;
 
-public record ResponseDTO(String token,String refreshToken) {
+public record TokenResponseDTO(String token, String refreshToken) {
 }

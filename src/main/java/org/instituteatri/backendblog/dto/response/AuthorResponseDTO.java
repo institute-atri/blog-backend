@@ -1,4 +1,4 @@
-package org.instituteatri.backendblog.dtos;
+package org.instituteatri.backendblog.dto.response;
 
-public record AuthorDTO(String name, String lastName) {
+public record AuthorResponseDTO(String name, String lastName) {
 }

@@ -1,4 +1,4 @@
-package org.instituteatri.backendblog.dtos;
+package org.instituteatri.backendblog.dto.response;
 
-public record AuthenticationDTO(String email, String password) {
+public record LoginResponseDTO(String email, String password) {
 }
