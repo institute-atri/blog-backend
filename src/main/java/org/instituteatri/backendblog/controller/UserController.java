@@ -9,8 +9,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.instituteatri.backendblog.dto.request.ChangePasswordRequestDTO;
-import org.instituteatri.backendblog.dto.request.PostRequestDTO;
-import org.instituteatri.backendblog.dto.request.RegisterRequestDTO;
+import org.instituteatri.backendblog.dto.request.UpdateUserRequestDTO;
+import org.instituteatri.backendblog.dto.response.PostResponseDTO;
+import org.instituteatri.backendblog.dto.response.TokenResponseDTO;
 import org.instituteatri.backendblog.dto.response.UserResponseDTO;
 import org.instituteatri.backendblog.service.UserService;
 import org.springframework.http.ResponseEntity;
@@ -151,12 +152,12 @@ public class UserController {
                             )))
     })
     @PutMapping("/update/{id}")
-    public ResponseEntity<Void> updateUser(
+    public ResponseEntity<TokenResponseDTO> updateUser(
             @PathVariable String id,
-            @RequestBody @Valid RegisterRequestDTO registerRequestDTO,
+            @RequestBody @Valid UpdateUserRequestDTO updateUserRequestDTO,
             Authentication authentication
     ) {
-        return userService.processUpdateUser(id, registerRequestDTO, authentication);
+        return userService.processUpdateUser(id, updateUserRequestDTO, authentication);
     }
 
     @Operation(
@@ -245,9 +246,9 @@ public class UserController {
 
     })
     @GetMapping("/posts/{id}")
-    public ResponseEntity<List<PostRequestDTO>> findAllPostsByUserId(@PathVariable String id) {
-        List<PostRequestDTO> postRequestDTOS = userService.findPostsByUserId(id);
-        return ResponseEntity.ok(postRequestDTOS);
+    public ResponseEntity<List<PostResponseDTO>> findAllPostsByUserId(@PathVariable String id) {
+        List<PostResponseDTO> postResponseDTOS = userService.findPostsByUserId(id);
+        return ResponseEntity.ok(postResponseDTOS);
     }
 
 
