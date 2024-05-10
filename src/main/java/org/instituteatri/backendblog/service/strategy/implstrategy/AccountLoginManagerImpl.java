@@ -1,12 +1,12 @@
-package org.instituteatri.backendblog.service.components.authcomponents;
+package org.instituteatri.backendblog.service.strategy.implstrategy;
 
 import lombok.RequiredArgsConstructor;
 import org.instituteatri.backendblog.domain.entities.User;
-import org.instituteatri.backendblog.dto.response.LoginResponseDTO;
+import org.instituteatri.backendblog.dto.request.LoginRequestDTO;
 import org.instituteatri.backendblog.dto.response.TokenResponseDTO;
-import org.instituteatri.backendblog.infrastructure.exceptions.AccountLockedException;
 import org.instituteatri.backendblog.infrastructure.exceptions.CustomAuthenticationException;
 import org.instituteatri.backendblog.repository.UserRepository;
+import org.instituteatri.backendblog.service.strategy.interfaces.AccountLoginManager;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.LockedException;
@@ -16,16 +16,19 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class AccountLoginComponent {
+public class AccountLoginManagerImpl implements AccountLoginManager {
 
     private final UserRepository userRepository;
 
-    public Authentication authenticateUserComponent(LoginResponseDTO authDto, AuthenticationManager authManager) {
+
+    @Override
+    public Authentication authenticateUser(LoginRequestDTO authDto, AuthenticationManager authManager) {
         var usernamePassword = new UsernamePasswordAuthenticationToken(authDto.email(), authDto.password());
         return authManager.authenticate(usernamePassword);
     }
 
-    public void handleSuccessfulLoginComponent(User user) {
+    @Override
+    public void handleSuccessfulLogin(User user) {
         if (!user.isActive()) {
             user.setFailedLoginAttempts(user.getFailedLoginAttempts() + 1);
             userRepository.save(user);
@@ -39,11 +42,8 @@ public class AccountLoginComponent {
         userRepository.save(user);
     }
 
-    public ResponseEntity<TokenResponseDTO> handleLockedAccountComponent() {
-        throw new AccountLockedException();
-    }
-
-    public ResponseEntity<TokenResponseDTO> handleBadCredentialsComponent(String email) {
+    @Override
+    public ResponseEntity<TokenResponseDTO> handleBadCredentials(String email) {
         var user = (User) userRepository.findByEmail(email);
         if (user != null) {
             user.setFailedLoginAttempts(user.getFailedLoginAttempts() + 1);
