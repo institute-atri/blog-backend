@@ -6,7 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.instituteatri.backendblog.dto.response.AuthorResponseDTO;
+import org.instituteatri.backendblog.dtos.AuthorDTO;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -26,11 +26,11 @@ public class Comment implements Serializable {
     @JsonIgnore
     private User user;
 
-    private transient AuthorResponseDTO authorResponseDTO;
+    private transient AuthorDTO authorDTO;
 
     public Comment(String text, LocalDateTime createdAt, User user) {
         this.text = text;
         this.createdAt = createdAt;
-        this.authorResponseDTO = new AuthorResponseDTO(user.getName(), user.getLastName());
+        this.authorDTO = new AuthorDTO(user.getName(), user.getLastName());
     }
 }

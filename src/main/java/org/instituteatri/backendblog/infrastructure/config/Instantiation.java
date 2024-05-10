@@ -1,4 +1,4 @@
-package org.instituteatri.backendblog.utils;
+package org.instituteatri.backendblog.infrastructure.config;
 
 import lombok.RequiredArgsConstructor;
 import org.instituteatri.backendblog.domain.entities.*;

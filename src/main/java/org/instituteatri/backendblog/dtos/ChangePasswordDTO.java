@@ -1,10 +1,10 @@
-package org.instituteatri.backendblog.dto.request;
+package org.instituteatri.backendblog.dtos;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
-public record ChangePasswordRequestDTO(
+public record ChangePasswordDTO(
         String oldPassword,
 
         @NotBlank(message = "Confirm password is required.")
