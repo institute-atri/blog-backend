@@ -10,7 +10,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.instituteatri.backendblog.dto.response.LoginResponseDTO;
+import org.instituteatri.backendblog.dto.request.LoginRequestDTO;
 import org.instituteatri.backendblog.dto.request.RefreshTokenRequestDTO;
 import org.instituteatri.backendblog.dto.request.RegisterRequestDTO;
 import org.instituteatri.backendblog.dto.response.TokenResponseDTO;
@@ -60,7 +60,7 @@ public class AccountController {
                             ))),
     })
     @PostMapping("/login")
-    public ResponseEntity<TokenResponseDTO> login(@RequestBody LoginResponseDTO authDto) {
+    public ResponseEntity<TokenResponseDTO> login(@RequestBody LoginRequestDTO authDto) {
         return accountService.processLogin(authDto, authenticationManager);
     }
 
