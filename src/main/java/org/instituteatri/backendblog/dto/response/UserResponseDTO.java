@@ -1,16 +1,16 @@
 package org.instituteatri.backendblog.dto.response;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.instituteatri.backendblog.dto.request.PostRequestDTO;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.util.List;
-
-public record UserResponseDTO(
-        String id,
-        String name,
-        String lastName,
-        String phoneNumber,
-        String bio,
-        @JsonIgnore
-        List<PostRequestDTO> postRequestDTOS) {
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class UserResponseDTO {
+    private String id;
+    private String name;
+    private String lastName;
+    private String phoneNumber;
+    private String bio;
 }
