@@ -93,12 +93,16 @@ public class SecurityFilter extends OncePerRequestFilter {
                 setAuthenticationInSecurityContext(userDetails);
                 log.info("[USER_AUTHENTICATED] User: {} successfully authenticated with token: {}.", userDetails.getUsername(), token);
             } else {
-                log.error("[TOKEN_FAILED] User-Agent: {}. IP Address: {}. Validation failed for token: {}", getUserAgent(), getIpAddress(), token);
+                getError(token);
             }
         } catch (TokenInvalidException e) {
             handleInvalidToken(response, e);
-            log.error("[TOKEN_FAILED] User-Agent: {}. IP Address: {}. Validation failed for token: {}", getUserAgent(), getIpAddress(), token);
+            getError(token);
         }
+    }
+
+    private void getError(String token) {
+        log.error("[TOKEN_FAILED] User-Agent: {}. IP Address: {}. Validation failed for token: {}", getUserAgent(), getIpAddress(), token);
     }
 
     private String getIpAddress() {
