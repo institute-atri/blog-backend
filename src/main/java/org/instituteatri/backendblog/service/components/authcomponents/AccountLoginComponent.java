@@ -2,8 +2,8 @@ package org.instituteatri.backendblog.service.components.authcomponents;
 
 import lombok.RequiredArgsConstructor;
 import org.instituteatri.backendblog.domain.entities.User;
-import org.instituteatri.backendblog.dtos.AuthenticationDTO;
-import org.instituteatri.backendblog.dtos.ResponseDTO;
+import org.instituteatri.backendblog.dto.response.LoginResponseDTO;
+import org.instituteatri.backendblog.dto.response.TokenResponseDTO;
 import org.instituteatri.backendblog.infrastructure.exceptions.AccountLockedException;
 import org.instituteatri.backendblog.infrastructure.exceptions.CustomAuthenticationException;
 import org.instituteatri.backendblog.repository.UserRepository;
@@ -20,7 +20,7 @@ public class AccountLoginComponent {
 
     private final UserRepository userRepository;
 
-    public Authentication authenticateUserComponent(AuthenticationDTO authDto, AuthenticationManager authManager) {
+    public Authentication authenticateUserComponent(LoginResponseDTO authDto, AuthenticationManager authManager) {
         var usernamePassword = new UsernamePasswordAuthenticationToken(authDto.email(), authDto.password());
         return authManager.authenticate(usernamePassword);
     }
@@ -39,11 +39,11 @@ public class AccountLoginComponent {
         userRepository.save(user);
     }
 
-    public ResponseEntity<ResponseDTO> handleLockedAccountComponent() {
+    public ResponseEntity<TokenResponseDTO> handleLockedAccountComponent() {
         throw new AccountLockedException();
     }
 
-    public ResponseEntity<ResponseDTO> handleBadCredentialsComponent(String email) {
+    public ResponseEntity<TokenResponseDTO> handleBadCredentialsComponent(String email) {
         var user = (User) userRepository.findByEmail(email);
         if (user != null) {
             user.setFailedLoginAttempts(user.getFailedLoginAttempts() + 1);

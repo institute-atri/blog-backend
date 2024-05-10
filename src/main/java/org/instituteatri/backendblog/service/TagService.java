@@ -3,8 +3,8 @@ package org.instituteatri.backendblog.service;
 import lombok.RequiredArgsConstructor;
 import org.instituteatri.backendblog.domain.entities.Post;
 import org.instituteatri.backendblog.domain.entities.Tag;
-import org.instituteatri.backendblog.dtos.PostDTO;
-import org.instituteatri.backendblog.dtos.TagDTO;
+import org.instituteatri.backendblog.dto.request.PostRequestDTO;
+import org.instituteatri.backendblog.dto.request.TagRequestDTO;
 import org.instituteatri.backendblog.infrastructure.exceptions.TagNotFoundException;
 import org.instituteatri.backendblog.mappings.TagMapper;
 import org.instituteatri.backendblog.repository.PostRepository;
@@ -27,7 +27,7 @@ public class TagService {
     private final TagMapper tagMapper;
     private final PostRepository postRepository;
 
-    public ResponseEntity<List<TagDTO>> processFindAllTags() {
+    public ResponseEntity<List<TagRequestDTO>> processFindAllTags() {
         List<Tag> tags = tagRepository.findAll();
 
         return ResponseEntity.ok(tags.stream()
@@ -35,23 +35,23 @@ public class TagService {
                 .toList());
     }
 
-    public TagDTO findById(String id) {
+    public TagRequestDTO findById(String id) {
         Optional<Tag> tag = tagRepository.findById(id);
 
         return tag.map(tagMapper::toTagDto).orElseThrow(() -> new TagNotFoundException(id));
     }
 
-    public List<PostDTO> findPostsByTagId(String tagId) {
-        TagDTO tagDTO = findById(tagId);
-        return tagDTO.postDTOS();
+    public List<PostRequestDTO> findPostsByTagId(String tagId) {
+        TagRequestDTO tagRequestDTO = findById(tagId);
+        return tagRequestDTO.postRequestDTOS();
     }
 
-    public ResponseEntity<TagDTO> processCreateTag(TagDTO tagDTO) {
-        Tag tag = new Tag(tagDTO.name(), tagDTO.slug());
+    public ResponseEntity<TagRequestDTO> processCreateTag(TagRequestDTO tagRequestDTO) {
+        Tag tag = new Tag(tagRequestDTO.name(), tagRequestDTO.slug());
 
         tag = tagRepository.save(tag);
 
-        TagDTO createdTagDTO = tagMapper.toTagDto(tag);
+        TagRequestDTO createdTagRequestDTO = tagMapper.toTagDto(tag);
 
         URI uri = ServletUriComponentsBuilder
                 .fromCurrentRequest()
@@ -59,7 +59,7 @@ public class TagService {
                 .buildAndExpand(tag.getId())
                 .toUri();
 
-        return ResponseEntity.created(uri).body(createdTagDTO);
+        return ResponseEntity.created(uri).body(createdTagRequestDTO);
     }
 
     public ResponseEntity<Void> processDeleteTag(String id) {
@@ -77,20 +77,20 @@ public class TagService {
         return ResponseEntity.noContent().build();
     }
 
-    public ResponseEntity<Void> processUpdateTag(String id, TagDTO updatedTagDTO) {
+    public ResponseEntity<Void> processUpdateTag(String id, TagRequestDTO updatedTagRequestDTO) {
         Tag existingTag = tagRepository.findById(id)
                 .orElseThrow(() -> new TagNotFoundException(id));
 
-        updateTagProperties(existingTag, updatedTagDTO);
+        updateTagProperties(existingTag, updatedTagRequestDTO);
 
         tagRepository.save(existingTag);
 
         return ResponseEntity.noContent().build();
     }
 
-    private void updateTagProperties(Tag existingTag, TagDTO updatedTagDTO) {
-        updateField(existingTag::setName, existingTag.getName(), updatedTagDTO.name());
-        updateField(existingTag::setSlug, existingTag.getSlug(), updatedTagDTO.slug());
+    private void updateTagProperties(Tag existingTag, TagRequestDTO updatedTagRequestDTO) {
+        updateField(existingTag::setName, existingTag.getName(), updatedTagRequestDTO.name());
+        updateField(existingTag::setSlug, existingTag.getSlug(), updatedTagRequestDTO.slug());
     }
 
     private <T> void updateField(Consumer<T> setter, T currentValue, T newValue) {
