@@ -1,7 +1,7 @@
 package org.instituteatri.backendblog.mappings.implconfigs;
 
 import org.instituteatri.backendblog.domain.entities.Post;
-import org.instituteatri.backendblog.dtos.PostDTO;
+import org.instituteatri.backendblog.dto.request.PostRequestDTO;
 import org.instituteatri.backendblog.mappings.PostMapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.MapperConfig;
@@ -15,22 +15,22 @@ import java.time.LocalDateTime;
 @Component
 public class PostMapperImpl implements PostMapper {
     @Override
-    public void createPostFromDto(PostDTO dto, Post existingPost) {
+    public void createPostFromDto(PostRequestDTO dto, Post existingPost) {
         existingPost.setTitle(dto.title());
         existingPost.setSummary(dto.summary());
         existingPost.setBody(dto.body());
         existingPost.setSlug(dto.slug());
         existingPost.setCreatedAt(LocalDateTime.now());
 
-        existingPost.setAuthorDTO(dto.authorDTO());
+        existingPost.setAuthorResponseDTO(dto.authorResponseDTO());
         existingPost.setCategories(dto.categories());
         existingPost.setTags(dto.tags());
         existingPost.setComments(dto.comments());
     }
 
     @Override
-    public PostDTO toPostDto(Post post) {
-        return new PostDTO(
+    public PostRequestDTO toPostDto(Post post) {
+        return new PostRequestDTO(
                 post.getId(),
                 post.getTitle(),
                 post.getSummary(),
@@ -38,7 +38,7 @@ public class PostMapperImpl implements PostMapper {
                 post.getSlug(),
                 post.getCreatedAt(),
                 post.getUpdatedAt(),
-                post.getAuthorDTO(),
+                post.getAuthorResponseDTO(),
                 post.getCategories(),
                 post.getTags(),
                 post.getComments()

@@ -1,11 +1,11 @@
-package org.instituteatri.backendblog.dtos;
+package org.instituteatri.backendblog.dto.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
-public record RegisterDTO(
+public record RegisterRequestDTO(
         @NotBlank(message = "Name is required.")
         @Size(min = 5, max = 30, message = "Name must be between 5 and 30 characters.")
         String name,

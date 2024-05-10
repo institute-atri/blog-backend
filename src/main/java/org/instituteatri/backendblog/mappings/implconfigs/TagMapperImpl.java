@@ -2,8 +2,8 @@ package org.instituteatri.backendblog.mappings.implconfigs;
 
 import lombok.RequiredArgsConstructor;
 import org.instituteatri.backendblog.domain.entities.Tag;
-import org.instituteatri.backendblog.dtos.PostDTO;
-import org.instituteatri.backendblog.dtos.TagDTO;
+import org.instituteatri.backendblog.dto.request.PostRequestDTO;
+import org.instituteatri.backendblog.dto.request.TagRequestDTO;
 import org.instituteatri.backendblog.mappings.TagMapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.MapperConfig;
@@ -21,18 +21,18 @@ public class TagMapperImpl implements TagMapper {
     private final MapPostsImplToDTO mapPostsImplToDTO;
 
     @Override
-    public TagDTO toTagDto(Tag tag) {
+    public TagRequestDTO toTagDto(Tag tag) {
         if (tag == null) {
             return null;
         }
 
-        List<PostDTO> postDTOs = mapPostsImplToDTO.mapPostsToDTO(tag.getPosts());
+        List<PostRequestDTO> postRequestDTOS = mapPostsImplToDTO.mapPostsToDTO(tag.getPosts());
 
-        return new TagDTO(
+        return new TagRequestDTO(
                 tag.getId(),
                 tag.getName(),
                 tag.getSlug(),
-                postDTOs
+                postRequestDTOS
         );
     }
 }

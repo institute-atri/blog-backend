@@ -1,4 +1,4 @@
-package org.instituteatri.backendblog.infrastructure.cors;
+package org.instituteatri.backendblog.utils;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;

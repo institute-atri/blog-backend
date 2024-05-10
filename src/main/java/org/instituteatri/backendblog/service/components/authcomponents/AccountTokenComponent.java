@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.instituteatri.backendblog.domain.entities.User;
 import org.instituteatri.backendblog.domain.token.Token;
 import org.instituteatri.backendblog.domain.token.TokenType;
-import org.instituteatri.backendblog.dtos.ResponseDTO;
+import org.instituteatri.backendblog.dto.response.TokenResponseDTO;
 import org.instituteatri.backendblog.infrastructure.security.TokenService;
 import org.instituteatri.backendblog.repository.TokenRepository;
 import org.instituteatri.backendblog.repository.UserRepository;
@@ -18,7 +18,7 @@ public class AccountTokenComponent {
     private final TokenService tokenService;
     private final UserRepository userRepository;
 
-    public ResponseDTO generateTokenResponse(User user) {
+    public TokenResponseDTO generateTokenResponse(User user) {
         String accessToken = tokenService.generateAccessToken(user);
         String refreshToken = tokenService.generateRefreshToken(user);
 
@@ -31,7 +31,7 @@ public class AccountTokenComponent {
         user.getTokens().add(refreshTokenToken);
         userRepository.save(user);
 
-        return new ResponseDTO(accessTokenToken.getTokenValue(), refreshTokenToken.getTokenValue());
+        return new TokenResponseDTO(accessTokenToken.getTokenValue(), refreshTokenToken.getTokenValue());
     }
 
     private void clearTokens(String userId) {

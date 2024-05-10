@@ -1,7 +1,7 @@
 package org.instituteatri.backendblog.mappings;
 
 import org.instituteatri.backendblog.domain.entities.Post;
-import org.instituteatri.backendblog.dtos.PostDTO;
+import org.instituteatri.backendblog.dto.request.PostRequestDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.MapperConfig;
 import org.mapstruct.ReportingPolicy;
@@ -10,7 +10,7 @@ import org.mapstruct.ReportingPolicy;
 @MapperConfig(unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface PostMapper {
 
-    void createPostFromDto(PostDTO dto, Post existingPost);
+    void createPostFromDto(PostRequestDTO dto, Post existingPost);
 
-    PostDTO toPostDto(Post post);
+    PostRequestDTO toPostDto(Post post);
 }

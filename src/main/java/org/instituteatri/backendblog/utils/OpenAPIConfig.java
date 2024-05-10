@@ -1,4 +1,4 @@
-package org.instituteatri.backendblog.infrastructure.config;
+package org.instituteatri.backendblog.utils;
 
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
