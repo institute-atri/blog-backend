@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.instituteatri.backendblog.domain.entities.User;
 import org.instituteatri.backendblog.dto.request.PostRequestDTO;
+import org.instituteatri.backendblog.dto.response.PostResponseDTO;
 import org.instituteatri.backendblog.service.PostService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -80,7 +81,7 @@ public class PostController {
 
     })
     @GetMapping()
-    public ResponseEntity<List<PostRequestDTO>> findAllPosts() {
+    public ResponseEntity<List<PostResponseDTO>> findAllPosts() {
         return postService.processFindAllPosts();
     }
 
@@ -146,7 +147,7 @@ public class PostController {
 
     })
     @GetMapping("/find/{id}")
-    public ResponseEntity<PostRequestDTO> findByIdPost(@PathVariable String id) {
+    public ResponseEntity<PostResponseDTO> findByIdPost(@PathVariable String id) {
         return ResponseEntity.ok(postService.processFindById(id));
     }
 
