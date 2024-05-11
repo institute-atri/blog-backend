@@ -45,13 +45,13 @@ public class PostUpdateComponent {
 
     private void updateCategoriesComponent(Post existingPost, List<Category> newCategories) {
         if (newCategories != null) {
-            existingPost.setCategories(postLoadEntitiesComponent.loadCategoriesComponent(newCategories));
+            existingPost.setCategories(postLoadEntitiesComponent.loadUniqueCategoriesFromDatabase(newCategories));
         }
     }
 
     private void updateTagsComponent(Post existingPost, List<Tag> newTags) {
         if (newTags != null) {
-            existingPost.setTags(postLoadEntitiesComponent.loadTagsComponent(newTags));
+            existingPost.setTags(postLoadEntitiesComponent.loadUniqueTagsFromDatabase(newTags));
         }
     }
 }
