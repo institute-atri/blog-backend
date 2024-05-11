@@ -22,22 +22,32 @@ public class PostLoadEntitiesComponent {
 
 
     /**
-     * Loads the categories from the provided list of categories and the database.
+     * Loads unique categories from the provided list and fetches them from the database.
+     * Duplicates are removed, and only the unique categories are fetched from the database.
      *
-     * @param categories The initial list of categories.
-     * @return A list of loaded categories from the database.
+     * @param categories The list of categories to load.
+     * @return A list of unique categories fetched from the database.
      */
-    public List<Category> loadCategoriesComponent(List<Category> categories) {
-        List<String> uniqueCategoryIds = categories.stream()
+    public List<Category> loadUniqueCategoriesFromDatabase(List<Category> categories) {
+        List<String> uniqueCategoryIds = getUniqueCategoryIds(categories);
+        Map<String, Category> loadedCategoriesMap = fetchCategoriesFromDatabase(uniqueCategoryIds);
+        return mapCategoryIdsToCategories(uniqueCategoryIds, loadedCategoriesMap);
+    }
+
+    private List<String> getUniqueCategoryIds(List<Category> categories) {
+        return categories.stream()
                 .map(Category::getId)
                 .distinct()
                 .toList();
+    }
 
-        Map<String, Category> loadedCategoriesMap = categoryRepository.findAllById(uniqueCategoryIds)
+    private Map<String, Category> fetchCategoriesFromDatabase(List<String> uniqueCategoryIds) {
+        return categoryRepository.findAllById(uniqueCategoryIds)
                 .stream()
                 .collect(toMap(Category::getId, category -> category));
+    }
 
-
+    private List<Category> mapCategoryIdsToCategories(List<String> uniqueCategoryIds, Map<String, Category> loadedCategoriesMap) {
         return uniqueCategoryIds.stream()
                 .map(loadedCategoriesMap::get)
                 .filter(Objects::nonNull)
@@ -45,21 +55,32 @@ public class PostLoadEntitiesComponent {
     }
 
     /**
-     * Loads the tags from the provided list of tags and the database.
+     * Loads unique tags from the provided list and fetches them from the database.
+     * Duplicates are removed, and only the unique tags are fetched from the database.
      *
-     * @param tags The initial list of tags.
-     * @return A list of loaded tags from the database.
+     * @param tags The list of tags to load.
+     * @return A list of unique tags fetched from the database.
      */
-    public List<Tag> loadTagsComponent(List<Tag> tags) {
-        List<String> uniqueTagIds = tags.stream()
+    public List<Tag> loadUniqueTagsFromDatabase(List<Tag> tags) {
+        List<String> uniqueTagIds = getUniqueTagIds(tags);
+        Map<String, Tag> loadedTagsMap = fetchTagsFromDatabase(uniqueTagIds);
+        return mapTagIdsToTags(uniqueTagIds, loadedTagsMap);
+    }
+
+    private List<String> getUniqueTagIds(List<Tag> tags) {
+        return tags.stream()
                 .map(Tag::getId)
                 .distinct()
                 .toList();
+    }
 
-        Map<String, Tag> loadedTagsMap = tagRepository.findAllById(uniqueTagIds)
+    private Map<String, Tag> fetchTagsFromDatabase(List<String> uniqueTagIds) {
+        return tagRepository.findAllById(uniqueTagIds)
                 .stream()
                 .collect(toMap(Tag::getId, tag -> tag));
+    }
 
+    private List<Tag> mapTagIdsToTags(List<String> uniqueTagIds, Map<String, Tag> loadedTagsMap) {
         return uniqueTagIds.stream()
                 .map(loadedTagsMap::get)
                 .filter(Objects::nonNull)
