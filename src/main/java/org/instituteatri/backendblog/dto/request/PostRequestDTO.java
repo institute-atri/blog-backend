@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.instituteatri.backendblog.domain.entities.Category;
+import org.instituteatri.backendblog.domain.entities.Comment;
 import org.instituteatri.backendblog.domain.entities.Tag;
 import org.instituteatri.backendblog.dto.response.AuthorResponseDTO;
 
@@ -38,5 +39,6 @@ public class PostRequestDTO {
     private AuthorResponseDTO authorResponseDTO;
     private List<Category> categories;
     private List<Tag> tags;
+    private List<Comment> comments;
 }
 
