@@ -20,7 +20,6 @@ import org.springframework.security.core.Authentication;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -39,6 +38,8 @@ class UserControllerTest {
     @InjectMocks
     private UserController userController;
 
+    private final String userId = "123";
+
     @Nested
     class getAllUsers {
 
@@ -48,14 +49,14 @@ class UserControllerTest {
             // Arrange
             List<UserResponseDTO> expectedResponse = new ArrayList<>();
             expectedResponse.add(new UserResponseDTO(
-                    UUID.randomUUID().toString(),
+                    "123",
                     "Name",
                     "LastName",
                     "123456789",
                     "Bio"
             ));
             expectedResponse.add(new UserResponseDTO(
-                    UUID.randomUUID().toString(),
+                    "123",
                     "Name2",
                     "LastName2",
                     "123456789",
@@ -93,7 +94,7 @@ class UserControllerTest {
         @DisplayName("Should get user by id with success")
         void shouldGetUserByIdWithSuccess() {
             // Arrange
-            String expectedId = UUID.randomUUID().toString();
+            String expectedId = "123";
             UserResponseDTO expectedResponse = new UserResponseDTO(
                     expectedId,
                     "Name",
@@ -116,7 +117,6 @@ class UserControllerTest {
         @DisplayName("Should get user by id with success when not found")
         void shouldGetUserByIdWithSuccessWhenNotFound() {
             // Arrange
-            String userId = UUID.randomUUID().toString();
             when(userService.findById(userId)).thenThrow(new UserNotFoundException(userId));
 
             // Act
@@ -134,7 +134,6 @@ class UserControllerTest {
         @DisplayName("Should update user success")
         void shouldUpdateUserSuccess() {
             // Arrange
-            String id = UUID.randomUUID().toString();
             UpdateUserRequestDTO updateUserRequestDTO = new UpdateUserRequestDTO(
                     "Name",
                     "LastName",
@@ -147,24 +146,23 @@ class UserControllerTest {
             ResponseEntity<TokenResponseDTO> expectedResponse =
                     ResponseEntity.ok().body(new TokenResponseDTO(
                             "Token", "RefreshToken"));
-            when(userService.processUpdateUser(id, updateUserRequestDTO, authentication)).thenReturn(expectedResponse);
+            when(userService.processUpdateUser(userId, updateUserRequestDTO, authentication)).thenReturn(expectedResponse);
 
             // Act
-            ResponseEntity<TokenResponseDTO> responseEntity = userController.updateUser(id, updateUserRequestDTO, authentication);
+            ResponseEntity<TokenResponseDTO> responseEntity = userController.updateUser(userId, updateUserRequestDTO, authentication);
 
             // Assert
             assertThat(responseEntity)
                     .isEqualTo(expectedResponse)
                     .extracting(ResponseEntity::getStatusCode)
                     .isEqualTo(HttpStatus.OK);
-            verify(userService).processUpdateUser(id, updateUserRequestDTO, authentication);
+            verify(userService).processUpdateUser(userId, updateUserRequestDTO, authentication);
         }
 
         @Test
         @DisplayName("Should return not found when user is not found")
         void shouldReturnNotFoundWhenUserNotFound() {
             // Arrange
-            String userId = UUID.randomUUID().toString();
             UpdateUserRequestDTO updateUserRequestDTO = new UpdateUserRequestDTO(
                     "Name",
                     "LastName",
@@ -193,7 +191,6 @@ class UserControllerTest {
         @DisplayName("Should delete user success")
         void shouldDeleteUserSuccess() {
             // Arrange
-            String userId = UUID.randomUUID().toString();
             ResponseEntity<Void> expectedResponse = ResponseEntity.noContent().build();
             when(userService.processDeleteUser(userId)).thenReturn(expectedResponse);
 
@@ -212,7 +209,6 @@ class UserControllerTest {
         @DisplayName("Should return not found when user is not found")
         void shouldReturnNotFoundWhenUserNotFound() {
             // Arrange
-            String userId = UUID.randomUUID().toString();
             when(userService.processDeleteUser(userId))
                     .thenThrow(new UserNotFoundException(userId));
 
@@ -232,10 +228,9 @@ class UserControllerTest {
         @DisplayName("Should find posts by user id")
         void shouldFindPostsByUserId() {
             // Arrange
-            String userId = UUID.randomUUID().toString();
             List<PostResponseDTO> expectedResponse = new ArrayList<>();
             ResponseEntity<List<PostResponseDTO>> expectedResponseEntity = ResponseEntity.ok(expectedResponse);
-            when(userService.findPostsByUserId(userId)).thenReturn(expectedResponseEntity );
+            when(userService.findPostsByUserId(userId)).thenReturn(expectedResponseEntity);
 
             // Act
             ResponseEntity<List<PostResponseDTO>> responseEntity = userController.findAllPostsByUserId(userId);
@@ -250,7 +245,6 @@ class UserControllerTest {
         @DisplayName("Should return not found when user is not found")
         void shouldReturnNotFoundWhenUserNotFound() {
             // Arrange
-            String userId = UUID.randomUUID().toString();
             when(userService.findPostsByUserId(userId))
                     .thenThrow(new UserNotFoundException(userId));
 
@@ -292,7 +286,6 @@ class UserControllerTest {
         @DisplayName("Should return not found when user is not found")
         void shouldReturnNotFoundWhenUserNotFound() {
             // Arrange
-            String userId = UUID.randomUUID().toString();
             ChangePasswordRequestDTO changePasswordRequestDTO = new ChangePasswordRequestDTO(
                     "Password123+",
                     "Password123+"
