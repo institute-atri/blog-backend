@@ -40,25 +40,29 @@ public class UserService {
 
     public ResponseEntity<List<UserResponseDTO>> processFindAllUsers() {
         List<User> users = userRepository.findAll();
-        List<UserResponseDTO> response = new ArrayList<>();
+        if (users.isEmpty()) {
+            throw new UserNotFoundException("No users found");
+        }
 
+        List<UserResponseDTO> response = new ArrayList<>();
         users.forEach(x -> response.add(modelMapper.map(x, UserResponseDTO.class)));
         return ResponseEntity.ok(response);
     }
 
-    public UserResponseDTO findById(String id) {
-        return userRepository.findById(id)
-                .map(user -> modelMapper.map(user, UserResponseDTO.class))
-                .orElseThrow(() -> new UserNotFoundException(id));
+    public ResponseEntity<UserResponseDTO> findById(String userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("Could not find user with id:" + userId));
+        UserResponseDTO userResponse = modelMapper.map(user, UserResponseDTO.class);
+        return ResponseEntity.ok(userResponse);
     }
 
-    public List<PostResponseDTO> findPostsByUserId(String userId) {
+    public ResponseEntity<List<PostResponseDTO>> findPostsByUserId(String userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException(userId));
+                .orElseThrow(() -> new UserNotFoundException("Could not find user with id:" + userId));
 
-        return user.getPosts().stream()
+        return ResponseEntity.ok().body(user.getPosts().stream()
                 .map(post -> modelMapper.map(post, PostResponseDTO.class))
-                .toList();
+                .toList());
     }
 
     public ResponseEntity<Void> processDeleteUser(String userId) {
@@ -92,7 +96,6 @@ public class UserService {
         return ResponseEntity.ok(authTokenManager.generateTokenResponse(existingUser));
     }
 
-
     @Transactional
     public ResponseEntity<Void> processChangePassword(ChangePasswordRequestDTO changePasswordRequestDTO, Authentication authentication) {
 
@@ -118,7 +121,7 @@ public class UserService {
 
     private User findUserByIdOrThrow(String userId) {
         return userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException(userId));
+                .orElseThrow(() -> new UserNotFoundException("Could not find user with id:" + userId));
     }
 
     private void updateUserProperties(User existingUser, UpdateUserRequestDTO updatedUserDto) {
@@ -145,7 +148,6 @@ public class UserService {
                 existingUser.getId()
         );
     }
-
 
     private void updatePassword(User existingUser, String newPassword) {
         if (newPassword != null && !passwordEncoder.matches(newPassword, existingUser.getPassword())) {
