@@ -44,7 +44,7 @@ class PostControllerTest {
     private final String postId = "123";
 
     User user = new User();
-    PostRequestDTO expectedResponse = new PostRequestDTO(
+    PostRequestDTO expectedRequest = new PostRequestDTO(
             "123",
             "Title",
             "summary",
@@ -173,36 +173,36 @@ class PostControllerTest {
             URI expectedUri = UriComponentsBuilder
                     .fromUriString(baseUri)
                     .path("/{id}")
-                    .buildAndExpand(expectedResponse.getId())
+                    .buildAndExpand(postId)
                     .toUri();
 
-            when(postService.processCreatePost(expectedResponse, authentication))
-                    .thenReturn(ResponseEntity.created(expectedUri).body(expectedResponse));
+            when(postService.processCreatePost(expectedRequest, authentication))
+                    .thenReturn(ResponseEntity.created(expectedUri).body(expectedRequest));
 
             // Act
-            ResponseEntity<PostRequestDTO> responseEntity = postController.createPost(expectedResponse, authentication);
+            ResponseEntity<PostRequestDTO> responseEntity = postController.createPost(expectedRequest, authentication);
 
             // Assert
-            assertThat(responseEntity.getBody()).isEqualTo(expectedResponse);
+            assertThat(responseEntity.getBody()).isEqualTo(expectedRequest);
             assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
             assertThat(responseEntity.getHeaders().getLocation()).isEqualTo(expectedUri);
-            verify(postService).processCreatePost(expectedResponse, authentication);
+            verify(postService).processCreatePost(expectedRequest, authentication);
         }
 
         @Test
         @DisplayName("Should handle error when creating post fails")
         void shouldHandleErrorWhenCreatingPostFails() {
             // Arrange
-            when(postService.processCreatePost(expectedResponse, authentication))
+            when(postService.processCreatePost(expectedRequest, authentication))
                     .thenThrow(new CustomExceptionEntities("Could not create post"));
 
             // Act
             Exception exception = assertThrows(CustomExceptionEntities.class,
-                    () -> postController.createPost(expectedResponse, authentication));
+                    () -> postController.createPost(expectedRequest, authentication));
 
             // Assert
             assertThat(exception.getMessage()).isEqualTo("Could not create post");
-            verify(postService).processCreatePost(expectedResponse, authentication);
+            verify(postService).processCreatePost(expectedRequest, authentication);
         }
     }
 
@@ -213,31 +213,31 @@ class PostControllerTest {
         @DisplayName("Should update post with success")
         void shouldUpdatePostWithSuccess() {
             // Arrange
-            when(postService.processUpdatePost(postId, expectedResponse, user))
+            when(postService.processUpdatePost(postId, expectedRequest, user))
                     .thenReturn(ResponseEntity.noContent().build());
 
             // Act
-            ResponseEntity<Void> responseEntity = postController.updatePost(postId, expectedResponse, user);
+            ResponseEntity<Void> responseEntity = postController.updatePost(postId, expectedRequest, user);
 
             // Assert
             assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
-            verify(postService).processUpdatePost(postId, expectedResponse, user);
+            verify(postService).processUpdatePost(postId, expectedRequest, user);
         }
 
         @Test
         @DisplayName("Should return not found when post is not found")
         void shouldReturnNotFoundWhenPostIsNotFound() {
             // Arrange
-            when(postService.processUpdatePost(postId, expectedResponse, user))
+            when(postService.processUpdatePost(postId, expectedRequest, user))
                     .thenThrow(new PostNotFoundException("Could not find post with id:" + postId));
 
             // Act
             Exception exception = assertThrows(PostNotFoundException.class,
-                    () -> postController.updatePost(postId, expectedResponse, user));
+                    () -> postController.updatePost(postId, expectedRequest, user));
 
             // Assert
             assertThat(exception.getMessage()).isEqualTo("Could not find post with id:" + postId);
-            verify(postService).processUpdatePost(postId, expectedResponse, user);
+            verify(postService).processUpdatePost(postId, expectedRequest, user);
         }
     }
 
