@@ -1,12 +1,14 @@
 package org.instituteatri.backendblog.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.instituteatri.backendblog.domain.entities.Category;
 import org.instituteatri.backendblog.domain.entities.Post;
 import org.instituteatri.backendblog.domain.entities.Tag;
 import org.instituteatri.backendblog.domain.entities.User;
 import org.instituteatri.backendblog.dto.request.PostRequestDTO;
 import org.instituteatri.backendblog.dto.response.PostResponseDTO;
+import org.instituteatri.backendblog.infrastructure.exceptions.CustomExceptionEntities;
 import org.instituteatri.backendblog.infrastructure.exceptions.NotAuthenticatedException;
 import org.instituteatri.backendblog.infrastructure.exceptions.PostNotFoundException;
 import org.instituteatri.backendblog.repository.CategoryRepository;
@@ -27,6 +29,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PostService {
@@ -42,8 +45,11 @@ public class PostService {
     private final ModelMapper modelMapper;
 
     public ResponseEntity<List<PostResponseDTO>> processFindAllPosts() {
-
         List<Post> posts = postRepository.findAll();
+        if (posts.isEmpty()) {
+            throw new PostNotFoundException("No post found");
+        }
+
         updateEntitiesInThePostList(posts);
 
         List<Post> updatedPosts = postRepository.findAll();
@@ -53,31 +59,35 @@ public class PostService {
         return ResponseEntity.ok(responseDTOs);
     }
 
-    public PostResponseDTO processFindById(String id) {
-        Post post = postRepository.findById(id)
-                .orElseThrow(() -> new PostNotFoundException(id));
-        return modelMapper.map(post, PostResponseDTO.class);
+    public ResponseEntity<PostResponseDTO> processFindById(String postId) {
+        Post existingPost = getExistingPost(postId);
+
+        PostResponseDTO postResponseDTO = modelMapper.map(existingPost, PostResponseDTO.class);
+        return ResponseEntity.ok(postResponseDTO);
     }
 
     public ResponseEntity<PostRequestDTO> processCreatePost(PostRequestDTO postRequestDTO, Authentication authentication) {
+        try {
+            User currentUser = getCurrentUser(authentication);
+            validateCurrentUser(currentUser);
 
-        User currentUser = getCurrentUser(authentication);
-        validateCurrentUser(currentUser);
+            PostRequestDTO createdPost = postCreateComponent.createNewPostDTOComponent(postRequestDTO, currentUser);
+            String baseUri = "http://localhost:8080";
 
-        PostRequestDTO createdPost = postCreateComponent.createNewPostDTOComponent(postRequestDTO, currentUser);
-        String baseUri = "http://localhost:8080";
+            URI uri = UriComponentsBuilder
+                    .fromUriString(baseUri)
+                    .path("/{id}")
+                    .buildAndExpand(createdPost.getId())
+                    .toUri();
 
-        URI uri = UriComponentsBuilder
-                .fromUriString(baseUri)
-                .path("/{id}")
-                .buildAndExpand(createdPost.getId())
-                .toUri();
-
-        return ResponseEntity.created(uri).body(createdPost);
+            return ResponseEntity.created(uri).body(createdPost);
+        } catch (Exception ex) {
+            log.warn("Could not create post", ex);
+            throw new CustomExceptionEntities("Could not create post");
+        }
     }
 
     public ResponseEntity<Void> processUpdatePost(String id, PostRequestDTO updatedPostRequestDto, User currentUser) {
-
         validateCurrentUser(currentUser);
 
         Post existingPost = getExistingPost(id);
@@ -92,7 +102,6 @@ public class PostService {
     }
 
     public ResponseEntity<Void> processDeletePost(String id, Authentication authentication) {
-
         User currentUser = getCurrentUser(authentication);
 
         Post existingPost = getExistingPost(id);
@@ -110,7 +119,7 @@ public class PostService {
 
     private Post getExistingPost(String id) {
         return postRepository.findById(id)
-                .orElseThrow(() -> new PostNotFoundException(id));
+                .orElseThrow(() -> new PostNotFoundException("Could not find post with id:" + id));
     }
 
     private void decrementCategoryAndTagCounts(Post post) {
