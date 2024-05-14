@@ -3,7 +3,7 @@ spring:
     name: backend-blog
   data:
     mongodb:
-      uri: mongodb://localhost:27017/blog
+      uri: mongodb://atri-mongo-database:27017/blog
 
 security:
   token:

@@ -1,6 +1,27 @@
-version: '3.8'
+# Docker Compose file for the blog backend services
 services:
-  db:
-    image: mongo:latest
+  # Configuration for the Atri Blog API service
+  atri-blog-api:
+    image: atri-blog-backend-api
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '8080:8080'
+    depends_on:
+      - atri-mongo-database
+    networks:
+      - atri-blog-network
+
+  # Configuration for the Atri MongoDB database service
+  atri-mongo-database:
+    image: mongo
     ports:
       - '27017:27017'
+    networks:
+      - atri-blog-network
+
+networks:
+  # Configuration for the Atri Blog network
+  atri-blog-network:
+    driver: bridge
