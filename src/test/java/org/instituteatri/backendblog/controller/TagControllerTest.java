@@ -248,11 +248,11 @@ class TagControllerTest {
     }
 
     @Nested
-    class findPostsByUserId {
+    class findPostsByTagId {
 
         @Test
         @DisplayName("Should find posts by tag id")
-        void shouldFindPostsByUserId() {
+        void shouldFindPostsByTagId() {
             // Arrange
             List<PostResponseDTO> expectedResponse = new ArrayList<>();
             ResponseEntity<List<PostResponseDTO>> expectedResponseEntity = ResponseEntity.ok(expectedResponse);
