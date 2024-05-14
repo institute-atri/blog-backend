@@ -148,7 +148,7 @@ public class PostController {
     })
     @GetMapping("/find/{id}")
     public ResponseEntity<PostResponseDTO> findByIdPost(@PathVariable String id) {
-        return ResponseEntity.ok(postService.processFindById(id));
+        return postService.processFindById(id);
     }
 
 
