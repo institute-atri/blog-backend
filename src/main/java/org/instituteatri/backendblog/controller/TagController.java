@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.instituteatri.backendblog.dto.request.TagRequestDTO;
+import org.instituteatri.backendblog.dto.request.TagUpdateRequestDTO;
 import org.instituteatri.backendblog.dto.response.PostResponseDTO;
 import org.instituteatri.backendblog.dto.response.TagResponseDTO;
 import org.instituteatri.backendblog.service.TagService;
@@ -23,7 +24,6 @@ import java.util.List;
 public class TagController {
 
     private final TagService tagService;
-
 
     @Operation(
             method = "GET",
@@ -86,11 +86,9 @@ public class TagController {
 
     })
     @GetMapping("/posts/{id}")
-    public ResponseEntity<List<PostResponseDTO>> getPostsByCategoryId(@PathVariable String id) {
-        List<PostResponseDTO> postResponseDTOS = tagService.findPostsByTagId(id);
-        return ResponseEntity.ok(postResponseDTOS);
+    public ResponseEntity<List<PostResponseDTO>> getPostsByTagId(@PathVariable String id) {
+        return tagService.findPostsByTagId(id);
     }
-
 
     @Operation(
             method = "GET",
@@ -112,7 +110,6 @@ public class TagController {
     public ResponseEntity<List<TagResponseDTO>> findAllTags() {
         return tagService.processFindAllTags();
     }
-
 
     @Operation(
             method = "GET",
@@ -140,9 +137,8 @@ public class TagController {
     })
     @GetMapping("/find/{id}")
     public ResponseEntity<TagResponseDTO> findByIdTag(@PathVariable String id) {
-        return ResponseEntity.ok(tagService.findById(id));
+        return tagService.findById(id);
     }
-
 
     @Operation(
             method = "POST",
@@ -189,7 +185,6 @@ public class TagController {
         return tagService.processCreateTag(tagRequestDTO);
     }
 
-
     @Operation(
             method = "PUT",
             summary = "Update an event.",
@@ -232,10 +227,9 @@ public class TagController {
     @PutMapping("/update/{id}")
     public ResponseEntity<Void> updateTag(
             @PathVariable String id,
-            @RequestBody @Valid TagRequestDTO tagRequestDTO) {
+            @RequestBody @Valid TagUpdateRequestDTO tagRequestDTO) {
         return tagService.processUpdateTag(id, tagRequestDTO);
     }
-
 
     @Operation(
             method = "DELETE",
