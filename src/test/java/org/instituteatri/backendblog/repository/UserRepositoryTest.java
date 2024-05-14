@@ -19,7 +19,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @DataMongoTest
-public class UserRepositoryTest {
+class UserRepositoryTest {
 
     @MockBean
     private UserRepository mockUserRepository;
