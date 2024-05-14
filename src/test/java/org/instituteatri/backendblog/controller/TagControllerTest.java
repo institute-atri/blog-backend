@@ -1,6 +1,5 @@
 package org.instituteatri.backendblog.controller;
 
-import org.instituteatri.backendblog.domain.entities.Tag;
 import org.instituteatri.backendblog.dto.request.TagRequestDTO;
 import org.instituteatri.backendblog.dto.request.TagUpdateRequestDTO;
 import org.instituteatri.backendblog.dto.response.PostResponseDTO;
@@ -15,7 +14,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -35,13 +33,14 @@ class TagControllerTest {
     @Mock
     private TagService tagService;
 
-    @Mock
-    private ModelMapper modelMapper;
-
     @InjectMocks
     private TagController tagController;
 
     private final String tagId = "123";
+    TagRequestDTO expectedResponse = new TagRequestDTO(
+            "Tag",
+            "Slug"
+    );
 
     @Nested
     class getAllTags {
@@ -131,46 +130,36 @@ class TagControllerTest {
         @DisplayName("Should create tag with success")
         void shouldCreateTagWithSuccess() {
             // Arrange
-            TagRequestDTO requestDTO = new TagRequestDTO(
-                    "Tag",
-                    "Slug"
-            );
-
-            Tag tag = new Tag(requestDTO.getName(), requestDTO.getSlug());
-
-            TagRequestDTO createdTagRequestDTO = modelMapper.map(tag, TagRequestDTO.class);
-
             String baseUri = "http://localhost:8080";
             URI uri = UriComponentsBuilder.fromUriString(baseUri)
                     .path("/{id}")
-                    .buildAndExpand(tag.getId()).toUri();
+                    .buildAndExpand(tagId).toUri();
 
-            when(tagService.processCreateTag(createdTagRequestDTO))
-                    .thenReturn(ResponseEntity.created(uri).body(createdTagRequestDTO));
+            when(tagService.processCreateTag(expectedResponse))
+                    .thenReturn(ResponseEntity.created(uri).body(expectedResponse));
 
             // Act
-            ResponseEntity<TagRequestDTO> responseEntity = tagController.createTag(createdTagRequestDTO);
+            ResponseEntity<TagRequestDTO> responseEntity = tagController.createTag(expectedResponse);
 
             // Assert
-            assertThat(responseEntity.getBody()).isEqualTo(createdTagRequestDTO);
+            assertThat(responseEntity.getBody()).isEqualTo(expectedResponse);
             assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-            verify(tagService).processCreateTag(createdTagRequestDTO);
+            verify(tagService).processCreateTag(expectedResponse);
         }
 
         @Test
         @DisplayName("Should handle error when creating tag fails")
         void shouldHandleErrorWhenCreatingTagFails() {
             // Arrange
-            TagRequestDTO requestDTO = new TagRequestDTO("Tag", "Slug");
-            when(tagService.processCreateTag(requestDTO))
+            when(tagService.processCreateTag(expectedResponse))
                     .thenThrow(new CustomExceptionEntities("Error creating tag."));
 
             // Act
-            Exception exception = assertThrows(CustomExceptionEntities.class, () -> tagController.createTag(requestDTO));
+            Exception exception = assertThrows(CustomExceptionEntities.class, () -> tagController.createTag(expectedResponse));
 
             // Assert
             assertThat(exception.getMessage()).isEqualTo("Error creating tag.");
-            verify(tagService).processCreateTag(requestDTO);
+            verify(tagService).processCreateTag(expectedResponse);
         }
 
     }
