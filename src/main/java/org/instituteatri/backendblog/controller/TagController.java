@@ -86,7 +86,7 @@ public class TagController {
 
     })
     @GetMapping("/posts/{id}")
-    public ResponseEntity<List<PostResponseDTO>> getPostsByCategoryId(@PathVariable String id) {
+    public ResponseEntity<List<PostResponseDTO>> getPostsByTagId(@PathVariable String id) {
         return tagService.findPostsByTagId(id);
     }
 

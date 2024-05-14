@@ -259,7 +259,7 @@ class TagControllerTest {
             when(tagService.findPostsByTagId(tagId)).thenReturn(expectedResponseEntity);
 
             // Act
-            ResponseEntity<List<PostResponseDTO>> responseEntity = tagController.getPostsByCategoryId(tagId);
+            ResponseEntity<List<PostResponseDTO>> responseEntity = tagController.getPostsByTagId(tagId);
 
             // Assert
             assertThat(responseEntity.getBody()).isEqualTo(expectedResponse);
@@ -275,7 +275,7 @@ class TagControllerTest {
                     .thenThrow(new TagNotFoundException("Could not find tag with id: " + tagId));
 
             // Act
-            Exception exception = assertThrows(TagNotFoundException.class, () -> tagController.getPostsByCategoryId(tagId));
+            Exception exception = assertThrows(TagNotFoundException.class, () -> tagController.getPostsByTagId(tagId));
 
             // Assert
             assertThat(exception.getMessage()).isEqualTo("Could not find tag with id: " + tagId);
