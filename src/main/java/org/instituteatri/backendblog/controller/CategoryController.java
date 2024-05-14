@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.instituteatri.backendblog.dto.request.CategoryRequestDTO;
+import org.instituteatri.backendblog.dto.request.CategoryUpdateRequestDTO;
 import org.instituteatri.backendblog.dto.response.CategoryResponseDTO;
 import org.instituteatri.backendblog.dto.response.PostResponseDTO;
 import org.instituteatri.backendblog.service.CategoryService;
@@ -25,7 +26,6 @@ import java.util.List;
 public class CategoryController {
 
     private final CategoryService categoryService;
-
 
     @Operation(
             method = "GET",
@@ -90,10 +90,8 @@ public class CategoryController {
     @GetMapping("/posts/{id}")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<List<PostResponseDTO>> getPostsByCategoryId(@PathVariable String id) {
-        List<PostResponseDTO> postResponseDTOS = categoryService.findPostsByCategoryId(id);
-        return ResponseEntity.ok(postResponseDTOS);
+        return categoryService.findPostsByCategoryId(id);
     }
-
 
     @Operation(
             method = "GET",
@@ -115,7 +113,6 @@ public class CategoryController {
     public ResponseEntity<List<CategoryResponseDTO>> findAllCategories() {
         return categoryService.processFindAllCategories();
     }
-
 
     @Operation(
             method = "GET",
@@ -143,9 +140,8 @@ public class CategoryController {
     })
     @GetMapping("/find/{id}")
     public ResponseEntity<CategoryResponseDTO> findCategoryById(@PathVariable String id) {
-        return ResponseEntity.ok(categoryService.findById(id));
+        return categoryService.findById(id);
     }
-
 
     @Operation(
             method = "POST",
@@ -192,7 +188,6 @@ public class CategoryController {
         return categoryService.processCreateCategory(categoryRequestDTO);
     }
 
-
     @Operation(
             method = "PUT",
             summary = "Update an event by ID.",
@@ -235,10 +230,9 @@ public class CategoryController {
     @PutMapping("update/{id}")
     public ResponseEntity<Void> updateCategory(
             @PathVariable String id,
-            @RequestBody @Valid CategoryRequestDTO categoryRequestDTO) {
+            @RequestBody @Valid CategoryUpdateRequestDTO categoryRequestDTO) {
         return categoryService.processUpdateCategory(id, categoryRequestDTO);
     }
-
 
     @Operation(
             method = "DELETE",
