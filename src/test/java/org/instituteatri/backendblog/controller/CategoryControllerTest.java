@@ -1,6 +1,5 @@
 package org.instituteatri.backendblog.controller;
 
-import org.instituteatri.backendblog.domain.entities.Category;
 import org.instituteatri.backendblog.dto.request.CategoryRequestDTO;
 import org.instituteatri.backendblog.dto.request.CategoryUpdateRequestDTO;
 import org.instituteatri.backendblog.dto.response.CategoryResponseDTO;
@@ -15,7 +14,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -35,13 +33,13 @@ class CategoryControllerTest {
     @Mock
     private CategoryService categoryService;
 
-    @Mock
-    private ModelMapper modelMapper;
-
     @InjectMocks
     private CategoryController categoryController;
 
     private final String categoryId = "123";
+    CategoryRequestDTO expectedRequest = new CategoryRequestDTO("name", "Slug");
+    CategoryResponseDTO expectedResponse = new CategoryResponseDTO("123", "name", "Slug");
+    CategoryUpdateRequestDTO expectedRequestDto = new CategoryUpdateRequestDTO("name", "Slug");
 
     @Nested
     class getAllCategories {
@@ -94,11 +92,6 @@ class CategoryControllerTest {
         @DisplayName("Should get category by id with success")
         void shouldGetCategoryByIdWithSuccess() {
             // Arrange
-            CategoryResponseDTO expectedResponse = new CategoryResponseDTO(
-                    "123",
-                    "name",
-                    "Slug"
-            );
             when(categoryService.findById(categoryId)).thenReturn(ResponseEntity.ok(expectedResponse));
 
             // Act
@@ -132,42 +125,35 @@ class CategoryControllerTest {
         @DisplayName("Should create category with success")
         void shouldCreateCategoryWithSuccess() {
             // Arrange
-            CategoryRequestDTO categoryRequestDTO = new CategoryRequestDTO("name", "Slug");
-
-            Category category = new Category(categoryRequestDTO.getName(), categoryRequestDTO.getSlug());
-
-            CategoryRequestDTO expectedResponse = modelMapper.map(category, CategoryRequestDTO.class);
-
             String baseUri = "http://localhost:8080";
             URI uri = UriComponentsBuilder.fromUriString(baseUri)
                     .path("/{id}")
-                    .buildAndExpand(category.getId()).toUri();
+                    .buildAndExpand(categoryId).toUri();
 
-            when(categoryService.processCreateCategory(expectedResponse))
-                    .thenReturn(ResponseEntity.created(uri).body(expectedResponse));
+            when(categoryService.processCreateCategory(expectedRequest))
+                    .thenReturn(ResponseEntity.created(uri).body(expectedRequest));
 
             // Act
-            ResponseEntity<CategoryRequestDTO> responseEntity = categoryController.createCategory(expectedResponse);
+            ResponseEntity<CategoryRequestDTO> responseEntity = categoryController.createCategory(expectedRequest);
 
             // Assert
-            assertThat(responseEntity.getBody()).isEqualTo(expectedResponse);
+            assertThat(responseEntity.getBody()).isEqualTo(expectedRequest);
             assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-            verify(categoryService).processCreateCategory(expectedResponse);
+            verify(categoryService).processCreateCategory(expectedRequest);
         }
 
         @Test
         @DisplayName("Should handle error when creating category fails")
         void shouldHandleErrorWhenCreatingCategoryFails() {
             // Arrange
-            CategoryRequestDTO categoryRequestDTO = new CategoryRequestDTO("name", "Slug");
-            when(categoryService.processCreateCategory(categoryRequestDTO)).thenThrow(new CustomExceptionEntities("Could not create category"));
+            when(categoryService.processCreateCategory(expectedRequest)).thenThrow(new CustomExceptionEntities("Could not create category"));
 
             // Act
-            Exception exception = assertThrows(CustomExceptionEntities.class, () -> categoryController.createCategory(categoryRequestDTO));
+            Exception exception = assertThrows(CustomExceptionEntities.class, () -> categoryController.createCategory(expectedRequest));
 
             // Assert
             assertThat(exception.getMessage()).isEqualTo("Could not create category");
-            verify(categoryService).processCreateCategory(categoryRequestDTO);
+            verify(categoryService).processCreateCategory(expectedRequest);
         }
     }
 
@@ -178,32 +164,30 @@ class CategoryControllerTest {
         @DisplayName("Should update category with success")
         void shouldUpdateCategoryWithSuccess() {
             // Arrange
-            CategoryUpdateRequestDTO expectedResponse = new CategoryUpdateRequestDTO("name", "Slug");
-            when(categoryService.processUpdateCategory(categoryId, expectedResponse))
+            when(categoryService.processUpdateCategory(categoryId, expectedRequestDto))
                     .thenReturn(ResponseEntity.noContent().build());
 
             // Act
-            ResponseEntity<Void> responseEntity = categoryController.updateCategory(categoryId, expectedResponse);
+            ResponseEntity<Void> responseEntity = categoryController.updateCategory(categoryId, expectedRequestDto);
 
             // Assert
             assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
-            verify(categoryService).processUpdateCategory(categoryId, expectedResponse);
+            verify(categoryService).processUpdateCategory(categoryId, expectedRequestDto);
         }
 
         @Test
         @DisplayName("Should return not found when category is not found")
         void shouldReturnNotFoundWhenCategoryIsNotFound() {
             // Arrange
-            CategoryUpdateRequestDTO expectedResponse = new CategoryUpdateRequestDTO("name", "Slug");
-            when(categoryService.processUpdateCategory(categoryId, expectedResponse))
+            when(categoryService.processUpdateCategory(categoryId, expectedRequestDto))
                     .thenThrow(new CategoryNotFoundException("Could not find category with id:" + categoryId));
 
             // Act
-            Exception exception = assertThrows(CategoryNotFoundException.class, () -> categoryController.updateCategory(categoryId, expectedResponse));
+            Exception exception = assertThrows(CategoryNotFoundException.class, () -> categoryController.updateCategory(categoryId, expectedRequestDto));
 
             // Assert
             assertThat(exception.getMessage()).isEqualTo("Could not find category with id:" + categoryId);
-            verify(categoryService).processUpdateCategory(categoryId, expectedResponse);
+            verify(categoryService).processUpdateCategory(categoryId, expectedRequestDto);
         }
 
     }
@@ -267,7 +251,7 @@ class CategoryControllerTest {
 
         @Test
         @DisplayName("Should return not found when category is not found")
-        void shouldReturnNotFoundWhenTagIsNotFound() {
+        void shouldReturnNotFoundWhenCategoryIsNotFound() {
             // Arrange
             when(categoryService.findPostsByCategoryId(categoryId))
                     .thenThrow(new CategoryNotFoundException("Could not find category with id:" + categoryId));
