@@ -1,6 +1,7 @@
 package org.instituteatri.backendblog.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.instituteatri.backendblog.domain.entities.Post;
 import org.instituteatri.backendblog.domain.entities.Tag;
 import org.instituteatri.backendblog.dto.request.TagRequestDTO;
@@ -12,8 +13,6 @@ import org.instituteatri.backendblog.infrastructure.exceptions.TagNotFoundExcept
 import org.instituteatri.backendblog.repository.PostRepository;
 import org.instituteatri.backendblog.repository.TagRepository;
 import org.modelmapper.ModelMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -23,11 +22,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class TagService {
 
-    private static final Logger log = LoggerFactory.getLogger(TagService.class);
     private final TagRepository tagRepository;
     private final PostRepository postRepository;
     private final ModelMapper modelMapper;
