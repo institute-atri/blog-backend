@@ -50,17 +50,16 @@ public class UserService {
     }
 
     public ResponseEntity<UserResponseDTO> findById(String userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("Could not find user with id:" + userId));
-        UserResponseDTO userResponse = modelMapper.map(user, UserResponseDTO.class);
+        User existingUser = findUserByIdOrThrow(userId);
+
+        UserResponseDTO userResponse = modelMapper.map(existingUser, UserResponseDTO.class);
         return ResponseEntity.ok(userResponse);
     }
 
     public ResponseEntity<List<PostResponseDTO>> findPostsByUserId(String userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("Could not find user with id:" + userId));
+        User existingUser = findUserByIdOrThrow(userId);
 
-        return ResponseEntity.ok().body(user.getPosts().stream()
+        return ResponseEntity.ok().body(existingUser.getPosts().stream()
                 .map(post -> modelMapper.map(post, PostResponseDTO.class))
                 .toList());
     }
