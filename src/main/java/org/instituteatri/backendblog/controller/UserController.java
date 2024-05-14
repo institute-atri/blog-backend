@@ -93,10 +93,8 @@ public class UserController {
             })
     @GetMapping("/find/{id}")
     public ResponseEntity<UserResponseDTO> findByIdUser(@PathVariable String id) {
-        UserResponseDTO user = userService.findById(id);
-        return ResponseEntity.ok().body(user);
+        return userService.findById(id);
     }
-
 
     @Operation(
             method = "PUT",
@@ -184,7 +182,6 @@ public class UserController {
         return userService.processDeleteUser(id);
     }
 
-
     @Operation(
             method = "GET",
             summary = "Find posts by user Id",
@@ -247,10 +244,8 @@ public class UserController {
     })
     @GetMapping("/posts/{id}")
     public ResponseEntity<List<PostResponseDTO>> findAllPostsByUserId(@PathVariable String id) {
-        List<PostResponseDTO> postResponseDTOS = userService.findPostsByUserId(id);
-        return ResponseEntity.ok(postResponseDTOS);
+        return userService.findPostsByUserId(id);
     }
-
 
     @Operation(
             method = "POST",
