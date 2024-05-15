@@ -86,30 +86,30 @@ class UserTest {
             int postCount = 0;
 
             // Act
-            User user = new User(id, name, lastName, phoneNumber, bio, email, password, isActive, failedLoginAttempts, lockExpirationTime, role, posts, tokens, postCount);
+            User testUser = new User(id, name, lastName, phoneNumber, bio, email, password, isActive, failedLoginAttempts, lockExpirationTime, role, posts, tokens, postCount);
 
             // Assert
-            assertEquals(id, user.getId(), "ID should be set correctly");
-            assertEquals(name, user.getName(), "Name should be set correctly");
-            assertEquals(lastName, user.getLastName(), "Last name should be set correctly");
-            assertEquals(phoneNumber, user.getPhoneNumber(), "Phone number should be set correctly");
-            assertEquals(bio, user.getBio(), "Bio should be set correctly");
-            assertEquals(email, user.getEmail(), "Email should be set correctly");
-            assertEquals(password, user.getPassword(), "Password should be set correctly");
-            assertTrue(user.isActive(), "isActive should be set correctly");
-            assertEquals(failedLoginAttempts, user.getFailedLoginAttempts(), "Failed login attempts should be set correctly");
-            assertEquals(lockExpirationTime, user.getLockExpirationTime(), "Lock expiration time should be set correctly");
-            assertEquals(role, user.getRole(), "Role should be set correctly");
-            assertEquals(posts, user.getPosts(), "Posts should be set correctly");
-            assertEquals(tokens, user.getTokens(), "Tokens should be set correctly");
-            assertEquals(postCount, user.getPostCount(), "Post count should be set correctly");
+            assertEquals(id, testUser.getId(), "ID should be set correctly");
+            assertEquals(name, testUser.getName(), "Name should be set correctly");
+            assertEquals(lastName, testUser.getLastName(), "Last name should be set correctly");
+            assertEquals(phoneNumber, testUser.getPhoneNumber(), "Phone number should be set correctly");
+            assertEquals(bio, testUser.getBio(), "Bio should be set correctly");
+            assertEquals(email, testUser.getEmail(), "Email should be set correctly");
+            assertEquals(password, testUser.getPassword(), "Password should be set correctly");
+            assertTrue(testUser.isActive(), "isActive should be set correctly");
+            assertEquals(failedLoginAttempts, testUser.getFailedLoginAttempts(), "Failed login attempts should be set correctly");
+            assertEquals(lockExpirationTime, testUser.getLockExpirationTime(), "Lock expiration time should be set correctly");
+            assertEquals(role, testUser.getRole(), "Role should be set correctly");
+            assertEquals(posts, testUser.getPosts(), "Posts should be set correctly");
+            assertEquals(tokens, testUser.getTokens(), "Tokens should be set correctly");
+            assertEquals(postCount, testUser.getPostCount(), "Post count should be set correctly");
         }
 
         @Test
         @DisplayName("Should not affect other properties when locking account")
         void shouldNotAffectOtherPropertiesWhenLockingAccount() {
             // Arrange
-            User user = new User(
+            User testUser = new User(
                     "Name",
                     "LastName",
                     "1234567890",
@@ -118,22 +118,22 @@ class UserTest {
                     "password",
                     true,
                     UserRole.USER);
-            String idBefore = user.getId();
-            String emailBefore = user.getEmail();
+            String idBefore = testUser.getId();
+            String emailBefore = testUser.getEmail();
 
             // Act
-            user.lockAccountForHours();
+            testUser.lockAccountForHours();
 
             // Assert
-            assertEquals(idBefore, user.getId(), "ID should not be affected by locking the account");
-            assertEquals("Name", user.getName(), "Name should not be affected by locking the account");
-            assertEquals("LastName", user.getLastName(), "LastName should not be affected by locking the account");
-            assertEquals("1234567890", user.getPhoneNumber(), "PhoneNumber should not be affected by locking the account");
-            assertEquals("Bio", user.getBio(), "Bio should not be affected by locking the account");
-            assertEquals(emailBefore, user.getEmail(), "Email should not be affected by locking the account");
-            assertEquals("password", user.getPassword(), "Password should not be affected by locking the account");
-            assertFalse(user.isActive(), "isActive should be set to false when locking the account");
-            assertEquals(UserRole.USER, user.getRole(), "Role should not be affected by locking the account");
+            assertEquals(idBefore, testUser.getId(), "ID should not be affected by locking the account");
+            assertEquals("Name", testUser.getName(), "Name should not be affected by locking the account");
+            assertEquals("LastName", testUser.getLastName(), "LastName should not be affected by locking the account");
+            assertEquals("1234567890", testUser.getPhoneNumber(), "PhoneNumber should not be affected by locking the account");
+            assertEquals("Bio", testUser.getBio(), "Bio should not be affected by locking the account");
+            assertEquals(emailBefore, testUser.getEmail(), "Email should not be affected by locking the account");
+            assertEquals("password", testUser.getPassword(), "Password should not be affected by locking the account");
+            assertFalse(testUser.isActive(), "isActive should be set to false when locking the account");
+            assertEquals(UserRole.USER, testUser.getRole(), "Role should not be affected by locking the account");
         }
 
         @Test
@@ -149,17 +149,17 @@ class UserTest {
             UserRole role = UserRole.USER;
 
             // Act
-            User user = new User(name, lastName, phoneNumber, bio, email, password, isActive, role);
+            User testUser = new User(name, lastName, phoneNumber, bio, email, password, isActive, role);
 
             // Assert
-            assertEquals(name, user.getName());
-            assertEquals(lastName, user.getLastName());
-            assertEquals(phoneNumber, user.getPhoneNumber());
-            assertEquals(bio, user.getBio());
-            assertEquals(email, user.getEmail());
-            assertEquals(password, user.getPassword());
-            assertTrue(user.isActive());
-            assertEquals(role, user.getRole());
+            assertEquals(name, testUser.getName());
+            assertEquals(lastName, testUser.getLastName());
+            assertEquals(phoneNumber, testUser.getPhoneNumber());
+            assertEquals(bio, testUser.getBio());
+            assertEquals(email, testUser.getEmail());
+            assertEquals(password, testUser.getPassword());
+            assertTrue(testUser.isActive());
+            assertEquals(role, testUser.getRole());
         }
     }
 
