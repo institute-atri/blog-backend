@@ -1,6 +1,7 @@
 package org.instituteatri.backendblog.repository;
 
 import org.instituteatri.backendblog.domain.entities.BlockedIP;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,10 @@ class BlockedIPRepositoryTest {
     @Autowired
     private BlockedIPRepository blockedIPRepository;
 
+    @AfterEach
+    void tearDown() {
+        blockedIPRepository.deleteAll();
+    }
     @Test
     @DisplayName("Should find blocked IP by its address")
     void shouldFindBlockedIPByAddress() {
