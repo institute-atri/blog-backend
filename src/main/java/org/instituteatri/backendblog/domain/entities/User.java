@@ -50,6 +50,10 @@ public class User implements UserDetails {
     @Transient
     private int postCount;
 
+    public void setPostCount(int postCount) {
+        this.postCount = Math.max(postCount, 0);
+    }
+
     public User(String name, String lastName, String phoneNumber, String bio, String email, String password, boolean isActive, UserRole role) {
         this.name = name;
         this.lastName = lastName;
@@ -80,17 +84,24 @@ public class User implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return true;
+        if (lockExpirationTime == null) {
+            return true;
+        }
+        return lockExpirationTime.isAfter(LocalDateTime.now());
     }
 
     @Override
     public boolean isAccountNonLocked() {
+        checkLockExpiration();
         return lockExpirationTime == null || lockExpirationTime.isBefore(LocalDateTime.now());
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return true;
+        if (lockExpirationTime == null) {
+            return true;
+        }
+        return lockExpirationTime.isAfter(LocalDateTime.now());
     }
 
     @Override
@@ -101,5 +112,12 @@ public class User implements UserDetails {
     public void lockAccountForHours() {
         lockExpirationTime = LocalDateTime.now().plusHours(2);
         isActive = false;
+    }
+
+    public void checkLockExpiration() {
+        if (lockExpirationTime != null && lockExpirationTime.isBefore(LocalDateTime.now())) {
+            isActive = true;
+            lockExpirationTime = null;
+        }
     }
 }
