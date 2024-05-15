@@ -3,6 +3,7 @@ package org.instituteatri.backendblog.repository;
 import org.instituteatri.backendblog.domain.entities.User;
 import org.instituteatri.backendblog.domain.token.Token;
 import org.instituteatri.backendblog.domain.token.TokenType;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -30,6 +31,11 @@ class TokenRepositoryTest {
     @BeforeEach
     void setUp() {
         tokenRepository.saveAll(expectedTokens);
+    }
+
+    @AfterEach
+    void tearDown() {
+        tokenRepository.deleteAll();
     }
 
     @Test
@@ -114,6 +120,8 @@ class TokenRepositoryTest {
     @Test
     @DisplayName("Should not find any tokens for non-existent user")
     void shouldNotFindAnyTokensForNonExistentUser() {
+        // Arrange
+
         // Act
         List<Token> actualTokens = tokenRepository.findAllByUserId("non-existent-user-id");
 
@@ -149,8 +157,11 @@ class TokenRepositoryTest {
     @Test
     @DisplayName("Should not find token by invalid token value and verify no token is returned")
     void shouldNotFindTokenByInvalidTokenValueAndVerifyNoTokenIsReturned() {
+        // Arrange
+        String invalidTokenValue = "invalidTokenValue";
+
         // Act
-        Optional<Token> foundTokenOptional = tokenRepository.findByTokenValue("invalidTokenValue");
+        Optional<Token> foundTokenOptional = tokenRepository.findByTokenValue(invalidTokenValue);
 
         // Assert
         assertFalse(foundTokenOptional.isPresent(), "Token should not be found with an invalid value");
