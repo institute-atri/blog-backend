@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: backend-blog
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/blog
