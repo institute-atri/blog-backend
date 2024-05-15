@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.time.Instant;
 
 @Getter
 @Setter
@@ -25,4 +26,5 @@ public class BlockedIP implements Serializable {
     private String ipAddress;
     private int failedAttempts;
     private String userAgent;
+    private Instant lastFailedAttemptTimestamp;
 }
