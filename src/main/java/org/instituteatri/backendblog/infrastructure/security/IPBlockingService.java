@@ -6,6 +6,10 @@ import org.instituteatri.backendblog.domain.entities.BlockedIP;
 import org.instituteatri.backendblog.repository.BlockedIPRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
+import java.util.Comparator;
+import java.util.List;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -16,13 +20,18 @@ public class IPBlockingService {
 
 
     public void registerFailedAttempt(String ipAddress, String userAgent) {
-        BlockedIP blockedIP = blockedIPRepository.findByIpAddress(ipAddress);
-        if (blockedIP == null) {
+        List<BlockedIP> blockedIPs = blockedIPRepository.findByIpAddress(ipAddress);
+        BlockedIP blockedIP;
+        if (blockedIPs.isEmpty()) {
             blockedIP = new BlockedIP();
             blockedIP.setIpAddress(ipAddress);
+        }else {
+            blockedIPs.sort(Comparator.comparing(BlockedIP::getLastFailedAttemptTimestamp).reversed());
+            blockedIP = blockedIPs.getFirst();
         }
         blockedIP.setFailedAttempts(blockedIP.getFailedAttempts() + 1);
         blockedIP.setUserAgent(userAgent);
+        blockedIP.setLastFailedAttemptTimestamp(Instant.now());
         blockedIPRepository.save(blockedIP);
         log.warn("[BLOCKED_IP] Failed attempt from IP address: {} and User-Agent: {} - Attempt count: {}", ipAddress, userAgent, blockedIP.getFailedAttempts());
 
@@ -31,8 +40,8 @@ public class IPBlockingService {
         }
     }
     public boolean isBlocked(String ipAddress) {
-        BlockedIP blockedIP = blockedIPRepository.findByIpAddress(ipAddress);
-        return blockedIP != null && blockedIP.getFailedAttempts() >= 3;
+        List<BlockedIP> blockedIPs = blockedIPRepository.findByIpAddress(ipAddress);
+        return blockedIPs.stream().anyMatch(blockedIP -> blockedIP.getFailedAttempts() >= 3);
     }
 
     public String getRealClientIP() {
