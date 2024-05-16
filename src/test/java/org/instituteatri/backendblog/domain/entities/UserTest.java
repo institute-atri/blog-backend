@@ -16,6 +16,73 @@ class UserTest {
     User user = new User();
     String email = "test@localhost.com";
 
+
+    @Nested
+    class testEqualsAndHashCode {
+
+        @Test
+        @DisplayName("Test equals method")
+        void testEquals() {
+            // Arrange
+            User userTestEquals1 = new User();
+            userTestEquals1.setId("1");
+            User userTestEquals2 = new User();
+            userTestEquals2.setId("1");
+            // Act & Assert
+            assertEquals(userTestEquals1, userTestEquals2, "Objects should be equal when they have the same values");
+        }
+
+        @Test
+        @DisplayName("Test equals method with different values")
+        void testEqualsWithDifferentValues() {
+            // Arrange
+            User userDifferentValues1 = new User();
+            userDifferentValues1.setId("1");
+            User userDifferentValues2 = new User();
+            userDifferentValues2.setId("2");
+
+            // Act & Assert
+            assertNotEquals(userDifferentValues1, userDifferentValues2, "Objects should not be equal when they have different values");
+        }
+
+        @Test
+        @DisplayName("Test equals method with different type")
+        void testEqualsWithDifferentType() {
+            // Arrange
+            Object differentObject = new Object();
+
+            // Act & Assert
+            assertNotEquals(user, differentObject, "Objects should not be equal when compared with a different type");
+        }
+
+        @Test
+        @DisplayName("Test equals method with same object")
+        void testEqualsWithSameObject() {
+            // Act & Assert
+            assertEquals(user, user, "An object should be equal to itself");
+        }
+
+        @Test
+        @DisplayName("Test equals method with null")
+        void testEqualsWithNull() {
+            // Act & Assert
+            assertNotEquals(user, null, "An object should not be equal to null");
+        }
+
+        @Test
+        @DisplayName("Test hashCode method")
+        void testHashCode() {
+            // Arrange
+            User userHashCode1 = new User();
+            userHashCode1.setId("user1");
+            User userHashCode2 = new User();
+            userHashCode2.setId("user1");
+            // Act & Assert
+            assertEquals(userHashCode1.hashCode(), userHashCode2.hashCode(), "Hash codes of two equal users should be the same");
+        }
+    }
+
+
     @Test
     @DisplayName("Should initialize post list")
     void shouldInitializePostList() {
@@ -343,6 +410,38 @@ class UserTest {
 
             // Assert
             assertTrue(user.isActive());
+        }
+
+        @Test
+        @DisplayName("Should return true when lockExpirationTime is null")
+        void shouldReturnTrueWhenLockExpirationTimeIsNull() {
+            // Arrange
+            user.setLockExpirationTime(null);
+
+            // Act & Assert
+            assertTrue(user.isAccountNonLocked(), "Account should not be locked when lockExpirationTime is null");
+        }
+
+        @Test
+        @DisplayName("Should return true when lockExpirationTime is before current time")
+        void shouldReturnTrueWhenLockExpirationTimeIsBeforeCurrentTime() {
+            // Arrange
+            LocalDateTime pastExpiration = LocalDateTime.now().minusHours(1);
+            user.setLockExpirationTime(pastExpiration);
+
+            // Act & Assert
+            assertTrue(user.isAccountNonLocked(), "Account should not be locked when lockExpirationTime is before current time");
+        }
+
+        @Test
+        @DisplayName("Should return false when lockExpirationTime is after current time")
+        void shouldReturnFalseWhenLockExpirationTimeIsAfterCurrentTime() {
+            // Arrange
+            LocalDateTime futureExpiration = LocalDateTime.now().plusHours(1);
+            user.setLockExpirationTime(futureExpiration);
+
+            // Act & Assert
+            assertFalse(user.isAccountNonLocked(), "Account should be locked when lockExpirationTime is after current time");
         }
     }
 }
