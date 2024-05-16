@@ -132,7 +132,7 @@ class BlockedIPTest {
     @DisplayName("Test equals method with null")
     void testEqualsWithNull() {
         // Act & Assert
-        assertNotEquals(blockedIp, null, "Object should not be equal to null");
+        assertNotEquals(null, blockedIp, "Object should not be equal to null");
     }
 
     @Test
