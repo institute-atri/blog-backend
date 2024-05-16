@@ -66,7 +66,7 @@ class UserTest {
         @DisplayName("Test equals method with null")
         void testEqualsWithNull() {
             // Act & Assert
-            assertNotEquals(user, null, "An object should not be equal to null");
+            assertNotEquals(null, user, "An object should not be equal to null");
         }
 
         @Test
