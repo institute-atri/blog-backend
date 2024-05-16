@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.instituteatri.backendblog.dto.response.AuthorResponseDTO;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -22,9 +23,11 @@ import java.util.List;
 @NoArgsConstructor
 @Document
 public class Post implements Serializable {
+
     @Serial
     private static final long serialVersionUID = 1L;
 
+    @Id
     private String id;
     private String title;
     private String summary;
@@ -51,5 +54,19 @@ public class Post implements Serializable {
         this.createdAt = createdAt;
         this.user = user;
         this.authorResponseDTO = new AuthorResponseDTO(user.getName(), user.getLastName());
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        if (this.createdAt != null) {
+            throw new UnsupportedOperationException("createdAt cannot be updated after object creation");
+        }
+        this.createdAt = createdAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        if (updatedAt.isBefore(this.createdAt)) {
+            throw new IllegalArgumentException("updatedAt cannot be before createdAt");
+        }
+        this.updatedAt = updatedAt;
     }
 }
