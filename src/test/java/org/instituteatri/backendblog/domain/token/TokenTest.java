@@ -28,10 +28,10 @@ class TokenTest {
     @Test
     @DisplayName("Test equality for objects built using builder")
     void testEqualityForObjectsBuiltUsingBuilder() {
-        Token token1 = createTokenUsingBuilder(new User());
-        Token token2 = createTokenUsingBuilder(new User());
+        Token tokenBuilder1 = createTokenUsingBuilder(new User());
+        Token tokenBuilder2 = createTokenUsingBuilder(new User());
 
-        assertEquals(token1, token2, "Method should return true for objects built using builder with same values");
+        assertEquals(tokenBuilder1, tokenBuilder2, "Method should return true for objects built using builder with same values");
     }
 
     @Test
@@ -83,10 +83,10 @@ class TokenTest {
     @Test
     @DisplayName("Test hashCode method")
     void testHashCode() {
-        Token token1 = createToken("id1", "value1", TokenType.BEARER, new User(), false, false);
-        Token token2 = createToken("id1", "value1", TokenType.BEARER, new User(), false, false);
+        Token tokenHashCode1 = createToken("id1", "value1", TokenType.BEARER, new User(), false, false);
+        Token tokenHashCode2 = createToken("id1", "value1", TokenType.BEARER, new User(), false, false);
 
-        assertEquals(token1.hashCode(), token2.hashCode(), "hashCode() should generate the same value for equal objects");
+        assertEquals(tokenHashCode1.hashCode(), tokenHashCode2.hashCode(), "hashCode() should generate the same value for equal objects");
     }
 
     @Nested
@@ -115,17 +115,17 @@ class TokenTest {
         @Test
         @DisplayName("Test equals method with different tokenValue")
         void testEqualsWithDifferentTokenValue() {
-            Token token1 = createToken("id", "value1", TokenType.BEARER, new User(), false, false);
-            Token token2 = createToken("id", "value2", TokenType.BEARER, new User(), false, false);
+            Token tokenTokenValue1 = createToken("id", "value1", TokenType.BEARER, new User(), false, false);
+            Token tokenTokenValue2 = createToken("id", "value2", TokenType.BEARER, new User(), false, false);
 
-            assertNotEquals(token1, token2, "Objects should not be equal when they have different token values");
+            assertNotEquals(tokenTokenValue1, tokenTokenValue2, "Objects should not be equal when they have different token values");
         }
 
         @Test
         @DisplayName("Test equals method with null")
         void testEqualsWithNull() {
             // Act & Assert
-            assertNotEquals(token1, null, "Object should not be equal to null");
+            assertNotEquals(null, token1, "Object should not be equal to null");
         }
 
         @Test
@@ -153,19 +153,19 @@ class TokenTest {
         @Test
         @DisplayName("Test equals method with different values including tokenValue")
         void testEqualsWithDifferentValues() {
-            Token token2 = createToken("id2", "value2", TokenType.BEARER, new User(), true, true);
+            Token tokenDifferentValues = createToken("id2", "value2", TokenType.BEARER, new User(), true, true);
 
-            assertNotEquals(token1, token2, "Objects should not be equal when they have different values");
-            assertNotEquals(token1.getTokenValue(), token2.getTokenValue(), "Token values should not be equal");
+            assertNotEquals(token1, tokenDifferentValues, "Objects should not be equal when they have different values");
+            assertNotEquals(token1.getTokenValue(), tokenDifferentValues.getTokenValue(), "Token values should not be equal");
         }
 
         @Test
         @DisplayName("Test equals method with different tokenType")
         void testEqualsWithDifferentTokenType() {
-            Token token1 = createToken("id", "value", TokenType.BEARER, new User(), false, false);
-            Token token2 = createToken("id", "value", TokenType.BASIC, new User(), false, false);
+            Token tokenTokenType1 = createToken("id", "value", TokenType.BEARER, new User(), false, false);
+            Token tokenTokenType2 = createToken("id", "value", TokenType.BASIC, new User(), false, false);
 
-            assertNotEquals(token1, token2, "Objects should not be equal when they have different token types");
+            assertNotEquals(tokenTokenType1, tokenTokenType2, "Objects should not be equal when they have different token types");
         }
     }
 }
