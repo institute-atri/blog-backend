@@ -90,10 +90,13 @@ class CommentTest {
         @Test
         @DisplayName("Should throw UnsupportedOperationException when trying to update createdAt after object creation")
         void shouldThrowExceptionWhenUpdatingCreatedAtAfterObjectCreation() {
+            // Arrange
+            LocalDateTime createdAt = LocalDateTime.of(2023, 1, 1, 0, 0);
+
             // Act & Assert
-            assertThrows(UnsupportedOperationException.class, () -> {
-                commentCreatedAt.setCreatedAt(LocalDateTime.of(2023, 1, 1, 0, 0));
-            }, "Should throw UnsupportedOperationException if trying to update createdAt after object creation");
+            assertThrows(UnsupportedOperationException.class, () ->
+                    commentCreatedAt.setCreatedAt(createdAt),
+                    "Should throw UnsupportedOperationException if trying to update createdAt after object creation");
         }
 
         @Test
