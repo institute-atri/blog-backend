@@ -95,17 +95,21 @@ class CommentTest {
 
             // Act & Assert
             assertThrows(UnsupportedOperationException.class, () ->
-                    commentCreatedAt.setCreatedAt(createdAt),
+                            commentCreatedAt.setCreatedAt(createdAt),
                     "Should throw UnsupportedOperationException if trying to update createdAt after object creation");
         }
 
         @Test
         @DisplayName("Should not update the createdAt")
         void shouldNotUpdateCreatedAt() {
+            // Arrange
+            LocalDateTime newCreatedAt = LocalDateTime.of(2023, 1, 1, 0, 0);
+
             // Act & Assert
             assertThrows(UnsupportedOperationException.class, () ->
-                            commentCreatedAt.setCreatedAt(LocalDateTime.of(2023, 1, 1, 0, 0)),
+                            commentCreatedAt.setCreatedAt(newCreatedAt),
                     "Should throw UnsupportedOperationException if trying to update createdAt after object creation");
+
             assertEquals(initialCreatedAt, commentCreatedAt.getCreatedAt(), "createdAt should remain unchanged");
         }
 
