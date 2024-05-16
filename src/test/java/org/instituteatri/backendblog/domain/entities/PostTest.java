@@ -98,20 +98,11 @@ class PostTest {
         @Test
         @DisplayName("Should initialize properties correctly with constructor taking six parameters")
         void shouldInitializePropertiesCorrectlyWithSixParameterConstructor() {
-            // Arrange
-            Post createPost = new Post(
-                    "Test Title",
-                    "Test Summary",
-                    "Test Body",
-                    "test-slug",
-                    createdAt,
-                    createUser);
-
             // Assert
-            assertEquals("Test Title", createPost.getTitle(), "Title should be initialized correctly");
-            assertEquals("Test Summary", createPost.getSummary(), "Summary should be initialized correctly");
-            assertEquals("Test Body", createPost.getBody(), "Body should be initialized correctly");
-            assertEquals("test-slug", createPost.getSlug(), "Slug should be initialized correctly");
+            assertEquals("Title", createPost.getTitle(), "Title should be initialized correctly");
+            assertEquals("Summary", createPost.getSummary(), "Summary should be initialized correctly");
+            assertEquals("Body", createPost.getBody(), "Body should be initialized correctly");
+            assertEquals("Slug", createPost.getSlug(), "Slug should be initialized correctly");
             assertEquals(createdAt, createPost.getCreatedAt(), "createdAt should be initialized correctly");
             assertNull(createPost.getUpdatedAt(), "updatedAt should be null");
             assertNotNull(createPost.getUser(), "User should not be null");
@@ -279,10 +270,14 @@ class PostTest {
             // Arrange
             LocalDateTime updatedCreatedAt = LocalDateTime.of(2023, 1, 1, 0, 0); // New creation date
 
-            // Act & Assert
-            assertThrows(UnsupportedOperationException.class, () ->
-                            post.setCreatedAt(updatedCreatedAt)
-                    , "Should throw UnsupportedOperationException if trying to update createdAt after object creation");
+            // Act
+            UnsupportedOperationException exception = assertThrows(UnsupportedOperationException.class, () ->
+                            post.setCreatedAt(updatedCreatedAt),
+                    "Should throw UnsupportedOperationException if trying to update createdAt after object creation");
+
+            // Assert
+            assertNotNull(exception, "Exception should not be null");
+            assertEquals("createdAt cannot be updated after object creation", exception.getMessage(), "Exception message should be correct");
         }
 
         @Test
