@@ -27,7 +27,7 @@ public class IPResolverService {
         return ipAddress;
     }
 
-    private static final String[] HEADERS_TO_CHECK = {
+    public static final String[] HEADERS_TO_CHECK = {
             "X-Forwarded-For",
             "Proxy-Client-IP",
             "WL-Proxy-Client-IP",
