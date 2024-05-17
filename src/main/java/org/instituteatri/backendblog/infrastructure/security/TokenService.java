@@ -7,6 +7,7 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.instituteatri.backendblog.domain.entities.User;
 import org.instituteatri.backendblog.domain.token.Token;
@@ -28,24 +29,25 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class TokenService {
 
+    @Setter
     @Value("${security.token.private-key}")
     private RSAPrivateKey privateKey;
 
+    @Setter
     @Value("${security.token.public-key}")
     private RSAPublicKey publicKey;
 
     @Value("${security.token.expiration-token}")
-    private Integer expirationToken;
+    protected Integer expirationToken;
 
     @Value("${security.token.expiration-refresh-token}")
-    private Integer refreshTokenExpiration;
+    protected Integer refreshTokenExpiration;
 
     private final TokenRepository tokenRepository;
 
     private final IPBlockingService ipBlockingService;
 
     private final HttpServletRequest request;
-
 
     public String generateToken(User user, Integer expiration) {
         try {
@@ -89,7 +91,24 @@ public class TokenService {
         return verifyToken(token, ipAddress, userAgent);
     }
 
-    private String verifyToken(String token, String ipAddress, String userAgent) {
+    protected Optional<Token> checkTokenInRepository(String token) {
+
+        Optional<Token> optionalToken = tokenRepository.findByTokenValue(token);
+        if (optionalToken.isEmpty()) {
+            log.warn("[TOKEN_NOT_FOUND] Token not found in the database: {}", token);
+            return Optional.empty();
+        }
+
+        Token dbToken = optionalToken.get();
+        if (dbToken.isRevoked()) {
+            log.warn("[TOKEN_REVOKED] Token is revoked: {}", token);
+            return Optional.empty();
+        }
+
+        return optionalToken;
+    }
+
+    protected String verifyToken(String token, String ipAddress, String userAgent) {
 
         try {
             Algorithm algorithm = getAlgorithm();
@@ -99,21 +118,13 @@ public class TokenService {
                     .build()
                     .verify(token);
 
-            Optional<Token> optionalToken = tokenRepository.findByTokenValue(token);
+            Optional<Token> optionalToken = checkTokenInRepository(token);
             if (optionalToken.isEmpty()) {
-                log.warn("[TOKEN_NOT_FOUND] Token not found in the database: {}", token);
-                return null;
-            }
-
-            Token dbToken = optionalToken.get();
-            if (dbToken.isRevoked()) {
-                log.warn("[TOKEN_REVOKED] Token is revoked: {}", token);
                 return null;
             }
 
             String subject = decodedJWT.getSubject();
             log.info("[TOKEN_SUCCESS] Token is valid for subject: {}", subject);
-
             return subject;
 
         } catch (JWTVerificationException exception) {
@@ -123,7 +134,7 @@ public class TokenService {
         }
     }
 
-    private Algorithm getAlgorithm() {
+    protected Algorithm getAlgorithm() {
         return Algorithm.RSA256(publicKey, privateKey);
     }
 
