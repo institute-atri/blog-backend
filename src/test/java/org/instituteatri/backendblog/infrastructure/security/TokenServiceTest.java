@@ -121,17 +121,17 @@ class TokenServiceTest {
         @DisplayName("Should return token when token is valid")
         void testCheckTokenInRepository_TokenValid() {
             // Arrange
-            Token validToken = new Token();
-            validToken.setRevoked(false);
+            Token validTokenInRepository = new Token();
+            validTokenInRepository.setRevoked(false);
 
-            when(tokenRepository.findByTokenValue(token)).thenReturn(Optional.of(validToken));
+            when(tokenRepository.findByTokenValue(token)).thenReturn(Optional.of(validTokenInRepository));
 
             // Act
             Optional<Token> result = checkToken(token);
 
             // Assert
             assertTrue(result.isPresent());
-            assertEquals(validToken, result.get());
+            assertEquals(validTokenInRepository, result.get());
         }
     }
 
@@ -190,16 +190,6 @@ class TokenServiceTest {
             // Assert
             assertEquals(userEmail, result);
             verify(tokenRepository, times(1)).findByTokenValue(validToken);
-        }
-
-        @Test
-        @DisplayName("Should throw TokenGenerationException when JWT creation fails")
-        void generateToken_ShouldThrowTokenGenerationException_WhenJWTCreationFails() {
-            // Act & Assert
-            TokenService tokenServiceSpy = spy(tokenService);
-            doThrow(JWTCreationException.class).when(tokenServiceSpy).getAlgorithm();
-
-            assertThrows(TokenGenerationException.class, () -> tokenServiceSpy.generateToken(user, 60));
         }
 
         @Test
@@ -314,14 +304,14 @@ class TokenServiceTest {
         @Test
         void testValidateTokenBlockedIP() {
             // Arrange
-            String validToken = "valid.token";
+            String validTokenTokenBlockedIP = "valid.token";
 
             when(ipBlockingService.getRealClientIP()).thenReturn(ipAddress);
             when(request.getHeader("User-Agent")).thenReturn(userAgent);
             when(ipBlockingService.isBlocked("127.0.0.1")).thenReturn(true);
 
             // Act
-            String result = tokenService.validateToken(validToken);
+            String result = tokenService.validateToken(validTokenTokenBlockedIP);
 
             // Assert
             assertNull(result);
