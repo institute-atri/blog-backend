@@ -325,7 +325,7 @@ class SecurityFilterTest {
     class testIsTokenValidMethod {
         @Test
         @DisplayName("Token should be invalid if expired")
-        public void testIsTokenValid_whenTokenRepositoryReturnsExpiredToken_thenReturnsFalse() {
+        void testIsTokenValid_whenTokenRepositoryReturnsExpiredToken_thenReturnsFalse() {
             // Arrange
             when(tokenRepository.findByTokenValue("expiredToken")).thenReturn(Optional.of(mockToken));
             when(mockToken.isExpired()).thenReturn(true);
@@ -341,7 +341,7 @@ class SecurityFilterTest {
 
         @Test
         @DisplayName("Token should be invalid if revoked")
-        public void testIsTokenValid_whenTokenRepositoryReturnsRevokedToken_thenReturnsFalse() {
+        void testIsTokenValid_whenTokenRepositoryReturnsRevokedToken_thenReturnsFalse() {
             // Arrange
             when(tokenRepository.findByTokenValue("revokedToken")).thenReturn(Optional.of(mockToken));
             when(mockToken.isRevoked()).thenReturn(true);
@@ -357,7 +357,7 @@ class SecurityFilterTest {
 
         @Test
         @DisplayName("Token should be valid if not expired and not revoked")
-        public void testIsTokenValid_whenTokenRepositoryReturnsValidToken_thenReturnsTrue() {
+        void testIsTokenValid_whenTokenRepositoryReturnsValidToken_thenReturnsTrue() {
             // Arrange
             when(tokenRepository.findByTokenValue(validToken)).thenReturn(Optional.of(mockToken));
             when(mockToken.isExpired()).thenReturn(false);
