@@ -53,6 +53,7 @@ public class SecurityFilter extends OncePerRequestFilter {
             String token = recoverTokenFromRequest(request);
             if (token != null) {
                 handleAuthentication(token, response);
+                return;
             }
             filterChain.doFilter(request, response);
         } catch (Exception e) {
@@ -72,7 +73,6 @@ public class SecurityFilter extends OncePerRequestFilter {
         return token;
     }
 
-
     /**
      * This method attempts to validate and authenticate the token.
      * If the token is valid, the user's authentication is set in the security context.
@@ -81,12 +81,12 @@ public class SecurityFilter extends OncePerRequestFilter {
      * @param response the outgoing HTTP response
      * @throws IOException if an I/O error occurs
      */
-    private void handleAuthentication(String token, HttpServletResponse response)
+    protected void handleAuthentication(String token, HttpServletResponse response)
             throws IOException {
 
         try {
             String email = tokenService.validateToken(token);
-            UserDetails userDetails = getUserDetailsByEmail(email);
+            UserDetails userDetails = userRepository.findByEmail(email);
             boolean isTokenValid = isTokenValid(token);
 
             if (userDetails != null && isTokenValid) {
@@ -113,11 +113,7 @@ public class SecurityFilter extends OncePerRequestFilter {
         return request.getHeader("User-Agent");
     }
 
-    private UserDetails getUserDetailsByEmail(String email) {
-        return userRepository.findByEmail(email);
-    }
-
-    private boolean isTokenValid(String token) {
+    protected boolean isTokenValid(String token) {
         return tokenRepository.findByTokenValue(token)
                 .map(t -> !t.isExpired() && !t.isRevoked())
                 .orElse(false);
