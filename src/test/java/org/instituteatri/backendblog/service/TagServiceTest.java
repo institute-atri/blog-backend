@@ -51,10 +51,8 @@ class TagServiceTest {
 
     @BeforeEach
     void setUp() {
-        existingTag = new Tag("Technology", "technology");
+        existingTag = new Tag("Java", "Spring");
         existingTag.setId(tagId);
-        existingTag.setName("Technology");
-        existingTag.setSlug("technology");
     }
 
     @Nested
@@ -64,7 +62,7 @@ class TagServiceTest {
         @DisplayName("updateField should update the field when the new value is different")
         void updateField_ShouldUpdateField_WhenNewValueIsDifferent() {
             // Arrange
-            existingTag.setName("Technology");
+            existingTag.setName("Spring boot");
 
             // Act
             tagService.updateField(existingTag::setName, existingTag.getName(), "Science");
@@ -90,23 +88,23 @@ class TagServiceTest {
         @DisplayName("updateField should not update the field when the new value is the same as the current value")
         void updateField_ShouldNotUpdateField_WhenNewValueIsSameAsCurrentValue() {
             // Arrange
-            existingTag.setName("Technology");
+            existingTag.setName("Books");
 
             // Act
-            tagService.updateField(existingTag::setName, existingTag.getName(), "Technology");
+            tagService.updateField(existingTag::setName, existingTag.getName(), "Books");
 
             // Assert
-            assertEquals("Technology", existingTag.getName());
+            assertEquals("Books", existingTag.getName());
         }
 
         @Test
         @DisplayName("updateField should update the field when the current value is null")
         void updateField_ShouldUpdateField_WhenCurrentValueIsNull() {
             // Act
-            tagService.updateField(existingTag::setName, null, "NewTechnology");
+            tagService.updateField(existingTag::setName, null, "NewTech");
 
             // Assert
-            assertEquals("NewTechnology", existingTag.getName());
+            assertEquals("NewTech", existingTag.getName());
         }
     }
 
