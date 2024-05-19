@@ -342,9 +342,6 @@ class PostServiceTest {
         @Test
         @DisplayName("validateCurrentUser should not throw any exception when currentUser is not null")
         void validateCurrentUser_ShouldNotThrowException_WhenCurrentUserIsNotNull() {
-            // Arrange
-            User currentUser = new User();
-
             // Act & Assert
             assertDoesNotThrow(() -> postService.validateCurrentUser(currentUser));
         }
