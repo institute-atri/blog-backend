@@ -121,7 +121,7 @@ public class CategoryService {
         updateField(existingCategory::setSlug, existingCategory.getSlug(), updatedCategoryRequestDTO.slug());
     }
 
-    private <T> void updateField(Consumer<T> setter, T currentValue, T newValue) {
+    protected <T> void updateField(Consumer<T> setter, T currentValue, T newValue) {
         if (newValue != null && !newValue.equals(currentValue)) {
             setter.accept(newValue);
         }
