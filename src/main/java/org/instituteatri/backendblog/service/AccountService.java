@@ -145,7 +145,7 @@ public class AccountService implements UserDetailsService {
         );
     }
 
-    private void checkIPBlock(String ipAddress) {
+    protected void checkIPBlock(String ipAddress) {
         if (ipBlockingService.isBlocked(ipAddress)) {
             log.warn("Request blocked from IP address: {}", ipAddress);
             throw new TooManyRequestsException(ipAddress);
