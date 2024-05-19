@@ -512,7 +512,7 @@ class UserServiceTest {
             // Arrange
             String newPassword = "newPassword";
             String confirmPassword = "differentPassword";
-            UpdateUserRequestDTO updateUserRequestDTO = new UpdateUserRequestDTO(
+            UpdateUserRequestDTO updateRequestDTO = new UpdateUserRequestDTO(
                     "newName",
                     "newLastName",
                     "2131231",
@@ -526,7 +526,7 @@ class UserServiceTest {
 
             // Act & Assert
             assertThrows(PasswordsNotMatchException.class, () ->
-                    userService.processUpdateUser(userId, updateUserRequestDTO, authentication)
+                    userService.processUpdateUser(userId, updateRequestDTO, authentication)
             );
 
             verify(userRepository, times(1)).findById(userId);
