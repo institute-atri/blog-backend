@@ -20,7 +20,7 @@ class AuthenticationValidationStrategyImplTest {
     private AuthenticationValidationStrategyImpl strategy;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         strategy = new AuthenticationValidationStrategyImpl();
     }
 
@@ -37,7 +37,7 @@ class AuthenticationValidationStrategyImplTest {
 
     @Test
     @DisplayName("Should not throw exception when Authentication is not null and authenticated")
-    public void validate_whenAuthenticationIsNotNullAndAuthenticated_shouldNotThrowException() {
+    void validate_whenAuthenticationIsNotNullAndAuthenticated_shouldNotThrowException() {
         // Arrange
         List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_USER"));
         Authentication authentication = new UsernamePasswordAuthenticationToken("user@example.com", "password", authorities);
@@ -51,14 +51,14 @@ class AuthenticationValidationStrategyImplTest {
 
     @Test
     @DisplayName("Should throw NotAuthenticatedException when Authentication is null")
-    public void validate_whenAuthenticationIsNull_shouldThrowNotAuthenticatedException() {
+    void validate_whenAuthenticationIsNull_shouldThrowNotAuthenticatedException() {
         // Act & Assert
         assertThrows(NotAuthenticatedException.class, () -> strategy.validate(null));
     }
 
     @Test
     @DisplayName("Should throw NotAuthenticatedException when Authentication is not authenticated")
-    public void validate_whenAuthenticationIsNotAuthenticated_shouldThrowNotAuthenticatedException() {
+    void validate_whenAuthenticationIsNotAuthenticated_shouldThrowNotAuthenticatedException() {
         // Arrange
         List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_USER"));
         Authentication authentication = new UsernamePasswordAuthenticationToken("user@example.com", "password", authorities);
@@ -70,7 +70,7 @@ class AuthenticationValidationStrategyImplTest {
 
     @Test
     @DisplayName("Should throw NotAuthenticatedException when Security Context Authentication is Null")
-    public void validate_whenSecurityContextAuthenticationIsNull_shouldThrowNotAuthenticatedException() {
+    void validate_whenSecurityContextAuthenticationIsNull_shouldThrowNotAuthenticatedException() {
         // Arrange
         SecurityContext context = SecurityContextHolder.createEmptyContext();
         context.setAuthentication(null);
