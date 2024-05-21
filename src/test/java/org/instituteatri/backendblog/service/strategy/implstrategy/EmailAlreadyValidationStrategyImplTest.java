@@ -12,7 +12,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -51,7 +50,7 @@ class EmailAlreadyValidationStrategyImplTest {
         existingUser.setId("456");
         existingUser.setEmail(newEmail);
 
-        when(userRepository.findByEmail(eq(newEmail))).thenReturn(existingUser);
+        when(userRepository.findByEmail(newEmail)).thenReturn(existingUser);
 
         // Act & Assert
         assertThrows(EmailAlreadyExistsException.class, () -> strategy.validate(existingEmail, newEmail, userIdToExclude));
@@ -61,7 +60,7 @@ class EmailAlreadyValidationStrategyImplTest {
     @DisplayName("Should not throw exception when new email does not exist")
     void validate_shouldNotThrowExceptionWhenNewEmailDoesNotExist() {
         // Arrange
-        when(userRepository.findByEmail(eq(newEmail))).thenReturn(null);
+        when(userRepository.findByEmail(newEmail)).thenReturn(null);
 
         // Act & Assert
         assertDoesNotThrow(() -> strategy.validate(existingEmail, newEmail, userIdToExclude));
@@ -74,7 +73,7 @@ class EmailAlreadyValidationStrategyImplTest {
         existingUser.setId(userIdToExclude);
         existingUser.setEmail(newEmail);
 
-        when(userRepository.findByEmail(eq(newEmail))).thenReturn(existingUser);
+        when(userRepository.findByEmail(newEmail)).thenReturn(existingUser);
 
         // Act & Assert
         assertDoesNotThrow(() -> strategy.validate(existingEmail, newEmail, userIdToExclude));
