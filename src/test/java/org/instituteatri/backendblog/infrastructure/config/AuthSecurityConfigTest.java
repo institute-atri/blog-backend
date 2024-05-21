@@ -53,7 +53,8 @@ class AuthSecurityConfigTest {
     }
 
     @Test
-    void testLoginWithInvalidCredentials() throws Exception {
+    @DisplayName("Should return Unauthorized status for login with invalid credentials")
+    void shouldReturnUnauthorizedForInvalidLogin() throws Exception {
 
         String requestBodyInvalidCredentials = """
                 {
@@ -69,7 +70,8 @@ class AuthSecurityConfigTest {
     }
 
     @Test
-    void testRegistrationWithDuplicateEmail() throws Exception {
+    @DisplayName("Should return BadRequest status for registration with duplicate email")
+    void shouldReturnBadRequestForDuplicateRegistration() throws Exception {
 
         String requestBodyDuplicateEmail = """
                 {
