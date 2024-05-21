@@ -74,8 +74,8 @@ public class TokenManagerImpl implements AuthenticationTokenManager {
                 .build();
         try {
             return tokenRepository.save(token);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to save user token", e);
+        } catch (TokenGenerationException e) {
+            throw new TokenGenerationException("Failed to save user token", e);
         }
     }
 
@@ -89,8 +89,8 @@ public class TokenManagerImpl implements AuthenticationTokenManager {
             });
             try {
                 tokenRepository.saveAll(validUserTokens);
-            } catch (RuntimeException e) {
-                throw new RuntimeException("Failed to revoke user tokens", e);
+            } catch (TokenGenerationException e) {
+                throw new TokenGenerationException("Failed to revoke user tokens", e);
             }
         }
     }
