@@ -120,14 +120,14 @@ class TokenManagerImplTest {
         @Test
         @DisplayName("Should handle failure to delete tokens")
         void clearTokens_shouldHandleFailureToDeleteTokens() {
-            // Arrange
-            List<Token> deleteTokens = List.of(new Token(), new Token());
-            when(tokenRepository.findAllByUserId(user.getId())).thenReturn(deleteTokens);
-            doThrow(new TokenGenerationException("Failed to delete tokens", null)).when(tokenRepository).deleteAll(deleteTokens);
+            // Arrange & Act & Assert
+            assertThrows(TokenGenerationException.class, () -> {
+                List<Token> deleteTokens = List.of(new Token(), new Token());
+                when(tokenRepository.findAllByUserId(user.getId())).thenReturn(deleteTokens);
+                doThrow(new TokenGenerationException("Failed to delete tokens", null)).when(tokenRepository).deleteAll(deleteTokens);
 
-            // Act & Assert
-            assertThrows(TokenGenerationException.class, () ->
-                tokenManager.clearTokens(user.getId()));
+                tokenManager.clearTokens(user.getId());
+            });
         }
     }
 
