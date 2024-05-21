@@ -5,6 +5,7 @@ import org.instituteatri.backendblog.domain.entities.User;
 import org.instituteatri.backendblog.domain.token.Token;
 import org.instituteatri.backendblog.domain.token.TokenType;
 import org.instituteatri.backendblog.dto.response.TokenResponseDTO;
+import org.instituteatri.backendblog.infrastructure.exceptions.TokenGenerationException;
 import org.instituteatri.backendblog.infrastructure.security.TokenService;
 import org.instituteatri.backendblog.repository.TokenRepository;
 import org.instituteatri.backendblog.repository.UserRepository;
@@ -37,19 +38,23 @@ public class TokenManagerImpl implements AuthenticationTokenManager {
      */
     @Override
     public TokenResponseDTO generateTokenResponse(User user) {
-        String accessToken = tokenService.generateAccessToken(user);
-        String refreshToken = tokenService.generateRefreshToken(user);
+        try {
+            String accessToken = tokenService.generateAccessToken(user);
+            String refreshToken = tokenService.generateRefreshToken(user);
 
-        clearTokens(user.getId());
-        Token accessTokenToken = saveUserToken(user, accessToken);
-        Token refreshTokenToken = saveUserToken(user, refreshToken);
+            clearTokens(user.getId());
+            Token accessTokenToken = saveUserToken(user, accessToken);
+            Token refreshTokenToken = saveUserToken(user, refreshToken);
 
-        user.getTokens().clear();
-        user.getTokens().add(accessTokenToken);
-        user.getTokens().add(refreshTokenToken);
-        userRepository.save(user);
+            user.getTokens().clear();
+            user.getTokens().add(accessTokenToken);
+            user.getTokens().add(refreshTokenToken);
+            userRepository.save(user);
 
-        return new TokenResponseDTO(accessTokenToken.getTokenValue(), refreshTokenToken.getTokenValue());
+            return new TokenResponseDTO(accessTokenToken.getTokenValue(), refreshTokenToken.getTokenValue());
+        } catch (TokenGenerationException e) {
+            throw new TokenGenerationException("Failed to generate access or refresh token", e);
+        }
     }
 
     public void clearTokens(String userId) {
@@ -67,7 +72,11 @@ public class TokenManagerImpl implements AuthenticationTokenManager {
                 .expired(false)
                 .revoked(false)
                 .build();
-        return tokenRepository.save(token);
+        try {
+            return tokenRepository.save(token);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to save user token", e);
+        }
     }
 
     @Override
@@ -78,7 +87,11 @@ public class TokenManagerImpl implements AuthenticationTokenManager {
                 token.setExpired(true);
                 token.setRevoked(true);
             });
-            tokenRepository.saveAll(validUserTokens);
+            try {
+                tokenRepository.saveAll(validUserTokens);
+            } catch (RuntimeException e) {
+                throw new RuntimeException("Failed to revoke user tokens", e);
+            }
         }
     }
 }
