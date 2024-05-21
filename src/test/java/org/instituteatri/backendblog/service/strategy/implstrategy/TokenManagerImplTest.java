@@ -123,10 +123,11 @@ class TokenManagerImplTest {
             // Arrange
             List<Token> deleteTokens = List.of(new Token(), new Token());
             when(tokenRepository.findAllByUserId(user.getId())).thenReturn(deleteTokens);
-            doThrow(new RuntimeException("Failed to delete tokens")).when(tokenRepository).deleteAll(deleteTokens);
+            doThrow(new TokenGenerationException("Failed to delete tokens", null)).when(tokenRepository).deleteAll(deleteTokens);
 
             // Act & Assert
-            assertThrows(RuntimeException.class, () -> tokenManager.clearTokens(user.getId()));
+            assertThrows(TokenGenerationException.class, () ->
+                tokenManager.clearTokens(user.getId()));
         }
     }
 
@@ -161,10 +162,10 @@ class TokenManagerImplTest {
         @DisplayName("Should handle failure to save user token")
         void saveUserToken_shouldHandleFailureToSaveUserToken() {
             // Arrange
-            when(tokenRepository.save(any(Token.class))).thenThrow(new RuntimeException("Failed to save token"));
+            when(tokenRepository.save(any(Token.class))).thenThrow(new TokenGenerationException("Failed to save token", null));
 
             // Act & Assert
-            assertThrows(RuntimeException.class, () -> tokenManager.saveUserToken(user, jwtToken));
+            assertThrows(TokenGenerationException.class, () -> tokenManager.saveUserToken(user, jwtToken));
         }
     }
 
@@ -203,10 +204,10 @@ class TokenManagerImplTest {
         void revokeAllUserTokens_shouldHandleFailureToRevokeUserTokens() {
             // Arrange
             when(tokenRepository.findAllValidTokenByUser(user.getId())).thenReturn(tokens);
-            doThrow(new RuntimeException("Failed to revoke tokens")).when(tokenRepository).saveAll(anyList());
+            doThrow(new TokenGenerationException("Failed to revoke tokens", null)).when(tokenRepository).saveAll(anyList());
 
             // Act & Assert
-            assertThrows(RuntimeException.class, () -> tokenManager.revokeAllUserTokens(user));
+            assertThrows(TokenGenerationException.class, () -> tokenManager.revokeAllUserTokens(user));
         }
 
         @Test
