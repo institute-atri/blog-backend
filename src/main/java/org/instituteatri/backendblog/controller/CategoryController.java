@@ -227,7 +227,7 @@ public class CategoryController {
                                     value = "{\"message\":\"Could not find category with id:661eff024af2c96e8a7deda9\"}"
                             )))
     })
-    @PutMapping("update/{id}")
+    @PutMapping("/update/{id}")
     public ResponseEntity<Void> updateCategory(
             @PathVariable String id,
             @RequestBody @Valid CategoryUpdateRequestDTO categoryRequestDTO) {
@@ -255,7 +255,7 @@ public class CategoryController {
                                             "\"message\":\"Could not find category with id:661eff024af2c96e8a7deda9\"" +
                                             "}")))
     })
-    @DeleteMapping("delete/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteCategory(@PathVariable String id) {
         return categoryService.processDeleteCategory(id);
     }
