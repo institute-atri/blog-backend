@@ -2,6 +2,7 @@ package org.instituteatri.backendblog.infrastructure.config;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.instituteatri.backendblog.repository.TokenRepository;
 import org.instituteatri.backendblog.repository.UserRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,6 +28,9 @@ class AuthSecurityConfigTest {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private TokenRepository tokenRepository;
+
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     private MockMvc mockMvc;
@@ -50,6 +54,7 @@ class AuthSecurityConfigTest {
     @AfterEach
     void tearDown() {
         userRepository.deleteAll();
+        tokenRepository.deleteAll();
     }
 
     @Test
