@@ -219,7 +219,6 @@ class PostUpdateComponentTest {
             newTags.add(new Tag("Tag1", "slug1"));
             updatedPostRequestDto.setTags(newTags);
 
-            Post existingPost = new Post();
             existingPost.setTitle(oldTitle);
             existingPost.setSummary(oldSummary);
             existingPost.setBody(oldBody);
