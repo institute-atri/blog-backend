@@ -127,7 +127,7 @@ public class PostService {
         post.getTags().forEach(tag -> postDeleteComponent.decrementTagPostCountComponent(tag.getId(), post.getId()));
     }
 
-    private void updateEntitiesInThePostList(List<Post> posts) {
+    protected void updateEntitiesInThePostList(List<Post> posts) {
         List<User> updatedUsers = userRepository.findAll();
         List<Tag> updatedTags = tagRepository.findAll();
         List<Category> updatedCategories = categoryRepository.findAll();
@@ -145,13 +145,13 @@ public class PostService {
         }
     }
 
-    private void validateCurrentUser(User currentUser) {
+    protected void validateCurrentUser(User currentUser) {
         if (currentUser == null) {
             throw new NotAuthenticatedException();
         }
     }
 
-    private User getCurrentUser(Authentication authentication) {
+    protected User getCurrentUser(Authentication authentication) {
         if (authentication == null || !authentication.isAuthenticated()) {
             throw new NotAuthenticatedException();
         }
