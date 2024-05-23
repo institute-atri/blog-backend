@@ -47,7 +47,7 @@ public class PostCreateComponent {
         return modelMapper.map(createdPost, PostRequestDTO.class);
     }
 
-    private Post createPostFromDTO(PostRequestDTO postRequestDTO) {
+    protected Post createPostFromDTO(PostRequestDTO postRequestDTO) {
         Post newPost = new Post();
         newPost.setTitle(postRequestDTO.getTitle());
         newPost.setSummary(postRequestDTO.getSummary());
@@ -57,30 +57,30 @@ public class PostCreateComponent {
         return newPost;
     }
 
-    private void setAuthorAndUser(Post post, User user) {
+    protected void setAuthorAndUser(Post post, User user) {
         AuthorResponseDTO authorDTO = new AuthorResponseDTO(user.getName(), user.getLastName());
         post.setAuthorResponseDTO(authorDTO);
         post.setUser(user);
     }
 
-    private void loadAndSetCategoriesAndTags(Post post, List<Category> categories, List<Tag> tags) {
+    protected void loadAndSetCategoriesAndTags(Post post, List<Category> categories, List<Tag> tags) {
         List<Category> loadCategories = postLoadEntitiesComponent.loadUniqueCategoriesFromDatabase(categories);
         List<Tag> loadTags = postLoadEntitiesComponent.loadUniqueTagsFromDatabase(tags);
         post.setCategories(loadCategories);
         post.setTags(loadTags);
     }
 
-    private void incrementCategoryAndTagCounts(Post post) {
+    protected void incrementCategoryAndTagCounts(Post post) {
         post.getCategories().forEach(category -> incrementCategoryPostCountComponent(category.getId(), post));
         post.getTags().forEach(tag -> incrementTagPostCountComponent(tag.getId(), post));
     }
 
-    private void updateCurrentUser(User user, Post post) {
+    protected void updateCurrentUser(User user, Post post) {
         user.getPosts().add(post);
         userRepository.save(user);
     }
 
-    private void incrementCategoryPostCountComponent(String categoryId, Post post) {
+    protected void incrementCategoryPostCountComponent(String categoryId, Post post) {
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new CategoryNotFoundException(categoryId));
         category.setPostCount(category.getPostCount() + 1);
@@ -89,7 +89,7 @@ public class PostCreateComponent {
     }
 
 
-    private void incrementTagPostCountComponent(String tagId, Post post) {
+    protected void incrementTagPostCountComponent(String tagId, Post post) {
         Tag tag = tagRepository.findById(tagId)
                 .orElseThrow(() -> new TagNotFoundException(tagId));
         tag.setPostCount(tag.getPostCount() + 1);
