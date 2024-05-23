@@ -37,21 +37,18 @@ public class PostUpdateComponent {
         updateTagsComponent(existingPost, updatedPostRequestDto.getTags());
     }
 
-    private <T> void updateFieldComponent(Consumer<T> setter, T currentValue, T newValue) {
+    protected <T> void updateFieldComponent(Consumer<T> setter, T currentValue, T newValue) {
         if (newValue != null && !newValue.equals(currentValue)) {
             setter.accept(newValue);
         }
     }
 
-    private void updateCategoriesComponent(Post existingPost, List<Category> newCategories) {
-        if (newCategories != null) {
-            existingPost.setCategories(postLoadEntitiesComponent.loadUniqueCategoriesFromDatabase(newCategories));
-        }
+    protected void updateCategoriesComponent(Post existingPost, List<Category> newCategories) {
+        existingPost.setCategories(newCategories != null ? postLoadEntitiesComponent.loadUniqueCategoriesFromDatabase(newCategories) : null);
     }
 
-    private void updateTagsComponent(Post existingPost, List<Tag> newTags) {
-        if (newTags != null) {
-            existingPost.setTags(postLoadEntitiesComponent.loadUniqueTagsFromDatabase(newTags));
-        }
+    protected void updateTagsComponent(Post existingPost, List<Tag> newTags) {
+        existingPost.setTags(newTags != null ? postLoadEntitiesComponent.loadUniqueTagsFromDatabase(newTags) : null);
     }
+
 }
