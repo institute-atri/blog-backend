@@ -34,20 +34,25 @@ public class PostLoadEntitiesComponent {
         return mapCategoryIdsToCategories(uniqueCategoryIds, loadedCategoriesMap);
     }
 
-    private List<String> getUniqueCategoryIds(List<Category> categories) {
+    protected List<String> getUniqueCategoryIds(List<Category> categories) {
         return categories.stream()
                 .map(Category::getId)
                 .distinct()
                 .toList();
     }
 
-    private Map<String, Category> fetchCategoriesFromDatabase(List<String> uniqueCategoryIds) {
+    protected Map<String, Category> fetchCategoriesFromDatabase(List<String> uniqueCategoryIds) {
+
+        if (uniqueCategoryIds.isEmpty()) {
+            return Map.of();
+        }
+
         return categoryRepository.findAllById(uniqueCategoryIds)
                 .stream()
                 .collect(toMap(Category::getId, category -> category));
     }
 
-    private List<Category> mapCategoryIdsToCategories(List<String> uniqueCategoryIds, Map<String, Category> loadedCategoriesMap) {
+    protected List<Category> mapCategoryIdsToCategories(List<String> uniqueCategoryIds, Map<String, Category> loadedCategoriesMap) {
         return uniqueCategoryIds.stream()
                 .map(loadedCategoriesMap::get)
                 .filter(Objects::nonNull)
@@ -67,20 +72,27 @@ public class PostLoadEntitiesComponent {
         return mapTagIdsToTags(uniqueTagIds, loadedTagsMap);
     }
 
-    private List<String> getUniqueTagIds(List<Tag> tags) {
+    protected List<String> getUniqueTagIds(List<Tag> tags) {
+
         return tags.stream()
                 .map(Tag::getId)
                 .distinct()
                 .toList();
     }
 
-    private Map<String, Tag> fetchTagsFromDatabase(List<String> uniqueTagIds) {
+    protected Map<String, Tag> fetchTagsFromDatabase(List<String> uniqueTagIds) {
+
+        if (uniqueTagIds.isEmpty()) {
+            return Map.of();
+        }
+
         return tagRepository.findAllById(uniqueTagIds)
                 .stream()
                 .collect(toMap(Tag::getId, tag -> tag));
     }
 
-    private List<Tag> mapTagIdsToTags(List<String> uniqueTagIds, Map<String, Tag> loadedTagsMap) {
+    protected List<Tag> mapTagIdsToTags(List<String> uniqueTagIds, Map<String, Tag> loadedTagsMap) {
+
         return uniqueTagIds.stream()
                 .map(loadedTagsMap::get)
                 .filter(Objects::nonNull)
