@@ -29,6 +29,7 @@ public class AccountLoginManagerImpl implements AccountLoginManager {
 
     @Override
     public void handleSuccessfulLogin(User user) {
+        user.checkLockExpiration();
         if (!user.isActive()) {
             user.setFailedLoginAttempts(user.getFailedLoginAttempts() + 1);
             userRepository.save(user);
@@ -46,6 +47,7 @@ public class AccountLoginManagerImpl implements AccountLoginManager {
     public ResponseEntity<TokenResponseDTO> handleBadCredentials(String email) {
         var user = (User) userRepository.findByEmail(email);
         if (user != null) {
+            user.checkLockExpiration();
             user.setFailedLoginAttempts(user.getFailedLoginAttempts() + 1);
             userRepository.save(user);
             if (user.getFailedLoginAttempts() >= 4) {
