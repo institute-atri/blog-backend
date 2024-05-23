@@ -21,7 +21,6 @@ public class PostDeleteComponent {
     private final TagRepository tagRepository;
     private final UserRepository userRepository;
 
-
     public void decrementTagPostCountComponent(String tagId, String postId) {
         Tag tag = tagRepository.findById(tagId)
                 .orElseThrow(() -> new TagNotFoundException(tagId));
@@ -43,6 +42,7 @@ public class PostDeleteComponent {
         currentUser.setPostCount(currentPostUser - 1);
         userRepository.save(currentUser);
     }
+
     public void validatePostDeleteComponent(Post existingPost, User currentUser) {
         if (!existingPost.getUser().getId().equals(currentUser.getId())) {
             throw new UserAccessDeniedException();
