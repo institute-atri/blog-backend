@@ -19,6 +19,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -123,7 +124,7 @@ public class UserService {
                 .orElseThrow(() -> new UserNotFoundException("Could not find user with id:" + userId));
     }
 
-    private void updateUserProperties(User existingUser, UpdateUserRequestDTO updatedUserDto) {
+    protected void updateUserProperties(User existingUser, UpdateUserRequestDTO updatedUserDto) {
         updateField(existingUser::setName, existingUser.getName(), updatedUserDto.name());
         updateField(existingUser::setLastName, existingUser.getLastName(), updatedUserDto.lastName());
         updateField(existingUser::setPhoneNumber, existingUser.getPhoneNumber(), updatedUserDto.phoneNumber());
@@ -132,7 +133,7 @@ public class UserService {
         updatePassword(existingUser, updatedUserDto.password());
     }
 
-    private <T> void updateField(Consumer<T> setter, T currentValue, T newValue) {
+    protected <T> void updateField(Consumer<T> setter, T currentValue, T newValue) {
         if (newValue != null && !newValue.equals(currentValue)) {
             setter.accept(newValue);
         }
@@ -148,8 +149,8 @@ public class UserService {
         );
     }
 
-    private void updatePassword(User existingUser, String newPassword) {
-        if (newPassword != null && !passwordEncoder.matches(newPassword, existingUser.getPassword())) {
+    protected void updatePassword(User existingUser, String newPassword) {
+        if (StringUtils.hasText(newPassword) && !passwordEncoder.matches(newPassword, existingUser.getPassword())) {
             String encryptedPassword = passwordEncoder.encode(newPassword);
             existingUser.setPassword(encryptedPassword);
         }
