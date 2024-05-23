@@ -51,7 +51,7 @@ class PostLoadEntitiesComponentTest {
         Category category3 = new Category(name3, slug3);
         String categoryId3 = "3";
 
-        List<String> uniqueCategoryIds = Arrays.asList(categoryId1, categoryId2, categoryId3);
+        List<String> listUniqueCategoryIds = Arrays.asList(categoryId1, categoryId2, categoryId3);
 
         List<Category> categories = new ArrayList<>();
 
@@ -66,19 +66,19 @@ class PostLoadEntitiesComponentTest {
                 category2.setId(categoryId2);
                 category3.setId(categoryId3);
 
-                List<Category> categories = Arrays.asList(category1, category2, category3, category1);
+                List<Category> categoriesUnique = Arrays.asList(category1, category2, category3, category1);
 
-                when(categoryRepository.findAllById(uniqueCategoryIds))
+                when(categoryRepository.findAllById(listUniqueCategoryIds))
                         .thenReturn(Arrays.asList(category1, category2, category3));
 
                 // Act
-                List<Category> result = postLoadEntitiesComponent.loadUniqueCategoriesFromDatabase(categories);
+                List<Category> categoryResult = postLoadEntitiesComponent.loadUniqueCategoriesFromDatabase(categoriesUnique);
 
                 // Assert
-                assertEquals(3, result.size());
-                assertEquals("Name1", result.get(0).getName());
-                assertEquals("Name2", result.get(1).getName());
-                assertEquals("Name3", result.get(2).getName());
+                assertEquals(3, categoryResult.size());
+                assertEquals("Name1", categoryResult.get(0).getName());
+                assertEquals("Name2", categoryResult.get(1).getName());
+                assertEquals("Name3", categoryResult.get(2).getName());
             }
 
             @Test
@@ -122,10 +122,10 @@ class PostLoadEntitiesComponentTest {
             @DisplayName("Should handle empty list and return empty list")
             void getUniqueCategoryIds_ShouldHandleEmptyListAndReturnEmptyList() {
                 // Act
-                List<String> uniqueCategoryIds = postLoadEntitiesComponent.getUniqueCategoryIds(categories);
+                List<String> uniqueCategoryIdsEmpty = postLoadEntitiesComponent.getUniqueCategoryIds(categories);
 
                 // Assert
-                assertEquals(0, uniqueCategoryIds.size());
+                assertEquals(0, uniqueCategoryIdsEmpty.size());
             }
         }
 
@@ -141,11 +141,11 @@ class PostLoadEntitiesComponentTest {
                 category3.setId(categoryId3);
 
 
-                when(categoryRepository.findAllById(uniqueCategoryIds))
+                when(categoryRepository.findAllById(listUniqueCategoryIds))
                         .thenReturn(Arrays.asList(category1, category2, category3));
 
                 // Act
-                Map<String, Category> fetchedCategories = postLoadEntitiesComponent.fetchCategoriesFromDatabase(uniqueCategoryIds);
+                Map<String, Category> fetchedCategories = postLoadEntitiesComponent.fetchCategoriesFromDatabase(listUniqueCategoryIds);
 
                 // Assert
                 assertEquals(3, fetchedCategories.size());
@@ -158,10 +158,10 @@ class PostLoadEntitiesComponentTest {
             @DisplayName("Should fetch categories from database and handle empty list")
             void fetchCategoriesFromDatabase_ShouldHandleEmptyList() {
                 // Arrange
-                List<String> uniqueCategoryIds = List.of();
+                List<String> uniqueCategoryIdsEmptyList = List.of();
 
                 // Act
-                Map<String, Category> fetchedCategories = postLoadEntitiesComponent.fetchCategoriesFromDatabase(uniqueCategoryIds);
+                Map<String, Category> fetchedCategories = postLoadEntitiesComponent.fetchCategoriesFromDatabase(uniqueCategoryIdsEmptyList);
 
                 // Assert
                 assertEquals(0, fetchedCategories.size());
@@ -185,7 +185,7 @@ class PostLoadEntitiesComponentTest {
                 loadedCategoriesMap.put(categoryId3, category3);
 
                 // Act
-                List<Category> result = postLoadEntitiesComponent.mapCategoryIdsToCategories(uniqueCategoryIds, loadedCategoriesMap);
+                List<Category> result = postLoadEntitiesComponent.mapCategoryIdsToCategories(listUniqueCategoryIds, loadedCategoriesMap);
 
                 // Assert
                 assertEquals(3, result.size());
@@ -207,7 +207,7 @@ class PostLoadEntitiesComponentTest {
                 loadedCategoriesMap.put(categoryId3, category3);
 
                 // Act
-                List<Category> result = postLoadEntitiesComponent.mapCategoryIdsToCategories(uniqueCategoryIds, loadedCategoriesMap);
+                List<Category> result = postLoadEntitiesComponent.mapCategoryIdsToCategories(listUniqueCategoryIds, loadedCategoriesMap);
 
                 // Assert
                 assertEquals(2, result.size());
@@ -247,19 +247,19 @@ class PostLoadEntitiesComponentTest {
                 tag2.setId(tagId2);
                 tag3.setId(tagId3);
 
-                List<Tag> tags = Arrays.asList(tag1, tag2, tag3, tag1);
+                List<Tag> tagsUnique = Arrays.asList(tag1, tag2, tag3, tag1);
 
                 when(tagRepository.findAllById(uniqueTagIds))
                         .thenReturn(Arrays.asList(tag1, tag2, tag3));
 
                 // Act
-                List<Tag> result = postLoadEntitiesComponent.loadUniqueTagsFromDatabase(tags);
+                List<Tag> tagsResult = postLoadEntitiesComponent.loadUniqueTagsFromDatabase(tagsUnique);
 
                 // Assert
-                assertEquals(3, result.size());
-                assertEquals("Name1", result.get(0).getName());
-                assertEquals("Name2", result.get(1).getName());
-                assertEquals("Name3", result.get(2).getName());
+                assertEquals(3, tagsResult.size());
+                assertEquals("Name1", tagsResult.get(0).getName());
+                assertEquals("Name2", tagsResult.get(1).getName());
+                assertEquals("Name3", tagsResult.get(2).getName());
             }
 
             @Test
@@ -290,23 +290,23 @@ class PostLoadEntitiesComponentTest {
                 tags.add(tag3);
 
                 // Act
-                List<String> uniqueTagIds = postLoadEntitiesComponent.getUniqueTagIds(tags);
+                List<String> uniqueTagsId = postLoadEntitiesComponent.getUniqueTagIds(tags);
 
                 // Assert
-                assertEquals(3, uniqueTagIds.size());
-                assertEquals(tagId1, uniqueTagIds.get(0));
-                assertEquals(tagId2, uniqueTagIds.get(1));
-                assertEquals(tagId3, uniqueTagIds.get(2));
+                assertEquals(3, uniqueTagsId.size());
+                assertEquals(tagId1, uniqueTagsId.get(0));
+                assertEquals(tagId2, uniqueTagsId.get(1));
+                assertEquals(tagId3, uniqueTagsId.get(2));
             }
 
             @Test
             @DisplayName("Should handle empty list and return empty list")
             void getUniqueTagIds_ShouldHandleEmptyListAndReturnEmptyList() {
                 // Act
-                List<String> uniqueTagIds = postLoadEntitiesComponent.getUniqueTagIds(tags);
+                List<String> uniqueTagIdsEmpty = postLoadEntitiesComponent.getUniqueTagIds(tags);
 
                 // Assert
-                assertEquals(0, uniqueTagIds.size());
+                assertEquals(0, uniqueTagIdsEmpty.size());
             }
         }
 
@@ -338,10 +338,10 @@ class PostLoadEntitiesComponentTest {
             @DisplayName("Should fetch tags from database and handle empty list")
             void fetchTagsFromDatabase_ShouldHandleEmptyList() {
                 // Arrange
-                List<String> uniqueTagIds = List.of();
+                List<String> uniqueTagIdsEmptyList = List.of();
 
                 // Act
-                Map<String, Tag> fetchedTags = postLoadEntitiesComponent.fetchTagsFromDatabase(uniqueTagIds);
+                Map<String, Tag> fetchedTags = postLoadEntitiesComponent.fetchTagsFromDatabase(uniqueTagIdsEmptyList);
 
                 // Assert
                 assertEquals(0, fetchedTags.size());
