@@ -116,7 +116,7 @@ public class TagService {
         updateField(existingTag::setSlug, existingTag.getSlug(), updatedTagRequestDTO.slug());
     }
 
-    private <T> void updateField(Consumer<T> setter, T currentValue, T newValue) {
+    protected <T> void updateField(Consumer<T> setter, T currentValue, T newValue) {
         if (newValue != null && !newValue.equals(currentValue)) {
             setter.accept(newValue);
         }
