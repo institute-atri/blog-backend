@@ -64,9 +64,8 @@ public class Post implements Serializable {
     }
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
-        if (updatedAt.isBefore(this.createdAt)) {
-            throw new IllegalArgumentException("updatedAt cannot be before createdAt");
+        if (updatedAt != null && (this.updatedAt == null || updatedAt.isAfter(this.updatedAt))) {
+            this.updatedAt = updatedAt;
         }
-        this.updatedAt = updatedAt;
     }
 }
