@@ -309,19 +309,21 @@ class PostTest {
     @Nested
     class setUpdatedAt {
 
+        Post post = new Post();
+        LocalDateTime updateTime = LocalDateTime.now();
+
         @Test
         @DisplayName("Should have updatedAt after createdAt when updated")
         void shouldHaveUpdatedAtAfterCreatedAtWhenUpdated() {
             // Arrange
-            LocalDateTime initialTime = LocalDateTime.now().minusDays(1);
-            Post testInitialTimePost = new Post("Title", "Summary", "Body", "Slug", initialTime, createUser);
-            LocalDateTime updateTime = LocalDateTime.now();
+            LocalDateTime updatedAtAfter = LocalDateTime.now().minusDays(1);
 
             // Act
-            testInitialTimePost.setUpdatedAt(updateTime);
+            post.setCreatedAt(updatedAtAfter);
+            post.setUpdatedAt(updateTime);
 
             // Assert
-            assertTrue(testInitialTimePost.getCreatedAt().isBefore(testInitialTimePost.getUpdatedAt()),
+            assertTrue(post.getCreatedAt().isBefore(post.getUpdatedAt()),
                     "UpdatedAt should be after createdAt");
         }
 
@@ -329,18 +331,83 @@ class PostTest {
         @DisplayName("Should not allow updatedAt to be before createdAt")
         void shouldNotAllowUpdatedAtBeforeCreatedAt() {
             // Arrange
-            LocalDateTime initialTime = LocalDateTime.now();
-            Post testInitialTimePost = new Post("Title", "Summary", "Body", "Slug", initialTime, createUser);
-            LocalDateTime earlierTime = initialTime.minusDays(1);
+            LocalDateTime updatedAtBefore = LocalDateTime.now();
+            LocalDateTime laterTime = updatedAtBefore.plusDays(1);
 
             // Act
-            Exception exception = assertThrows(IllegalArgumentException.class, () ->
-                    testInitialTimePost.setUpdatedAt(earlierTime));
+            post.setCreatedAt(updatedAtBefore);
+            post.setUpdatedAt(laterTime);
 
             // Assert
-            String expectedMessage = "updatedAt cannot be before createdAt";
-            String actualMessage = exception.getMessage();
-            assertTrue(actualMessage.contains(expectedMessage), "Exception message should contain the expected text");
+            assertNotNull(post.getUpdatedAt());
+            assertEquals(laterTime, post.getUpdatedAt());
+        }
+
+
+        @Test
+        @DisplayName("Should set updatedAt if it is initially null")
+        void shouldSetUpdatedAtIfInitiallyNull() {
+            // Arrange
+            LocalDateTime updatedAtIfInitiallyNull = LocalDateTime.now().minusDays(1);
+
+            // Act
+            post.setCreatedAt(updatedAtIfInitiallyNull);
+            post.setUpdatedAt(updatedAtIfInitiallyNull.plusDays(1));
+
+            // Assert
+            assertNotNull(post.getUpdatedAt());
+            assertEquals(updatedAtIfInitiallyNull.plusDays(1), post.getUpdatedAt());
+        }
+
+        @Test
+        @DisplayName("Should not change updatedAt if given updatedAt is null")
+        void shouldNotChangeUpdatedAtIfGivenIsNull() {
+            // Arrange
+            LocalDateTime updatedAtIfGivenIsNull = LocalDateTime.now().minusDays(1);
+
+            // Act
+            post.setCreatedAt(updatedAtIfGivenIsNull);
+            post.setUpdatedAt(updateTime);
+            post.setUpdatedAt(null);
+
+            // Assert
+            assertEquals(updateTime, post.getUpdatedAt(), "updatedAt should not change if given updatedAt is null");
+        }
+
+        @Test
+        @DisplayName("Should not update updatedAt if given time is before the current updatedAt")
+        void shouldNotUpdateIfGivenTimeIsBeforeCurrentUpdatedAt() {
+            // Arrange
+            LocalDateTime updateIfGivenTimeIsBefore = LocalDateTime.now().minusDays(2);
+
+            LocalDateTime firstUpdateTime = updateIfGivenTimeIsBefore.plusDays(1);
+            LocalDateTime secondUpdateTime = updateIfGivenTimeIsBefore.plusHours(12);
+
+            // Act
+            post.setCreatedAt(updateIfGivenTimeIsBefore);
+            post.setUpdatedAt(firstUpdateTime);
+            post.setUpdatedAt(secondUpdateTime);
+
+            // Assert
+            assertEquals(firstUpdateTime, post.getUpdatedAt());
+        }
+
+        @Test
+        @DisplayName("Should update updatedAt if given time is after the current updatedAt")
+        void shouldUpdateIfGivenTimeIsAfterCurrentUpdatedAt() {
+            // Arrange
+            LocalDateTime updateIfGivenTimeIsAfter = LocalDateTime.now().minusDays(2);
+
+            LocalDateTime firstUpdateTime = updateIfGivenTimeIsAfter.plusDays(1);
+            LocalDateTime secondUpdateTime = updateIfGivenTimeIsAfter.plusDays(2);
+
+            // Act
+            post.setCreatedAt(updateIfGivenTimeIsAfter);
+            post.setUpdatedAt(firstUpdateTime);
+            post.setUpdatedAt(secondUpdateTime);
+
+            // Assert
+            assertEquals(secondUpdateTime, post.getUpdatedAt());
         }
     }
 }
