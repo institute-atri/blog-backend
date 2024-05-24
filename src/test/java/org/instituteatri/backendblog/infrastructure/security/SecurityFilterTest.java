@@ -140,31 +140,6 @@ class SecurityFilterTest {
     @DisplayName("Test Do Filter Internal method")
     class testDoFilterInternalMethod {
         @Test
-        @DisplayName("Should proceed with valid token")
-        void testDoFilterInternal_withValidToken() throws ServletException, IOException {
-            // Arrange
-            when(request.getHeader("Authorization")).thenReturn("Bearer " + validToken);
-            when(tokenService.validateToken(validToken)).thenReturn(email);
-            when(userRepository.findByEmail(email)).thenReturn(mockUserDetails);
-            when(tokenRepository.findByTokenValue(validToken)).thenReturn(Optional.of(mockToken));
-            when(mockToken.isExpired()).thenReturn(false);
-            when(mockToken.isRevoked()).thenReturn(false);
-
-            // Act
-            securityFilter.doFilterInternal(request, response, filterChain);
-
-            // Assert
-            verify(filterChain, never()).doFilter(request, response);
-            verify(tokenService).validateToken(validToken);
-            verify(userRepository).findByEmail(email);
-            verify(tokenRepository).findByTokenValue(validToken);
-
-            assertNotNull(SecurityContextHolder.getContext().getAuthentication());
-            verify(mockToken, times(1)).isExpired();
-            verify(mockToken, times(1)).isRevoked();
-        }
-
-        @Test
         @DisplayName("Should handle authentication for valid token")
         void testDoFilterInternal_ValidToken() throws Exception {
             // Arrange
