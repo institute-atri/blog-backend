@@ -51,10 +51,8 @@ public class SecurityFilter extends OncePerRequestFilter {
 
         try {
             String token = recoverTokenFromRequest(request);
-            if (token != null) {
-                if (!handleAuthentication(token, response)) {
-                    return;
-                }
+            if (token != null && !handleAuthentication(token, response)) {
+                return;
             }
             filterChain.doFilter(request, response);
         } catch (Exception e) {
