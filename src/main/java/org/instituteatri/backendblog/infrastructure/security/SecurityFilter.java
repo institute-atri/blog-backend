@@ -51,8 +51,7 @@ public class SecurityFilter extends OncePerRequestFilter {
 
         try {
             String token = recoverTokenFromRequest(request);
-            if (token != null) {
-                handleAuthentication(token, response);
+            if (token != null && !handleAuthentication(token, response)) {
                 return;
             }
             filterChain.doFilter(request, response);
@@ -81,7 +80,7 @@ public class SecurityFilter extends OncePerRequestFilter {
      * @param response the outgoing HTTP response
      * @throws IOException if an I/O error occurs
      */
-    protected void handleAuthentication(String token, HttpServletResponse response)
+    protected boolean handleAuthentication(String token, HttpServletResponse response)
             throws IOException {
 
         try {
@@ -92,12 +91,16 @@ public class SecurityFilter extends OncePerRequestFilter {
             if (userDetails != null && isTokenValid) {
                 setAuthenticationInSecurityContext(userDetails);
                 log.info("[USER_AUTHENTICATED] User: {} successfully authenticated with token: {}.", userDetails.getUsername(), token);
+                return true;
             } else {
                 getError(token);
+                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                return false;
             }
         } catch (TokenInvalidException e) {
             handleInvalidToken(response, e);
             getError(token);
+            return false;
         }
     }
 
