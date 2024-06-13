@@ -11,11 +11,7 @@ import org.instituteatri.backendblog.dto.request.RegisterRequestDTO;
 import org.instituteatri.backendblog.dto.response.TokenResponseDTO;
 import org.instituteatri.backendblog.infrastructure.exceptions.AccountLockedException;
 import org.instituteatri.backendblog.infrastructure.exceptions.EmailAlreadyExistsException;
-import org.instituteatri.backendblog.infrastructure.exceptions.TooManyRequestsException;
-import org.instituteatri.backendblog.infrastructure.security.IPBlockingService;
-import org.instituteatri.backendblog.infrastructure.security.IPResolverService;
 import org.instituteatri.backendblog.infrastructure.security.TokenService;
-import org.instituteatri.backendblog.infrastructure.security.UserCreationRateLimiterService;
 import org.instituteatri.backendblog.repository.UserRepository;
 import org.instituteatri.backendblog.service.strategy.interfaces.AccountLoginManager;
 import org.instituteatri.backendblog.service.strategy.interfaces.AuthenticationTokenManager;
@@ -40,12 +36,9 @@ public class AccountService implements UserDetailsService {
 
     private final UserRepository userRepository;
     private final TokenService tokenService;
-    private final IPBlockingService ipBlockingService;
-    private final IPResolverService ipResolverService;
     private final AuthenticationTokenManager authTokenManager;
     private final AccountLoginManager accountLoginManager;
     private final PasswordValidationStrategy passwordValidationStrategy;
-    private final UserCreationRateLimiterService userCreationRateLimiterService;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -53,11 +46,6 @@ public class AccountService implements UserDetailsService {
     }
 
     public ResponseEntity<TokenResponseDTO> processLogin(LoginRequestDTO authDto, AuthenticationManager authManager) {
-
-        String ipAddress = ipResolverService.getRealClientIP();
-        log.debug("Processing login request from IP address: {}", ipAddress);
-
-        checkIPBlock(ipAddress);
 
         try {
             var authResult = accountLoginManager.authenticateUser(authDto, authManager);
@@ -80,15 +68,6 @@ public class AccountService implements UserDetailsService {
     }
 
     public ResponseEntity<TokenResponseDTO> processRegister(RegisterRequestDTO registerRequestDTO) {
-
-        String ipAddress = ipResolverService.getRealClientIP();
-        log.debug("Processing registration request from IP address: {}", ipAddress);
-        checkIPBlock(ipAddress);
-
-        if (!userCreationRateLimiterService.allowUserCreation(ipAddress)) {
-            log.warn("User creation rate limit exceeded for IP address: {}", ipAddress);
-            throw new TooManyRequestsException(ipAddress);
-        }
 
         if (isEmailExists(registerRequestDTO.email())) {
             log.warn("Email already exists: {}", registerRequestDTO.email());
@@ -143,12 +122,5 @@ public class AccountService implements UserDetailsService {
                 true,
                 UserRole.USER
         );
-    }
-
-    protected void checkIPBlock(String ipAddress) {
-        if (ipBlockingService.isBlocked(ipAddress)) {
-            log.warn("Request blocked from IP address: {}", ipAddress);
-            throw new TooManyRequestsException(ipAddress);
-        }
     }
 }

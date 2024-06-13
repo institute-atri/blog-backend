@@ -5,7 +5,6 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -45,9 +44,6 @@ public class TokenService {
 
     private final TokenRepository tokenRepository;
 
-    private final IPBlockingService ipBlockingService;
-
-    private final HttpServletRequest request;
 
     public String generateToken(User user, Integer expiration) {
         try {
@@ -79,18 +75,6 @@ public class TokenService {
         return refreshToken;
     }
 
-    public String validateToken(String token) {
-        String ipAddress = ipBlockingService.getRealClientIP();
-        String userAgent = request.getHeader("User-Agent");
-
-        if (ipBlockingService.isBlocked(ipAddress)) {
-            log.warn("[BLOCKED_IP] Access denied for blocked IP address and User-Agent: {} - {}", ipAddress, userAgent);
-            return null;
-        }
-
-        return verifyToken(token, ipAddress, userAgent);
-    }
-
     protected Optional<Token> checkTokenInRepository(String token) {
 
         Optional<Token> optionalToken = tokenRepository.findByTokenValue(token);
@@ -108,7 +92,7 @@ public class TokenService {
         return optionalToken;
     }
 
-    protected String verifyToken(String token, String ipAddress, String userAgent) {
+    public String validateToken(String token) {
 
         try {
             Algorithm algorithm = getAlgorithm();
@@ -129,7 +113,6 @@ public class TokenService {
 
         } catch (JWTVerificationException exception) {
             log.error("[TOKEN_INVALID] JWT verification failed, exception: {}", exception.getMessage());
-            ipBlockingService.registerFailedAttempt(ipAddress, userAgent);
             return null;
         }
     }

@@ -4,7 +4,6 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import jakarta.servlet.http.HttpServletRequest;
 import org.instituteatri.backendblog.domain.entities.User;
 import org.instituteatri.backendblog.domain.entities.UserRole;
 import org.instituteatri.backendblog.domain.token.Token;
@@ -36,20 +35,12 @@ class TokenServiceTest {
     @Mock
     private TokenRepository tokenRepository;
 
-    @Mock
-    private IPBlockingService ipBlockingService;
-
-    @Mock
-    private HttpServletRequest request;
-
     @InjectMocks
     private TokenService tokenService;
 
     private final User user = new User();
     private RSAPrivateKey privateKey;
     private RSAPublicKey publicKey;
-    private final String ipAddress = "127.0.0.1";
-    private final String userAgent = "Mozilla/5.0";
     private final String userEmail = "test@example.com";
     private String validToken;
 
@@ -162,8 +153,6 @@ class TokenServiceTest {
         @DisplayName("Should return null when token is not found in database")
         void testValidateTokenNotFoundInDatabase() {
             // Arrange
-            when(ipBlockingService.getRealClientIP()).thenReturn(ipAddress);
-            when(request.getHeader("User-Agent")).thenReturn(userAgent);
             when(tokenRepository.findByTokenValue(validToken)).thenReturn(Optional.empty());
 
             // Act
@@ -180,8 +169,6 @@ class TokenServiceTest {
             // Arrange
             Token expectedToken = new Token();
 
-            when(ipBlockingService.getRealClientIP()).thenReturn(ipAddress);
-            when(request.getHeader("User-Agent")).thenReturn(userAgent);
             when(tokenRepository.findByTokenValue(validToken)).thenReturn(Optional.of(expectedToken));
 
             // Act
@@ -267,9 +254,6 @@ class TokenServiceTest {
             Token validTokenObj = new Token();
             validTokenObj.setUser(user);
 
-            when(ipBlockingService.getRealClientIP()).thenReturn(ipAddress);
-            when(request.getHeader("User-Agent")).thenReturn(userAgent);
-            when(ipBlockingService.isBlocked(ipAddress)).thenReturn(false);
             when(tokenRepository.findByTokenValue(validToken)).thenReturn(Optional.of(validTokenObj));
 
             // Act
@@ -277,7 +261,6 @@ class TokenServiceTest {
 
             // Assert
             assertEquals(userEmail, result);
-            verify(ipBlockingService, times(0)).registerFailedAttempt(ipAddress, userAgent);
         }
 
         @Test
@@ -286,15 +269,11 @@ class TokenServiceTest {
             // Arrange
             String malformedToken = "malformed.token";
 
-            when(ipBlockingService.getRealClientIP()).thenReturn(ipAddress);
-            when(request.getHeader("User-Agent")).thenReturn(userAgent);
-
             // Act
             String result = tokenService.validateToken(malformedToken);
 
             // Assert
             assertNull(result);
-            verify(ipBlockingService, times(1)).registerFailedAttempt(ipAddress, userAgent);
         }
     }
 
@@ -306,16 +285,11 @@ class TokenServiceTest {
             // Arrange
             String validTokenTokenBlockedIP = "valid.token";
 
-            when(ipBlockingService.getRealClientIP()).thenReturn(ipAddress);
-            when(request.getHeader("User-Agent")).thenReturn(userAgent);
-            when(ipBlockingService.isBlocked("127.0.0.1")).thenReturn(true);
-
             // Act
             String result = tokenService.validateToken(validTokenTokenBlockedIP);
 
             // Assert
             assertNull(result);
-            verify(ipBlockingService, times(1)).isBlocked(ipAddress);
         }
     }
 }

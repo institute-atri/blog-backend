@@ -7,11 +7,7 @@ import org.instituteatri.backendblog.dto.request.RegisterRequestDTO;
 import org.instituteatri.backendblog.dto.response.TokenResponseDTO;
 import org.instituteatri.backendblog.infrastructure.exceptions.AccountLockedException;
 import org.instituteatri.backendblog.infrastructure.exceptions.EmailAlreadyExistsException;
-import org.instituteatri.backendblog.infrastructure.exceptions.TooManyRequestsException;
-import org.instituteatri.backendblog.infrastructure.security.IPBlockingService;
-import org.instituteatri.backendblog.infrastructure.security.IPResolverService;
 import org.instituteatri.backendblog.infrastructure.security.TokenService;
-import org.instituteatri.backendblog.infrastructure.security.UserCreationRateLimiterService;
 import org.instituteatri.backendblog.repository.UserRepository;
 import org.instituteatri.backendblog.service.strategy.interfaces.AccountLoginManager;
 import org.instituteatri.backendblog.service.strategy.interfaces.AuthenticationTokenManager;
@@ -49,12 +45,6 @@ class AccountServiceTest {
     private TokenService tokenService;
 
     @Mock
-    private IPBlockingService ipBlockingService;
-
-    @Mock
-    private IPResolverService ipResolverService;
-
-    @Mock
     private AuthenticationTokenManager authTokenManager;
 
     @Mock
@@ -64,15 +54,11 @@ class AccountServiceTest {
     private PasswordValidationStrategy passwordValidationStrategy;
 
     @Mock
-    private UserCreationRateLimiterService userCreationRateLimiterService;
-
-    @Mock
     private AuthenticationManager authManager;
 
     @Mock
     private Authentication authResult;
 
-    private final String ipAddress = "127.0.0.1";
     private final LoginRequestDTO authDto = new LoginRequestDTO("user@example.com", "password");
     private final RegisterRequestDTO registerRequestDTO = new RegisterRequestDTO(
             "Name",
@@ -92,7 +78,6 @@ class AccountServiceTest {
             // Arrange
             User userLogin = new User();
             userLogin.setEmail("user@example.com");
-            when(ipResolverService.getRealClientIP()).thenReturn(ipAddress);
             when(accountLoginManager.authenticateUser(authDto, authManager)).thenReturn(authResult);
             when(authResult.getPrincipal()).thenReturn(userLogin);
             TokenResponseDTO tokenResponse = new TokenResponseDTO("token", "refreshToken");
@@ -112,7 +97,6 @@ class AccountServiceTest {
         @DisplayName("processLogin should throw AccountLockedException when user account is locked")
         void processLogin_ShouldThrowAccountLockedException_WhenUserAccountIsLocked() {
             // Arrange
-            when(ipResolverService.getRealClientIP()).thenReturn(ipAddress);
             when(accountLoginManager.authenticateUser(authDto, authManager)).thenThrow(LockedException.class);
 
             // Act & Assert
@@ -124,7 +108,6 @@ class AccountServiceTest {
         @DisplayName("processLogin should handle bad credentials and return appropriate response")
         void processLogin_ShouldHandleBadCredentials_WhenBadCredentialsProvided() {
             // Arrange
-            when(ipResolverService.getRealClientIP()).thenReturn(ipAddress);
             when(accountLoginManager.authenticateUser(authDto, authManager)).thenThrow(BadCredentialsException.class);
             ResponseEntity<TokenResponseDTO> badCredentialsResponse = ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
             when(accountLoginManager.handleBadCredentials(authDto.email())).thenReturn(badCredentialsResponse);
@@ -145,8 +128,6 @@ class AccountServiceTest {
         @DisplayName("processRegister should create new user and return created response with token")
         void processRegister_ShouldCreateNewUser_WhenRequestIsValid() {
             // Arrange
-            when(ipResolverService.getRealClientIP()).thenReturn(ipAddress);
-            when(userCreationRateLimiterService.allowUserCreation(ipAddress)).thenReturn(true);
             when(userRepository.findByEmail(registerRequestDTO.email())).thenReturn(null);
             doNothing().when(passwordValidationStrategy).validate(registerRequestDTO.password(), registerRequestDTO.confirmPassword());
 
@@ -178,25 +159,11 @@ class AccountServiceTest {
         @DisplayName("processRegister should throw EmailAlreadyExistsException when email already exists")
         void processRegister_ShouldThrowEmailAlreadyExistsException_WhenEmailAlreadyExists() {
             // Arrange
-            when(ipResolverService.getRealClientIP()).thenReturn(ipAddress);
-            when(userCreationRateLimiterService.allowUserCreation(ipAddress)).thenReturn(true);
             when(userRepository.findByEmail(registerRequestDTO.email())).thenReturn(new User());
 
             // Act & Assert
             assertThrows(EmailAlreadyExistsException.class, () -> accountService.processRegister(registerRequestDTO));
         }
-
-        @Test
-        @DisplayName("processRegister should throw TooManyRequestsException when user creation rate limit is exceeded")
-        void processRegister_ShouldThrowTooManyRequestsException_WhenRateLimitExceeded() {
-            // Arrange
-            when(ipResolverService.getRealClientIP()).thenReturn(ipAddress);
-            when(userCreationRateLimiterService.allowUserCreation(ipAddress)).thenReturn(false);
-
-            // Act & Assert
-            assertThrows(TooManyRequestsException.class, () -> accountService.processRegister(registerRequestDTO));
-        }
-
     }
 
     @Nested
@@ -241,32 +208,6 @@ class AccountServiceTest {
 
             // Assert
             assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-        }
-    }
-
-    @Nested
-    @DisplayName("Test check IP block method")
-    class testCheckIPBlockMethod {
-        @Test
-        @DisplayName("checkIPBlock should throw TooManyRequestsException when IP is blocked")
-        void checkIPBlock_ShouldThrowTooManyRequestsException_WhenIPisBlocked() {
-            // Arrange
-            String blockedIP = "127.0.0.1";
-            when(ipBlockingService.isBlocked(blockedIP)).thenReturn(true);
-
-            // Act & Assert
-            assertThrows(TooManyRequestsException.class, () -> accountService.checkIPBlock(blockedIP));
-        }
-
-        @Test
-        @DisplayName("checkIPBlock should not throw exception when IP is not blocked")
-        void checkIPBlock_ShouldNotThrowException_WhenIPisNotBlocked() {
-            // Arrange
-            String unblockedIP = "192.168.1.1";
-            when(ipBlockingService.isBlocked(unblockedIP)).thenReturn(false);
-
-            // Act & Assert
-            assertDoesNotThrow(() -> accountService.checkIPBlock(unblockedIP));
         }
     }
 }
